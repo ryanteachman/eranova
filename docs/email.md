@@ -11,16 +11,20 @@ replies wait in the `outbox` table and only move to `approved_sent` when a perso
 ```bash
 pip install -r requirements.txt            # openai + pydantic are used for the LLM steps
 # .env needs TMS_API_BASE, TMS_API_KEY, OPENAI_API_KEY (optional: OPENAI_MODEL_FAST, default gpt-4o-mini)
+python scripts/sync_data.py                # once: Ryan's cache of shipments, carriers, customers, categories
 
 python -m email_pipeline run demo/sample_emails/01_quote_dallas_returns.json   # one sample
 python -m email_pipeline run all                                             # every sample
 python -m email_pipeline inbox | outbox
-python -m email_pipeline approve <action_id>     # stub approval queue, only until Ryan's actions land
+python -m email_pipeline approve <action_id>     # Ryan's approval queue (a quote approval creates it in Meridian)
+python -m email_pipeline reject <action_id> [reason]
 
-python -m email_pipeline.routes                  # blueprint alone on http://localhost:5001/api/email
+flask --app backend run --debug --port 5000      # the whole API, email routes at /api/email
 ```
 
-Set `DB_PATH=/some/scratch.db` to try things without touching `return_trip.db`.
+Set `DB_PATH=/some/scratch.db` to try things without touching `return_trip.db` (sync into it first).
+Approving a `create_return_quote` creates a real quote in Meridian; `python scripts/reset_demo.py`
+declines Return Trip quotes afterwards.
 
 **Demo order** (each email builds on the last):
 
@@ -80,18 +84,21 @@ is empty now*.
 
 ## Matching (`match.py`)
 
-All Meridian calls are reads (`/search`, `/vendors/lookup`, `/vendors/{id}`, `/customers`, `/shipments`).
-**The LLM extracts; `check_compat` decides.**
+Shipments, carriers, customers, facilities and freight categories come from Ryan's synced cache
+(`db.load_records`, `classify.get_classifications`); names are resolved live with Meridian's `/search` and
+`/vendors/lookup`. Nothing here writes to Meridian. **The LLM extracts; Ryan's `check_compat` decides.**
 
 - **Customer:** the sender's address matched to a customer contact (0.95), else `/search` on `customer_hint`,
   retrying with shorter hints (one hit 0.9, several 0.6 with `alternatives`).
 - **Carrier:** MC / DOT / SCAC found in the text → `/vendors/lookup` (0.98), else name search.
-- **QUOTE_REQUEST:** `find_backhauls(origin)` gives the trucks emptying at the request's origin. Each truck
-  is run through `check_compat(trailer_last_category, equipment, candidate, carrier)` with the email's freight,
-  plus a requested-equipment check. Scoring: +30 if the truck is heading home to the destination city
+- **QUOTE_REQUEST:** `arriving_trucks(origin)` lists every truck on an active outbound load into the request's
+  origin (from the cache; the trailer's last load comes from Ryan's `network.trailer_history`). Each truck is run
+  through Ryan's `check_compat(last_category, equipment, candidate, carrier, trailer_number=…, last_load_note=…)`
+  with the email's freight, plus a requested-equipment check. Scoring: +30 if the truck is heading home to the destination city
   (+15 same state), +20 if it empties 0–2 days before pickup, −20 if it empties after pickup. The result is
   `status: "prospect"` with `prospect` and the `options`, or `"none_found"` with `reasons`. All blocked trucks
-  are kept in `blocked`.
+  are kept in `blocked`. The chosen truck is priced with Ryan's `pricing`: lane miles (Meridian's average on the
+  lane, else his distance estimate), `backhaul_buy_lines`, the customer's `margin_for` and a local `estimate`.
 - **Tiebreakers** (trucks with equal scores, in this order): same pickup facility (the truck delivers at the
   dock we pick up from) → load status (DELIVERED > AT_DELIVERY > IN_TRANSIT > PICKED_UP/AT_PICKUP > DISPATCHED >
   COVERED > BOOKED: how sure we are the truck shows up) → carrier compliance (GREEN > YELLOW > RED) → known
@@ -108,33 +115,45 @@ All Meridian calls are reads (`/search`, `/vendors/lookup`, `/vendors/{id}`, `/c
   Meridian's history for the trailer in later quote matching (the reason says so).
 - **WASHOUT_CERT:** insert into `washouts`; `unblocked` lists network prospects for that trailer that are now
   ok, and options on earlier quote emails that FSMA had blocked for that trailer.
-- **LAST_LOAD_INFO / CARRIER_OFFER:** `find_backhauls` at the truck's position, each prospect re-checked for
+- **LAST_LOAD_INFO / CARRIER_OFFER:** Ryan's `find_backhauls` at the truck's position, each prospect re-checked for
   *this* truck (its last load, equipment and carrier). Offers get +30 when the destination matches
   `preferred_direction`. `LAST_LOAD_INFO` also returns `newly_blocked`: food quote options that had planned
   on this trailer.
 
 ## Actions and replies
 
-`create_return_quote` payload (email quote requests: the full lane + freight):
+Actions go into Ryan's approval queue with `propose(…, actor="email_pipeline")`; his executor does the
+write on approval. `create_return_quote` payload for an email quote request: the fields his executor needs
+(`customer_id, equipment_type, category, origin, destination, miles, outbound_file, target_margin_pct,
+buy_lines`) plus the email's details, which his executor doesn't send to Meridian yet (see requests):
 ```json
 {"source": "email", "source_email_id": "em_…", "prospect_id": "email-em_…", "customer_id": "NORTHSTAR",
- "mode": "TL", "equipment_type": "V",
+ "mode": "TL", "equipment_type": "V", "category": "RETAIL_RETURNS", "miles": 925, "target_margin_pct": 10,
+ "buy_lines": [{"charge_code": "FRT", "…": "…"}, {"charge_code": "FSC", "…": "…"}],
  "origin": {"city": "Dallas", "state": "TX", "zip": "75241", "name": "Big-Box DC135", "facility_id": "BBR-DC135"},
  "destination": {"city": "Chicago", "state": "IL", "name": "…", "facility_id": "NORTHSTAR-CHI"},
  "pickup_date": "2026-11-17", "freight_lines": [{"pieces": 18, "weight_lb": 14200, "package_type": "PALLET", "description": "…", "hazmat": false}],
- "references": [{"type": "PO", "value": "4471882"}], "accessorials": ["seal required"],
- "outbound_file": "7300156", "carrier_id": "ACMECARR", "trailer_number": null, "rate_ref": "return-trip:7300156"}
+ "references": [{"type": "PO", "value": "4471882"}], "accessorials": ["live load", "seal required", "…"],
+ "outbound_file": "7300147", "carrier_id": "ACMECARR", "trailer_number": "53631"}
 ```
-For carrier emails: `{source, source_email_id, prospect_id, carrier_id, trailer_number}`.
-Confidence = min(classification confidence, customer/carrier match confidence). Reasoning quotes the email.
+For carrier emails it is Ryan's prospect (`prospect_id, customer_id, equipment_type, category, origin,
+destination, miles, outbound_file, target_margin_pct, buy_lines`) plus `carrier_id` and `trailer_number`.
+The approver sees the estimated buy/sell in the summary. Confidence = min(classification confidence,
+customer/carrier match confidence). Reasoning quotes the email.
 
 `send_reply` payload: `{reply_id, email_id, quote_action_id}`. Drafts never contain a price. A quote reply
 carries `{{sell_total}}`, and approving `send_reply` (`reply.execute_send_reply`) fills it from the approved
-quote's `result.sell_total` and appends the quote number. If the quote isn't approved yet, it refuses.
+quote's `result.sell_total` and appends the quote number. If the quote isn't approved yet, it refuses: Ryan's
+queue marks that action `failed` (it can't be approved twice), so the reply is first queued again under a new
+`send_reply` action, and the error message names it. Approve the quote, then that new action.
+When a person rejects a `send_reply`, the outbox shows the draft as `rejected` (synced on read).
 Carrier replies never get the placeholder. As a last safety net, any `$` figure the model writes is
 replaced in the draft.
 
-## Agent tools (`tools.py`)
+## Agent tools and executors (`tools.py`)
+
+Registered with Ryan's `@tool` and `@executor` when his backend imports `email_pipeline.tools`.
+Executors: `send_reply` → `reply.execute_send_reply`, `confirm_carrier_rate` → `haggle.execute_rate_confirmation`.
 
 | Tool | Tier | Does |
 |---|---|---|
@@ -142,10 +161,12 @@ replaced in the draft.
 | `read_email(email_id)` | auto | full email + extraction + match + replies |
 | `process_email(email_id)` | auto | re-runs the pipeline (writes only our tables + proposes actions) |
 | `draft_reply(email_id, instructions?)` | auto | new outbox draft + `send_reply` action |
-| `send_reply(reply_id)` | approve | marks `approved_sent` (simulated) |
-| `haggle_with_carrier(email_id, target_pay_min?, target_pay_max?)` | auto | stretch: simulated negotiation → `cover_load` action |
+| `send_reply(reply_id)` | approve | returns the proposal; on approval the executor marks it `approved_sent` (simulated) |
+| `haggle_with_carrier(email_id, target_pay_min?, target_pay_max?)` | auto | stretch: simulated negotiation → `confirm_carrier_rate` action |
 
-## HTTP routes (`routes.py`, Blueprint `email_bp`, prefix `/api/email`)
+## HTTP routes (`routes.py`, Blueprint `bp`, mounted by Ryan at `/api/email`)
+
+Errors use Ryan's `{error, detail}` body (e.g. `404 not_found` for an unknown email).
 
 | Method | Route | Returns | Contract |
 |---|---|---|---|
@@ -155,7 +176,6 @@ replaced in the draft.
 | POST | `/simulate` `{file}` | loads `demo/sample_emails/<file>` and ingests it (404 if unknown) | `contracts/email_process_result.json` |
 | GET | `/outbox?status=` | `{items:[{reply_id, email_id, to_addr, subject, body, status, action_id, created_at}]}` | `contracts/email_outbox.json` |
 | GET | `/samples` | `{items:[file names]}` for the simulate buttons | — |
-| GET | `/health` | `{ok, stubbed:[…]}`: which of Ryan's interfaces are still stubs | — |
 | POST | `/<email_id>/haggle` | stretch: `{target_pay_min, target_pay_max, target_basis, carrier_ask, deal, action_id, transcript}` | — |
 
 ## Tables (`store.py`, created by `init_email_tables()`)
@@ -167,19 +187,23 @@ replaced in the draft.
 
 ## Integration with Ryan's backend
 
-`email_pipeline/deps.py` imports each of Ryan's interfaces (`get_conn`, `tool`, `propose`, `find_backhauls`,
-`check_compat`, `meridian.get`) and falls back to the same-named stand-in in `_stubs.py` when one is missing.
-The switch-over therefore needs no code change, and `/api/email/health` lists what is still stubbed.
-The stubs read live Meridian data. `post` refuses, and the stub `approve` fakes a quote result
-(`STUB-…`, sell $1,850) so the reply flow can be shown. What I need from Ryan is in `docs/requests.md`.
+The pipeline uses Ryan's modules directly: `db` (connection, schema, cache, audit log), `meridian` (reads),
+`agent.registry.tool`, `agent.actions` (`propose`, `executor`, `approve`/`reject` in the CLI),
+`brain.compat.check_compat`, `brain.network` (`find_backhauls`, `trailer_history`, `distance_miles`),
+`brain.pricing` and `brain.classify`. `email_pipeline/__init__.py` imports `backend` first, because the backend
+imports `email_pipeline.routes` and `.tools` while it starts; that order avoids a circular import when the
+pipeline is run on its own. `store.init_email_tables()` also runs Ryan's `db.init_db()`.
+What I need from Ryan is in `docs/requests.md`.
 
 ## Stretch
 
 - **Carrier Haggle** (`haggle.py`): the target range comes from lane history (median buy $/mi on the lane,
   or its head-haul direction) × miles, at 65–85% for a backhaul. Our side is deterministic: open at the minimum,
   meet in the middle, never above the maximum. The carrier is an LLM persona whose walk-away (92% of its ask) is
-  also enforced in code. A deal → `propose("cover_load", …)`. On sample 05: ask $795.50, target $683–$893,
-  deal ≈ $750.
+  also enforced in code. Lane history comes from Ryan's shipment cache. A deal drafts a rate confirmation to
+  the carrier in the outbox and proposes `confirm_carrier_rate`; approving it marks the confirmation sent
+  (simulated). It does not cover the load in Meridian: `/shipments/{id}/cover` needs the backhaul quote booked
+  first. On sample 05: ask $795.50, target $683–$893, deals between about $730 and $750.
 - **Real inbox** (`inbox_poll.py`): IMAP polling of UNSEEN mail into `process_email`, **off unless
   `EMAIL_POLL_ENABLED=1`** (`IMAP_HOST`, `IMAP_USER`, `IMAP_PASSWORD`, `IMAP_FOLDER`, `EMAIL_POLL_SECONDS`).
   Not tested against a live mailbox; `.eml` parsing is tested.
@@ -194,12 +218,13 @@ Each prompt lives in code next to its schema, with a one-line comment on what it
 
 - **LLM provider:** the pipeline uses OpenAI structured output (`gpt-4o-mini`, `OPENAI_MODEL_FAST`) through
   `llm.structured()`, not `anthropic` as the original plan said. Swapping providers only touches `llm.py`.
-- The stub `find_backhauls` is crude: one return-lane prospect per truck arriving in the city, for the same
-  customer, with categories from a hard-coded reverse-logistics table and keyword freight categories.
-  Ryan's real finder replaces it.
-- Matching expects prospects to carry `outbound_file, outbound_status, delivery_facility_id, carrier_id,
-  trailer_number, trailer_last_category, available_date, origin, destination, equipment, category, miles`
-  (see requests). Without `outbound_status` / `delivery_facility_id` those tiebreakers are skipped.
+- Matching reads Ryan's cache, so it is only as fresh as the last `python scripts/sync_data.py`.
+- Ryan's `create_return_quote` executor doesn't send `pickup_date`, `freight_lines` or references to Meridian,
+  so a quote from an email has the lane and price but not the email's freight details (see requests).
+- For carrier emails the quote's `rate_ref` points at the outbound file Ryan's finder paired with the freight,
+  not at the emailing carrier's truck (which isn't on a Meridian file).
+- Ryan's test `test_every_tool_is_registered_with_a_valid_schema` expects only his seven tools, so it fails now
+  that the six email tools register (see requests). The other 68 tests pass.
 - Last-load history from email lives only in our `emails` table; Ryan's own network and compat won't see it
   unless he reads `store.emailed_last_load()`.
 - Every `simulate` creates a new email row (no de-duplication), so the demo button can be pressed repeatedly.
@@ -207,4 +232,3 @@ Each prompt lives in code next to its schema, with a one-line comment on what it
   payload carries them either way.
 - The model's confidence on `06_vague` lands at 0.7–0.8; the missing-essentials check is what sends it to review.
 - A carrier's rate ask repeated in a reply is replaced with "(pricing to follow)" by the no-dollars guard.
-- The stub caches active shipments once per process; restart to pick up Meridian changes.

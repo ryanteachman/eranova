@@ -1,12 +1,12 @@
 {
   "action_ids": [
-    "act_28d75fc549",
-    "act_c7bc27a6ee"
+    "act_9f287c95",
+    "act_698e89e3"
   ],
   "attachments": [],
   "body": "Hi team,\n\nFollowing up on my VM from this morning. We've got the Northstar RTV staged at door 41 -- store returns + salvage, mostly damaged POS display units and some shelving hardware that came back from stores. Northstar Manufacturing is paying for this move per their vendor return agreement (bill to Northstar, RA# RTV-135-20417).\n\nPick up: Big-Box DC135, 9800 Commerce Pkwy, Dallas TX 75241\nDeliver: Northstar Manufacturing - Chicago Dock, Chicago IL\nWhen: this Tue (11/17), any time after 0600. Live load, ~2 hrs\nFreight: 18 pallets, roughly 14,200 lbs total, all shrink wrapped, nothing hazardous. Std 53' dry van is fine\nDriver MUST have a seal, our gate is strict about it. Northstar's PO for the move is 4471882 if you need it.\n\nCan you get me a price today? Trying to get this off the dock before weekend volume hits.\n\nThanks\nTasha Greer\nReverse Logistics Coordinator | Big-Box Retailer DC135\n972-555-0141\n\n-----Original Message-----\nFrom: Tasha Greer\nSent: Thursday, November 12, 2026 4:02 PM\nSubject: returns pickup DC135 -> Chicago\nWho do I talk to about a backhaul out of DC135?",
   "confidence": 0.9,
-  "email_id": "em_817c52908a",
+  "email_id": "em_e5437d9b15",
   "error": null,
   "extracted": {
     "accessorials": [
@@ -65,19 +65,47 @@
       "city": "Chicago",
       "facility_id": "NORTHSTAR-CHI",
       "name": "Northstar Manufacturing - Chicago Dock",
+      "requirements": [],
       "state": "IL",
       "zip": null
     },
     "options": [
       {
-        "available_date": "2026-11-17",
+        "available_date": "2026-11-16",
+        "carrier_compliance": "GREEN",
         "carrier_id": "ACMECARR",
+        "delivery_facility_id": "BBR-DC135",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300147",
+        "outbound_status": "DISPATCHED",
+        "reasons": [
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 1 day(s) before the requested pickup.",
+          "Tied on score with outbound file 7300156; chosen on load status (DISPATCHED vs COVERED)."
+        ],
+        "score": 100,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53631"
+      },
+      {
+        "available_date": "2026-11-17",
+        "carrier_compliance": "GREEN",
+        "carrier_id": "ACMECARR",
+        "delivery_facility_id": "BBR-DC135",
         "equipment": "V",
         "heading_home_to": "Chicago, IL",
         "ok": true,
         "outbound_file": "7300156",
+        "outbound_status": "COVERED",
         "reasons": [
-          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
           "Truck is heading home to Chicago, exactly where this freight goes.",
           "Truck empties 0 day(s) before the requested pickup."
         ],
@@ -86,46 +114,19 @@
         "trailer_number": null
       },
       {
-        "available_date": "2026-11-16",
-        "carrier_id": "ACMECARR",
-        "equipment": "V",
-        "heading_home_to": "Chicago, IL",
-        "ok": true,
-        "outbound_file": "7300147",
-        "reasons": [
-          "Equipment V can carry RETAIL_RETURNS freight.",
-          "Truck is heading home to Chicago, exactly where this freight goes.",
-          "Truck empties 1 day(s) before the requested pickup."
-        ],
-        "score": 100,
-        "trailer_last_category": "STEEL",
-        "trailer_number": "53631"
-      },
-      {
         "available_date": "2026-11-13",
-        "carrier_id": "ACMECARR",
-        "equipment": "V",
-        "heading_home_to": "Chicago, IL",
-        "ok": true,
-        "outbound_file": "7300132",
-        "reasons": [
-          "Equipment V can carry RETAIL_RETURNS freight.",
-          "Truck is heading home to Chicago, exactly where this freight goes.",
-          "Truck empties 4 days before pickup (long wait)."
-        ],
-        "score": 80,
-        "trailer_last_category": "STEEL",
-        "trailer_number": "53805"
-      },
-      {
-        "available_date": "2026-11-13",
+        "carrier_compliance": "GREEN",
         "carrier_id": "PRAIRIEHL",
+        "delivery_facility_id": "BBR-DC135",
         "equipment": "V",
         "heading_home_to": "Chicago, IL",
         "ok": true,
         "outbound_file": "7300122",
+        "outbound_status": "DELIVERED",
         "reasons": [
-          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier PRAIRIEHL is ACTIVE with an unexpired CARGO policy.",
           "Truck is heading home to Chicago, exactly where this freight goes.",
           "Truck empties 4 days before pickup (long wait)."
         ],
@@ -134,30 +135,122 @@
         "trailer_number": "53912"
       },
       {
-        "available_date": "2026-11-13",
+        "available_date": "2026-11-12",
+        "carrier_compliance": "GREEN",
         "carrier_id": "BLUERIDGE",
+        "delivery_facility_id": "BBR-DC135",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300117",
+        "outbound_status": "IN_TRANSIT",
+        "reasons": [
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier BLUERIDGE is ACTIVE with an unexpired CARGO policy.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 5 days before pickup (long wait)."
+        ],
+        "score": 80,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53937"
+      },
+      {
+        "available_date": "2026-11-13",
+        "carrier_compliance": "GREEN",
+        "carrier_id": "BLUERIDGE",
+        "delivery_facility_id": "BBR-DC135",
         "equipment": "V",
         "heading_home_to": "Chicago, IL",
         "ok": true,
         "outbound_file": "7300119",
+        "outbound_status": "IN_TRANSIT",
         "reasons": [
-          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier BLUERIDGE is ACTIVE with an unexpired CARGO policy.",
           "Truck is heading home to Chicago, exactly where this freight goes.",
           "Truck empties 4 days before pickup (long wait)."
         ],
         "score": 80,
         "trailer_last_category": "STEEL",
         "trailer_number": "53750"
+      },
+      {
+        "available_date": "2026-11-12",
+        "carrier_compliance": "GREEN",
+        "carrier_id": "LAKESHORE",
+        "delivery_facility_id": "BBR-DC135",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300120",
+        "outbound_status": "IN_TRANSIT",
+        "reasons": [
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier LAKESHORE is ACTIVE with an unexpired CARGO policy.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 5 days before pickup (long wait)."
+        ],
+        "score": 80,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53734"
+      },
+      {
+        "available_date": "2026-11-13",
+        "carrier_compliance": "GREEN",
+        "carrier_id": "ACMECARR",
+        "delivery_facility_id": "BBR-DC135",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300132",
+        "outbound_status": "IN_TRANSIT",
+        "reasons": [
+          "Dry V matches dry RETAIL_RETURNS freight.",
+          "14,200 lb / 18 pallets fits the V.",
+          "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 4 days before pickup (long wait)."
+        ],
+        "score": 80,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53805"
       }
     ],
     "origin": {
       "city": "Dallas",
       "facility_id": "BBR-DC135",
       "name": "Big-Box DC135",
+      "requirements": [
+        "seal required",
+        "driver ID required",
+        "appointment required",
+        "lumper required"
+      ],
       "state": "TX",
       "zip": "75241"
     },
     "prospect": {
+      "buy_lines": [
+        {
+          "amount": 1240.21,
+          "charge_code": "FRT",
+          "description": "Backhaul linehaul",
+          "quantity": 1,
+          "rate": 1240.21,
+          "rate_basis": "FLAT"
+        },
+        {
+          "amount": 527.25,
+          "charge_code": "FSC",
+          "description": "Fuel surcharge @ 0.57/mi",
+          "quantity": 925,
+          "rate": 0.57,
+          "rate_basis": "PER_MILE"
+        }
+      ],
       "carrier_id": "ACMECARR",
       "category": "RETAIL_RETURNS",
       "customer_id": "NORTHSTAR",
@@ -166,28 +259,43 @@
         "city": "Chicago",
         "facility_id": "NORTHSTAR-CHI",
         "name": "Northstar Manufacturing - Chicago Dock",
+        "requirements": [],
         "state": "IL",
         "zip": null
       },
       "equipment": "V",
+      "est_buy": 1767.46,
+      "est_sell": 1905.26,
+      "gp_pct": 7.2,
+      "miles": 925,
       "ok": true,
       "origin": {
         "city": "Dallas",
         "facility_id": "BBR-DC135",
         "name": "Big-Box DC135",
+        "requirements": [
+          "seal required",
+          "driver ID required",
+          "appointment required",
+          "lumper required"
+        ],
         "state": "TX",
         "zip": "75241"
       },
-      "outbound_file": "7300156",
-      "prospect_id": "email-em_817c52908a",
+      "outbound_file": "7300147",
+      "prospect_id": "email-em_e5437d9b15",
       "reasons": [
-        "Equipment V can carry RETAIL_RETURNS freight.",
+        "Dry V matches dry RETAIL_RETURNS freight.",
+        "14,200 lb / 18 pallets fits the V.",
+        "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
         "Truck is heading home to Chicago, exactly where this freight goes.",
-        "Truck empties 0 day(s) before the requested pickup."
+        "Truck empties 1 day(s) before the requested pickup.",
+        "Tied on score with outbound file 7300156; chosen on load status (DISPATCHED vs COVERED)."
       ],
       "score": 100,
       "source": "email",
-      "trailer_number": null
+      "target_margin_pct": 10,
+      "trailer_number": "53631"
     },
     "status": "prospect"
   },
@@ -195,11 +303,11 @@
   "received_at": "2026-11-13T15:12:00Z",
   "replies": [
     {
-      "action_id": "act_c7bc27a6ee",
-      "body": "Hi Tasha,\n\nThank you for your follow-up. We have noted the pickup at Big-Box DC135, 9800 Commerce Pkwy, Dallas TX 75241, and delivery to Northstar Manufacturing - Chicago Dock, Chicago IL, on Tuesday, 11/17, after 0600. The load consists of 18 pallets, approximately 14,200 lbs, and requires a standard 53' dry van with a seal. \n\nOur all-in rate is {{sell_total}}, valid for 7 days.\n\nBest regards,\nMeridian Logistics - Return Trip desk",
-      "created_at": "2026-11-13T17:55:33Z",
-      "email_id": "em_817c52908a",
-      "reply_id": "rp_8cd97390a1",
+      "action_id": "act_698e89e3",
+      "body": "Hi Tasha,\n\nThank you for your follow-up. We have noted the pickup at Big-Box DC135, 9800 Commerce Pkwy, Dallas TX 75241, and delivery to Northstar Manufacturing - Chicago Dock, Chicago IL, on Tuesday, 11/17, after 0600. We will ensure the driver has a seal, as required, and we are preparing a quote for this move. \n\nOur all-in rate is {{sell_total}}, valid for 7 days.\n\nBest regards,\nMeridian Logistics - Return Trip desk",
+      "created_at": "2026-11-13T18:47:53Z",
+      "email_id": "em_e5437d9b15",
+      "reply_id": "rp_b14bf8939a",
       "status": "draft",
       "subject": "Re: returns pickup DC135 -> Chicago?? need truck Tue",
       "to_addr": "Tasha Greer <tgreer.dc135@bigboxretail.example.com>"
