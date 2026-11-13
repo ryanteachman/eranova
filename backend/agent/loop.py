@@ -6,7 +6,7 @@ from openai import OpenAI
 
 from .. import config, db, meridian
 from ..errors import ApiError
-from . import actions, tools  # noqa: F401  (tools registers itself on import)
+from . import actions, autonomy, tools  # noqa: F401  (tools registers itself on import)
 from .registry import TOOLS, openai_tools
 
 MAX_TURNS = 8
@@ -21,14 +21,27 @@ Rules:
 - Use network_overview to see where trucks run empty, then find_backhauls for a city.
 - Only propose create_return_quote for prospects with ok = true. Never work around a blocked
   prospect; explain the blocking reason instead (compatibility rules are decided by code).
-- create_return_quote does not write anything: it queues the quote for a human to approve.
-  Tell the user it is waiting for approval and give the action id.
+- create_return_quote is decided by the brokerage's decision mode: it is either queued for a
+  human to approve or executed right away by the AI. Report exactly what its result says
+  (waiting for approval, created automatically with the quote id, or failed) with the action id.
 - If a Meridian call fails, read its detail sentence and correct your next call.
 - Be brief and concrete: cities, customers, scores, dollars, reasons."""
 
 
 def _client():
     return OpenAI(api_key=config.OPENAI_API_KEY, base_url=config.OPENAI_BASE_URL)
+
+
+def describe_outcome(action):
+    """One sentence for the model on what happened to a proposed action under the decision mode."""
+    action_id, mode = action["action_id"], action.get("mode") or "approval"
+    if action["status"] == "done":
+        return (f"Executed automatically by the AI as {action_id} ({mode} mode): "
+                f"{json.dumps(action['result'], default=str)[:400]}")
+    if action["status"] == "failed":
+        return f"The AI tried to execute {action_id} ({mode} mode) but it failed: {action['result'].get('error')}"
+    why = autonomy.hold_message(mode, action.get("risk") or {"blockers": [], "reasons": [], "cap": None})
+    return f"Queued for human approval as {action_id}" + (f" ({why})" if why else "")
 
 
 def _run_tool(name, args, actions_created):
@@ -41,7 +54,7 @@ def _run_tool(name, args, actions_created):
             proposal = entry["fn"](**args)
             action = actions.propose(kind=name, **proposal)
             actions_created.append(action["action_id"])
-            return f"Queued for human approval as {action['action_id']}"
+            return describe_outcome(action)
         return json.dumps(entry["fn"](**args), default=str)[:RESULT_CHARS]
     except meridian.MeridianError as exc:
         return f"Meridian error {exc.status} {exc.error}: {exc.detail}"

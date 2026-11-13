@@ -13,7 +13,9 @@ is noted in `docs/status.md`.
 |---|---|---|---|---|
 | GET | `/api/network` | — | Network totals, cities and lane arcs | `network.json` |
 | GET | `/api/city/<state>/<city>` | — | One city's inbound/outbound counts and ranked backhaul prospects | `city.json` |
-| POST | `/api/fill` | `{prospect_id}` | `{action_id, status: "pending"}`, a quote proposal waiting for approval | `fill.json` |
+| POST | `/api/fill` | `{prospect_id}` | `{action_id, status, mode, decided_by, risk, result}`. In approval mode `status` is `pending`; in auto/invisible mode it can come back `done` (or `failed`) with the quote in `result` | `fill.json` |
+| GET | `/api/mode` | — | `{mode, modes, risk_rules, daily_caps, ai_today: {actions, sell}}` | `mode.json` |
+| PUT | `/api/mode` | `{mode: "approval" \| "auto" \| "invisible"}` | Same as `GET /api/mode` | `mode.json` |
 | GET | `/api/actions?status=pending` | — | `{items: [Action]}` | `actions.json` |
 | POST | `/api/actions/<id>/approve` | — | `Action` with `status: "done"` and `result` holding the new Meridian quote | `action_approved.json` |
 | POST | `/api/actions/<id>/reject` | `{reason}` | `Action` with `status: "rejected"` | `action_rejected.json` |
@@ -78,6 +80,9 @@ truck is compatible, a blocked prospect (`ok: false`, `score: 0`) explaining why
 | `status` | string | `pending`, `running` (being approved right now), `done`, `rejected`, `failed`. |
 | `result` | object or null | `null` while pending. On `done`: `{quote_id, summary, sell_total, meridian_url}`. On `rejected`: `{reason}`. On `failed`: `{error, status}`, where `error` is Meridian's sentence. |
 | `created_at` | string | UTC ISO-8601. |
+| `mode` | string | Decision mode when it was proposed: `approval`, `auto`, `invisible`. |
+| `decided_by` | string or null | `human` or `ai` once approved/rejected; `null` while pending. |
+| `risk` | object | `{level: "low" \| "high", reasons: [str], blockers: [str], cap: str \| null}`. `reasons`: why auto mode won't run it alone. `blockers`: it waits on another action (no mode runs it). `cap`: the AI's daily limit was hit. Assessed in every mode, so the UI can show what auto would do. See `action_auto_executed.json` for an AI-executed action. |
 
 **Chat** (`/api/agent/chat`)
 
