@@ -42,6 +42,8 @@ def test_fill_approve_creates_and_prices_the_quote(client, fake_meridian):
     assert price["target_margin_pct"] == 10
     assert [line["charge_code"] for line in price["buy_lines"]] == ["FRT", "FSC"]
     assert "Return Trip" in note["note"]
+    # Hours of Service dates from the prospect go onto the Meridian quote.
+    assert create["pickup_date"] and create["delivery_date_target"] >= create["pickup_date"]
 
 
 def test_fill_twice_returns_the_same_pending_action(client):

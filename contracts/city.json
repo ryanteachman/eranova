@@ -8,12 +8,15 @@
       "category": "SCRAP",
       "customer_id": "NORTHSTAR",
       "customer_name": "Northstar Manufacturing",
+      "delivery_date_target": "2026-11-18",
       "destination": {
         "city": "Chicago",
         "state": "IL"
       },
       "equipment": "V",
       "est_buy": 1767.46,
+      "est_delivery": "11/18 20:30 CST",
+      "est_pickup": "11/17 12:30 CST",
       "est_sell": 1905.26,
       "gp_pct": 7.2,
       "miles": 925,
@@ -24,11 +27,13 @@
         "state": "TX"
       },
       "outbound_file": "7300156",
+      "pickup_date": "2026-11-17",
       "prospect_id": "TX:Dallas:NORTHSTAR:SCRAP:Dallas:Chicago:7300156",
       "reasons": [
         "Dry V matches dry SCRAP freight.",
         "30,761 lb / 10 pallets fits the V.",
         "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+        "HOS: truck empty 11/17 12:30 CST; earliest legal pickup 11/17 12:30 CST; delivery about 11/18 20:30 CST (925 mi at 50 mph, legal breaks and rests included).",
         "Warm lead: Northstar Manufacturing already ships with us (27 loads on this pattern).",
         "Saves 925 empty miles (100% of the trip home).",
         "Equipment match: this freight usually moves on V.",
@@ -42,12 +47,15 @@
       "category": "RETAIL_RETURNS",
       "customer_id": "KEYSTONE-TX",
       "customer_name": "Keystone Home & Garden - Texas Division",
+      "delivery_date_target": "2026-11-19",
       "destination": {
         "city": "Columbus",
         "state": "OH"
       },
       "equipment": "V",
       "est_buy": 1858.5,
+      "est_delivery": "11/19 08:44 CST",
+      "est_pickup": "11/17 13:14 CST",
       "est_sell": 1998.5,
       "gp_pct": 7.0,
       "miles": 1050,
@@ -58,11 +66,13 @@
         "state": "TX"
       },
       "outbound_file": "7300156",
+      "pickup_date": "2026-11-17",
       "prospect_id": "TX:Dallas:KEYSTONE-TX:RETAIL_RETURNS:Fort Worth:Columbus:7300156",
       "reasons": [
         "Dry V matches dry RETAIL_RETURNS freight.",
         "24,266 lb / 12 pallets fits the V.",
         "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+        "HOS: truck empty 11/17 12:30 CST; earliest legal pickup 11/17 13:14 CST; delivery about 11/19 08:44 CST (1050 mi at 50 mph, legal breaks and rests included).",
         "Warm lead: Keystone Home & Garden - Texas Division already ships with us (11 loads on this pattern).",
         "Saves 557 empty miles (60% of the trip home).",
         "Equipment match: this freight usually moves on V.",
