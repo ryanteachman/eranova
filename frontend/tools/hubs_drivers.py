@@ -11,7 +11,8 @@ Run:  python3 frontend/tools/hubs_drivers.py frontend/mocks
 import json
 import sys
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 out = Path(sys.argv[1])
@@ -55,6 +56,70 @@ def road(a, b):
 STATUS_GROUP = {"BOOKED": "booked", "COVERED": "booked", "DISPATCHED": "booked", "AT_PICKUP": "in_transit", "PICKED_UP": "in_transit",
                 "IN_TRANSIT": "in_transit", "AT_DELIVERY": "in_transit", "DELIVERED": "delivered", "POD_RECEIVED": "delivered",
                 "CLOSED": "delivered", "ON_HOLD": "on_hold"}
+
+# ---------- where is my order: each open load's public tracking (fetch_tracking.py) ----------
+events = json.loads((cache / "events.json").read_text()) if (cache / "events.json").exists() else {}
+geo = json.loads((cache / "geo.json").read_text()) if (cache / "geo.json").exists() else {}
+NOW = datetime.now(timezone.utc)
+WISMO_OPEN = ("BOOKED", "COVERED", "DISPATCHED", "AT_PICKUP", "PICKED_UP", "IN_TRANSIT", "AT_DELIVERY", "ON_HOLD", "DELIVERED")
+STATUS_WORDS = {"BOOKED": "Booked, carrier being found", "COVERED": "Carrier assigned", "DISPATCHED": "Truck on the way to pick up",
+                "AT_PICKUP": "At your dock", "PICKED_UP": "Loaded", "IN_TRANSIT": "On the road", "AT_DELIVERY": "At delivery",
+                "DELIVERED": "Delivered", "ON_HOLD": "On hold"}
+
+
+def utc(iso):
+    return datetime.fromisoformat(iso.replace("Z", "+00:00")) if iso else None
+
+
+def local_to_utc(local, tz):
+    return datetime.fromisoformat(local).replace(tzinfo=ZoneInfo(tz)).astimezone(timezone.utc) if local and tz else None
+
+
+def fmt(dt, tz):
+    d = dt.astimezone(ZoneInfo(tz)) if tz else dt
+    return d.strftime("%a %-I:%M %p")
+
+
+def wismo(s):
+    """Where is this load, in the words the agent would send the shipper. Only PUBLIC events."""
+    evs = [e for e in events.get(s["shipment_id"], []) if e.get("visibility") == "PUBLIC"]
+    evs.sort(key=lambda e: e["event_at"], reverse=True)
+    last_stop = s["stops"][-1]
+    win = last_stop.get("scheduled_window") or {}
+    tz = win.get("timezone")
+    due = local_to_utc(win.get("latest_local"), tz)
+    call = next((e for e in evs if e["event_type"] == "CHECK_CALL"), None)
+    seen = next((e for e in evs if e.get("city")), None)
+    eta = utc(call.get("eta")) if call else None
+    pos = geo.get(f"{seen['city']},{seen['state']}") if seen else None
+    nxt = utc(s.get("next_tracking_at"))
+    overdue = bool(nxt and nxt <= NOW and s["status"] not in ("DELIVERED",))
+    late = bool(eta and due and eta > due)
+    stale = bool(eta and eta < NOW and s["status"] not in ("DELIVERED",))
+    dest = f"{s['consignee_city']}, {s['consignee_state']}"
+    if s["status"] == "DELIVERED":
+        answer = f"Delivered in {dest}."
+    elif seen:
+        when = fmt(utc(seen["event_at"]), tz)
+        if eta and eta < NOW:
+            tail = f"ETA was {fmt(eta, tz)} and nothing has been reported since. Needs a check call."
+        elif eta:
+            tail = f"ETA {fmt(eta, tz)}, {'after' if late else 'inside'} the delivery window."
+        else:
+            tail = STATUS_WORDS.get(s["status"], s["status"]) + "."
+        answer = f"Last reported in {seen['city']}, {seen['state']} ({when}). " + tail
+    else:
+        answer = f"{STATUS_WORDS.get(s['status'], s['status'])}. No location reported yet."
+    return {
+        "shipment_id": s["shipment_id"], "status": s["status"], "status_text": STATUS_WORDS.get(s["status"], s["status"]),
+        "to": dest, "consignee": s.get("consignee_name"), "pickup": s["pickup_date"],
+        "carrier": vendors.get(s.get("carrier_id"), {}).get("legal_name") if s.get("carrier_id") else None,
+        "due": fmt(due, tz) if due else None, "eta": fmt(eta, tz) if eta else None, "late": late, "stale": stale, "tracking_overdue": overdue,
+        "last_seen": {"city": seen["city"], "state": seen["state"], "at": seen["event_at"], "lng": pos[1], "lat": pos[0]} if seen and pos else None,
+        "answer": answer,
+        "timeline": [{"at": e["event_at"], "type": e["event_type"], "text": e.get("note"), "city": e.get("city"), "state": e.get("state")} for e in evs[:6]],
+    }
+
 
 # ---------- supply hubs: plant -> everywhere it ships ----------
 hubs = defaultdict(lambda: {"spokes": defaultdict(list)})
@@ -105,6 +170,8 @@ for (cid, fid), h in hubs.items():
                  "delivered": sum(1 for w in weekloads if STATUS_GROUP.get(w["status"]) == "delivered"),
                  "booked": sum(1 for w in weekloads if STATUS_GROUP.get(w["status"]) == "booked")},
         "all": {"loads": len(allloads), "spend": round(sum(s["sell_total"] for s in allloads)), "destinations": len(spokes)},
+        "wismo": sorted((wismo(s) for s in allloads if s["status"] in WISMO_OPEN),
+                        key=lambda w: (not (w["late"] or w["stale"]), not w["tracking_overdue"], w["status"] == "DELIVERED", w["pickup"])),
     })
 shipper_hubs.sort(key=lambda x: (-x["week"]["loads"], -x["all"]["loads"]))
 (out / "shipper_hubs.json").write_text(json.dumps({"week": {"from": str(WEEK), "to": str(WEEK_END)}, "items": shipper_hubs}, indent=2) + "\n")
@@ -157,5 +224,6 @@ STATUS_ORDER = {"IN_TRANSIT": 0, "AT_DELIVERY": 1, "AT_PICKUP": 2, "PICKED_UP": 
 drivers.sort(key=lambda d: (STATUS_ORDER.get(d["load"]["status"], 9), d["name"]))
 (out / "drivers.json").write_text(json.dumps({"items": drivers}, indent=2) + "\n")
 
+print("wismo:", sum(len(h["wismo"]) for h in shipper_hubs), "open loads |", [(w["shipment_id"], w["answer"]) for h in shipper_hubs[:2] for w in h["wismo"][:2]])
 print("hubs:", len(shipper_hubs), "| top:", [(h["customer"], h["plant"], h["week"]["loads"], len(h["spokes"])) for h in shipper_hubs[:5]])
 print("drivers:", len(drivers), "| e.g.", [(d["name"], d["carrier_id"], d["truck"], d["load"]["status"], d["load"]["origin"]["city"] + "->" + d["load"]["destination"]["city"]) for d in drivers[:5]])

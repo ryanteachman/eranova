@@ -132,18 +132,19 @@ function hubItems(hubs) {
     title: plantName(h),
     big: `${h.week.loads}`,
     bigNote: `loads this week · ${h.spokes.length} ${h.spokes.length === 1 ? 'destination' : 'destinations'}`,
-    tag: h.week.in_transit ? `${h.week.in_transit} on the road` : `${h.all.loads} loads since January`,
-    tone: h.week.in_transit ? 'amber' : '',
+    tag: needsCall(h) ? `${needsCall(h)} ${needsCall(h) === 1 ? 'load needs' : 'loads need'} a check call` : h.week.in_transit ? `${h.week.in_transit} on the road` : `${h.all.loads} loads since January`,
+    tone: needsCall(h) ? 'amber' : '',
     stats: [
       ['Delivered', `${h.week.delivered}`],
       ['On the road', `${h.week.in_transit}`],
       ['Booked, not picked up', `${h.week.booked}`],
       ['Spend this week', usd0(h.week.spend)],
     ],
-    listTitle: 'Where this plant ships',
-    list: h.spokes.slice(0, 4).map((sp) => ({
-      name: sp.name,
-      why: `${sp.loads_week} this week · ${sp.loads_all} since January${sp.on_time_pct != null ? ` · ${sp.on_time_pct}% on time` : ''}`,
+    listTitle: 'Where is my order? · live from Meridian tracking',
+    list: (h.wismo || []).filter((w) => w.status !== 'DELIVERED').slice(0, 6).map((w) => ({
+      key: w.shipment_id,
+      name: `${w.stale || w.late ? '⚠ ' : ''}Load ${w.shipment_id} → ${w.to} · ${w.status_text}`,
+      why: w.answer,
     })),
     action: 'Live from Meridian',
     done: true,
@@ -151,11 +152,21 @@ function hubItems(hubs) {
     raw: h,
   }))
 }
+const needsCall = (h) => (h.wismo || []).filter((w) => w.stale || w.late || w.tracking_overdue).length
 const hubAsTour = (h) => ({
-  tour_id: h.hub_id, kind: 'hub', status: 'hub', equipment: '', name: plantName(h),
+  tour_id: h.hub_id, kind: 'hub', status: 'hub', equipment: '', name: plantName(h), hub: h.hub,
+  // trucks grouped by the city they last reported from, so four trucks in one town read as one marker
+  trucks: Object.values((h.wismo || []).filter((w) => w.last_seen && w.status !== 'DELIVERED').reduce((m, w) => {
+    const k = `${w.last_seen.city},${w.last_seen.state}`
+    const g = m[k] ?? { id: k, lng: w.last_seen.lng, lat: w.last_seen.lat, city: w.last_seen.city, n: 0, alert: false }
+    g.n += 1
+    g.alert = g.alert || w.stale || w.late || w.tracking_overdue
+    m[k] = g
+    return m
+  }, {})).map((g) => ({ ...g, label: g.n === 1 ? `1 truck · ${g.city}` : `${g.n} trucks · ${g.city}` })),
   legs: h.spokes.map((sp, i) => ({
     seq: i + 1, kind: 'existing', status: sp.status, origin: h.hub, destination: sp.destination,
-    miles: sp.miles, path: sp.path, rgb: SPOKE_RGB[sp.status] ?? SPOKE_RGB.none_this_week,
+    miles: sp.miles, path: sp.path, rgb: SPOKE_RGB[sp.status] ?? SPOKE_RGB.none_this_week, loads_all: sp.loads_all, loads_week: sp.loads_week,
   })),
 })
 // The carrier's week for a truck and the driver who drives it (same carrier + truck number in Meridian).
@@ -343,7 +354,7 @@ export default function App() {
 
   // Every approval pops a notice. If it wrote to Meridian (a quote), the notice links to it.
   const seenWrites = useRef(null)
-  const announce = useCallback((a) => {
+  const announce = useCallback((a, how = 'Approved') => {
     if (!a || a.status !== 'done') return
     if (seenWrites.current?.has(a.action_id)) return
     seenWrites.current?.add(a.action_id)
@@ -353,7 +364,7 @@ export default function App() {
     const id = a.action_id
     setNotices((n) => [...n, {
       id,
-      head: wrote ? 'Meridian updated' : 'Approved',
+      head: wrote ? `Meridian updated${how === 'Approved' ? '' : ' · by the agent'}` : how,
       title: r.quote_id ? `Quote ${r.quote_id} created` : r.summary || a.title,
       amount: r.sell_total,
       path: wrote ? path : null,
@@ -367,8 +378,29 @@ export default function App() {
       seenWrites.current = new Set(writes.map((a) => a.action_id)) // don't announce what happened before the page opened
       return
     }
-    writes.forEach(announce) // catches approvals made anywhere else (another tab, a teammate)
+    writes.forEach((a) => {
+      if (a.decided_by === 'ai' && a.mode === 'invisible') seenWrites.current.add(a.action_id) // quiet: Activity only
+      else announce(a, a.decided_by === 'ai' ? 'Done by the agent' : 'Approved')
+    })
   }, [allActions.data, announce])
+
+  // Who decides a write (Ryan's backend, /api/mode):
+  //   approval:  every action waits for a person
+  //   auto:      the agent runs low-risk actions itself and holds the rest with the reasons
+  //   invisible: the agent runs everything except blocked or over-cap actions, quietly
+  const modeInfo = usePoll(() => api.getMode(), 10000)
+  const mode = modeInfo.data?.mode ?? 'approval'
+  async function setMode(m) {
+    try {
+      await api.setMode(m)
+      modeInfo.refresh()
+      toast(m === 'approval' ? 'Approval mode: every action waits for you.'
+        : m === 'auto' ? 'Auto mode: the agent runs low-risk actions and tells you. Risky ones still wait for you.'
+          : 'Invisible mode: the agent runs actions quietly. See Activity.', 'info')
+    } catch (e) {
+      toast(e.message, 'error')
+    }
+  }
 
   const sub = {
     broker: {
@@ -378,7 +410,7 @@ export default function App() {
     }[view],
     carrier: <>Dispatch: accept a full week for each truck · it goes straight to the driver's phone</>,
     driver: <>The driver's app: today's load, every stop, one button for the next step</>,
-    shipper: <>Each plant is a supply hub · lines show where its goods ship this week</>,
+    shipper: <>Your plant is the hub · each spoke is a customer you ship to, thicker = more loads · trucks sit where they last reported</>,
   }[role]
 
   return (
@@ -395,7 +427,7 @@ export default function App() {
           onSelectTour={(id) => {
             if (role === 'broker') select(id)
           }}
-          pad={{ top: 170, right: 400, bottom: 250, left: 40 }}
+          pad={{ top: role === 'shipper' ? 260 : 170, right: 400, bottom: 250, left: 40 }}
         />
       </div>
 
@@ -455,6 +487,14 @@ export default function App() {
       </div>
 
       <div className="v3-more">
+        <div className="v3-mode glass" role="radiogroup" aria-label="Agent mode">
+          {[['invisible', 'Invisible'], ['approval', 'Approve'], ['auto', 'Auto']].map(([id, label]) => (
+            <button key={id} role="radio" aria-checked={mode === id} className={mode === id ? `on ${id}` : ''} onClick={() => setMode(id)}
+              title={{ invisible: 'The agent acts quietly; only Activity shows it', approval: 'Every action waits for your OK', auto: 'The agent runs low-risk actions and tells you; risky ones wait' }[id]}>
+              {label}
+            </button>
+          ))}
+        </div>
         <button className="glass" onClick={() => setShowReports(true)}>Reports</button>
         <button className="glass" onClick={() => setActivity({})}>Activity</button>
         <button className="glass meridian" onClick={() => setActivity({ meridian: true })}>View Meridian ↗</button>
@@ -518,6 +558,8 @@ export default function App() {
           <span><i style={{ background: '#d97706' }} />On the road</span>
           <span><i style={{ background: '#64748b' }} />Booked</span>
           <span><i style={{ background: '#cbd5e1' }} />No load this week</span>
+          <span><i style={{ background: '#d97706', boxShadow: '0 0 0 2px #fff, 0 0 0 3px #d97706' }} />Truck, last check call</span>
+          <span><i style={{ background: '#dc2626', boxShadow: '0 0 0 2px #fff, 0 0 0 3px #dc2626' }} />Needs a check call</span>
         </div>
       )}
       {role === 'broker' && (

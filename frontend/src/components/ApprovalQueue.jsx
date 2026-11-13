@@ -22,6 +22,9 @@ function PendingCard({ action, busy, onApprove, onReject }) {
         <span className={tier.cls}>{tier.label}</span>
       </div>
       <div>{action.summary}</div>
+      {action.risk?.reasons?.length > 0 && action.status === 'pending' && (
+        <p className="held">Auto mode held this for you: {action.risk.reasons.join(' · ')}</p>
+      )}
       <div className="row small muted">
         <div className="conf"><i style={{ width: pct + '%' }} /></div>
         {pct}% confident

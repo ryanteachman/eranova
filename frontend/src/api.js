@@ -85,6 +85,9 @@ const real = {
   getLearned: () => request('/api/learned'),
   // manufacturer supply hubs and the driver app, built from real Meridian loads
   getHubs: () => request('/api/hubs'),
+  // who decides a write: approval (a person) · auto (the agent, low risk only) · invisible (the agent)
+  getMode: () => request('/api/mode'),
+  setMode: (mode) => request('/api/mode', { method: 'PUT', body: { mode } }),
   // Ryan's carrier scorecards from real Meridian loads (on time, damage, bounces, cost)
   getCarriers: () => request('/api/carriers'),
   rankCarriers: (body) => request('/api/carriers/rank', { method: 'POST', body }),
@@ -296,6 +299,13 @@ Object.assign(mock, {
   async rankCarriers() {
     await wait(300)
     return clone(carriersRankMock)
+  },
+  async getMode() {
+    return { mode: db.mode ?? 'approval', modes: ['approval', 'auto', 'invisible'] }
+  },
+  async setMode(mode) {
+    db.mode = mode
+    return { mode, modes: ['approval', 'auto', 'invisible'] }
   },
   async getHubs() {
     await wait(200)

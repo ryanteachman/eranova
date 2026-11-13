@@ -103,6 +103,28 @@ function buildTrip(tour, period, offset, color) {
   return laps
 }
 
+// Hub and spoke: arcs from the plant (width = loads since January), sized destination nodes, the plant as a dark hub, and live trucks
+// at the city they last reported from (Meridian check calls).
+function hubLayers(h, sec, pulse) {
+  const font = { fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif', fontWeight: 600, characterSet: 'auto', background: true,
+    getBackgroundColor: [255, 255, 255, 235], backgroundPadding: [6, 3], getBorderColor: [...INK, 40], getBorderWidth: 1 }
+  return [
+    // spokes as arcs (like the loops): faint at the plant, full colour where the goods arrive
+    new ArcLayer({
+      id: 'hub-spokes', data: h.spokes, getSourcePosition: (x) => x.path[0], getTargetPosition: (x) => x.path[1],
+      getSourceColor: (x) => [x.color[0], x.color[1], x.color[2], 90], getTargetColor: (x) => x.color,
+      getWidth: (x) => x.width, getHeight: 0.4, greatCircle: false,
+    }),
+    new ScatterplotLayer({ id: 'hub-nodes', data: h.nodes, getPosition: (x) => x.pos, radiusUnits: 'pixels', getRadius: (x) => x.radius, getFillColor: (x) => [...x.color, 255], stroked: true, getLineColor: [255, 255, 255], lineWidthUnits: 'pixels', getLineWidth: 3 }),
+    new TextLayer({ id: 'hub-node-labels', data: h.nodes, getPosition: (x) => x.pos, getText: (x) => x.label, getSize: 12, getColor: INK, getPixelOffset: (x) => [0, -x.radius - 14], ...font }),
+    new ScatterplotLayer({ id: 'hub-halo', data: h.centre, getPosition: (x) => x.pos, radiusUnits: 'pixels', getRadius: 26 + pulse * 10, getFillColor: [...INK, Math.round(40 * (1 - pulse) + 15)], updateTriggers: { getRadius: pulse, getFillColor: pulse } }),
+    new ScatterplotLayer({ id: 'hub-centre', data: h.centre, getPosition: (x) => x.pos, radiusUnits: 'pixels', getRadius: 18, getFillColor: [...INK, 255], stroked: true, getLineColor: [255, 255, 255], lineWidthUnits: 'pixels', getLineWidth: 4 }),
+    new TextLayer({ id: 'hub-centre-label', data: h.centre, getPosition: (x) => x.pos, getText: (x) => x.name, getSize: 14, getColor: INK, getPixelOffset: [0, 40], ...font }),
+    new ScatterplotLayer({ id: 'hub-trucks', data: h.trucks, getPosition: (x) => x.pos, radiusUnits: 'pixels', getRadius: 7, getFillColor: (x) => (x.alert ? [...EMPTY_RGB, 255] : [217, 119, 6, 255]), stroked: true, getLineColor: [255, 255, 255], lineWidthUnits: 'pixels', getLineWidth: 2.5 }),
+    new TextLayer({ id: 'hub-truck-labels', data: h.trucks, getPosition: (x) => x.pos, getText: (x) => x.label, getSize: 11, getColor: (x) => (x.alert ? EMPTY_RGB : INK), getPixelOffset: [0, 16], ...font }),
+  ]
+}
+
 function legLabel(l) {
   const s = String(l.status || '').replace('_', ' ')
   return `${l.origin.city} → ${l.destination.city}${l.miles ? ` · ${l.miles} mi` : ''} · ${s}`
@@ -133,7 +155,26 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
     const roads = []      // the focused loop on its real roads
     const roadsFound = [] // the focused loop's brain-found legs, dashed
     const empties = []
+    // hub and spoke: one plant in the middle, straight spokes to everywhere it ships
+    let hub = null
+    if (focus?.kind === 'hub') {
+      const centre = ll(focus.hub)
+      const max = Math.max(1, ...focus.legs.map((l) => l.loads_all || 1))
+      hub = {
+        centre: [{ pos: centre, name: focus.name }],
+        spokes: focus.legs.map((l) => ({
+          tour_id: focus.tour_id, path: [centre, ll(l.destination)], color: [...l.rgb, 235],
+          width: 3 + 9 * Math.sqrt((l.loads_all || 1) / max), loads: l.loads_all, live: l.loads_week > 0,
+        })),
+        nodes: focus.legs.map((l) => ({
+          pos: ll(l.destination), color: l.rgb, radius: 6 + 10 * Math.sqrt((l.loads_all || 1) / max),
+          label: `${l.destination.city} · ${l.loads_all} ${l.loads_all === 1 ? 'load' : 'loads'}`,
+        })),
+        trucks: (focus.trucks || []).map((t) => ({ ...t, pos: [t.lng, t.lat] })),
+      }
+    }
     for (const t of tours) {
+      if (t.kind === 'hub' && hub) continue
       const isFocus = t === focus
       for (const l of t.legs || []) {
         const row = { ...l, tour_id: t.tour_id, src: ll(l.origin), dst: ll(l.destination), road: roadPath(l).pts }
@@ -151,18 +192,18 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
       }
     }
     const truckRgb = focus ? (focus.status === 'lane' ? STATUS_RGB.found : STATUS_RGB[tourState(focus)]) : BLUE
-    const tripsFocus = focus
+    const tripsFocus = focus && !hub
       ? [0, LOOP / 2].flatMap((o) => buildTrip(focus, LOOP, o, [...truckRgb, 255]) || [])
       : []
     const stops = []
     const seen = new Set()
-    for (const l of focus?.legs || []) {
+    for (const l of hub ? [] : focus?.legs || []) {
       for (const p of [l.origin, l.destination]) {
         const k = `${p.city}|${p.state}`
         if (!seen.has(k)) { seen.add(k); stops.push({ ...p, pos: ll(p) }) }
       }
     }
-    return { focus, all: tours, arcs, roads, roadsFound, empties, tripsFocus, stops }
+    return { focus, all: tours, arcs, roads, roadsFound, empties, tripsFocus, stops, hub }
   }, [tours, focusTourId])
 
   // ---- layer factory: called every frame (cheap; data refs are stable) ----
@@ -206,6 +247,7 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
           getColor: (x) => x.colors, widthMinPixels: 6, capRounded: true, jointRounded: true,
           trailLength: LOOP * 0.15, currentTime: tFocus, fadeTrail: true,
         }),
+        ...(d.hub ? hubLayers(d.hub, sec, pulse) : []),
         new ScatterplotLayer({
           id: 'stops', data: d.stops, getPosition: (x) => x.pos, radiusUnits: 'pixels', getRadius: 7,
           stroked: true, filled: true, getFillColor: [255, 255, 255], getLineColor: INK, lineWidthUnits: 'pixels', getLineWidth: 2.5,

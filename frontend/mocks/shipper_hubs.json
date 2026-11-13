@@ -1952,7 +1952,407 @@
         "loads": 33,
         "spend": 104416,
         "destinations": 2
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300117",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-10",
+          "carrier": "Blue Ridge Transport",
+          "due": "Thu 10:00 AM",
+          "eta": "Thu 6:35 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Springfield",
+            "state": "MO",
+            "at": "2026-11-12T01:37:15Z",
+            "lng": -93.2923,
+            "lat": 37.2082
+          },
+          "answer": "Last reported in Springfield, MO (Wed 7:37 PM). ETA was Thu 6:35 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-12T01:37:15Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, MO \u2014 running on schedule, ETA 11-12 12:35",
+              "city": "Springfield",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-11T14:39:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through St. Louis, MO \u2014 running on schedule, ETA 11-12 12:35",
+              "city": "St. Louis",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-11T03:41:45Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, IL \u2014 running on schedule, ETA 11-12 12:35",
+              "city": "Springfield",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-10T16:44:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-10T15:59:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Chicago",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-10T13:44:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Chicago",
+              "state": "IL"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300120",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-10",
+          "carrier": "Lakeshore Carriers Inc.",
+          "due": "Thu 11:00 AM",
+          "eta": "Thu 6:58 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Springfield",
+            "state": "MO",
+            "at": "2026-11-12T01:32:30Z",
+            "lng": -93.2923,
+            "lat": 37.2082
+          },
+          "answer": "Last reported in Springfield, MO (Wed 7:32 PM). ETA was Thu 6:58 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-12T01:32:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, MO \u2014 running on schedule, ETA 11-12 12:58",
+              "city": "Springfield",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-11T14:07:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through St. Louis, MO \u2014 running on schedule, ETA 11-12 12:58",
+              "city": "St. Louis",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-11T02:41:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, IL \u2014 running on schedule, ETA 11-12 12:58",
+              "city": "Springfield",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-10T15:16:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-10T14:31:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Chicago",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-10T13:38:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Chicago",
+              "state": "IL"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300132",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-11",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Fri 11:00 AM",
+          "eta": "Fri 6:37 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Springfield",
+            "state": "MO",
+            "at": "2026-11-13T01:27:45Z",
+            "lng": -93.2923,
+            "lat": 37.2082
+          },
+          "answer": "Last reported in Springfield, MO (Thu 7:27 PM). ETA was Fri 6:37 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T01:27:45Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, MO \u2014 running on schedule, ETA 11-13 12:37",
+              "city": "Springfield",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T14:18:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through St. Louis, MO \u2014 running on schedule, ETA 11-13 12:37",
+              "city": "St. Louis",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T03:09:15Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, IL \u2014 running on schedule, ETA 11-13 12:37",
+              "city": "Springfield",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-11T16:00:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-11T15:15:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Chicago",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-11T13:38:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Chicago",
+              "state": "IL"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300119",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-11",
+          "carrier": "Blue Ridge Transport",
+          "due": "Fri 11:00 AM",
+          "eta": "Fri 6:37 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Springfield",
+            "state": "MO",
+            "at": "2026-11-13T01:19:00Z",
+            "lng": -93.2923,
+            "lat": 37.2082
+          },
+          "answer": "Last reported in Springfield, MO (Thu 7:19 PM). ETA was Fri 6:37 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T01:19:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, MO \u2014 running on schedule, ETA 11-13 12:37",
+              "city": "Springfield",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T14:01:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through St. Louis, MO \u2014 running on schedule, ETA 11-13 12:37",
+              "city": "St. Louis",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T02:43:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, IL \u2014 running on schedule, ETA 11-13 12:37",
+              "city": "Springfield",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-11T15:25:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-11T14:40:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Chicago",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-11T13:41:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Chicago",
+              "state": "IL"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300147",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-14",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Mon 8:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300156",
+          "status": "COVERED",
+          "status_text": "Carrier assigned",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-15",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Tue 11:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Carrier assigned. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300153",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "McDonough, GA",
+          "consignee": "Big-Box Retailer DC072",
+          "pickup": "2026-11-15",
+          "carrier": null,
+          "due": "Tue 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300176",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-17",
+          "carrier": null,
+          "due": "Thu 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300122",
+          "status": "DELIVERED",
+          "status_text": "Delivered",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-11",
+          "carrier": "Prairie Haul Lines",
+          "due": "Fri 7:00 AM",
+          "eta": "Fri 6:10 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Dallas",
+            "state": "TX",
+            "at": "2026-11-13T12:55:42Z",
+            "lng": -96.7969,
+            "lat": 32.7763
+          },
+          "answer": "Delivered in Dallas, TX.",
+          "timeline": [
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_DELIVERY \u2192 DELIVERED",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-13T12:10:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-13T01:11:31Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, MO \u2014 running on schedule, ETA 11-13 12:10",
+              "city": "Springfield",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T14:12:21Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through St. Louis, MO \u2014 running on schedule, ETA 11-13 12:10",
+              "city": "St. Louis",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T03:13:10Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Springfield, IL \u2014 running on schedule, ETA 11-13 12:10",
+              "city": "Springfield",
+              "state": "IL"
+            },
+            {
+              "at": "2026-11-11T16:14:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Dallas",
+              "state": "TX"
+            }
+          ]
+        }
+      ]
     },
     {
       "hub_id": "VALIANTFD:VALIANT-DSM",
@@ -4766,7 +5166,119 @@
         "loads": 13,
         "spend": 26094,
         "destinations": 3
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300128",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Aurora, CO",
+          "consignee": "Grocer's Pride DC5",
+          "pickup": "2026-11-12",
+          "carrier": "Gulfstream Express Carriers",
+          "due": "Fri 8:00 AM",
+          "eta": "Fri 6:47 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Kearney",
+            "state": "NE",
+            "at": "2026-11-13T06:40:20Z",
+            "lng": -99.0819,
+            "lat": 40.6995
+          },
+          "answer": "Last reported in Kearney, NE (Thu 11:40 PM). ETA was Fri 6:47 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T06:40:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Kearney, NE \u2014 running on schedule, ETA 11-13 13:47",
+              "city": "Kearney",
+              "state": "NE"
+            },
+            {
+              "at": "2026-11-12T23:33:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Omaha, NE \u2014 running on schedule, ETA 11-13 13:47",
+              "city": "Omaha",
+              "state": "NE"
+            },
+            {
+              "at": "2026-11-12T16:27:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Aurora",
+              "state": "CO"
+            },
+            {
+              "at": "2026-11-12T15:42:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Des Moines",
+              "state": "IA"
+            },
+            {
+              "at": "2026-11-12T13:41:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Des Moines",
+              "state": "IA"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300159",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Aurora, CO",
+          "consignee": "Grocer's Pride DC5",
+          "pickup": "2026-11-14",
+          "carrier": "Canyon Freight Systems",
+          "due": "Sun 8:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300140",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Joliet, IL",
+          "consignee": "ValueMart Stores DC22",
+          "pickup": "2026-11-14",
+          "carrier": "Canyon Freight Systems",
+          "due": "Sun 8:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300172",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Memphis, TN",
+          "consignee": "ValueMart Stores DC09",
+          "pickup": "2026-11-18",
+          "carrier": null,
+          "due": "Thu 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "KEYSTONE-TX:KEYSTONE-CMH",
@@ -5748,7 +6260,126 @@
         "loads": 11,
         "spend": 38800,
         "destinations": 1
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300127",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Fort Worth, TX",
+          "consignee": "Keystone Home & Garden - Fort Worth WH",
+          "pickup": "2026-11-11",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Fri 9:00 AM",
+          "eta": "Fri 6:45 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Memphis",
+            "state": "TN",
+            "at": "2026-11-13T01:12:30Z",
+            "lng": -90.0518,
+            "lat": 35.146
+          },
+          "answer": "Last reported in Memphis, TN (Thu 7:12 PM). ETA was Fri 6:45 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T01:12:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Memphis, TN \u2014 running on schedule, ETA 11-13 12:45",
+              "city": "Memphis",
+              "state": "TN"
+            },
+            {
+              "at": "2026-11-12T13:40:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Nashville, TN \u2014 running on schedule, ETA 11-13 12:45",
+              "city": "Nashville",
+              "state": "TN"
+            },
+            {
+              "at": "2026-11-12T02:07:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Louisville, KY \u2014 running on schedule, ETA 11-13 12:45",
+              "city": "Louisville",
+              "state": "KY"
+            },
+            {
+              "at": "2026-11-11T14:35:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Fort Worth",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-11T13:50:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Columbus",
+              "state": "OH"
+            },
+            {
+              "at": "2026-11-11T12:49:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Columbus",
+              "state": "OH"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300166",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Fort Worth, TX",
+          "consignee": "Keystone Home & Garden - Fort Worth WH",
+          "pickup": "2026-11-14",
+          "carrier": "Prairie Haul Lines",
+          "due": "Mon 8:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300154",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Fort Worth, TX",
+          "consignee": "Keystone Home & Garden - Fort Worth WH",
+          "pickup": "2026-11-14",
+          "carrier": null,
+          "due": "Mon 7:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300170",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Fort Worth, TX",
+          "consignee": "Keystone Home & Garden - Fort Worth WH",
+          "pickup": "2026-11-16",
+          "carrier": null,
+          "due": "Wed 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "IRONPEAK:IRONPEAK-PIT",
@@ -6726,7 +7357,168 @@
         "loads": 10,
         "spend": 12145,
         "destinations": 1
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300139",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-13",
+          "carrier": "Coastline LTL Systems",
+          "due": "Sat 4:00 PM",
+          "eta": "Sat 6:53 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Harrisburg",
+            "state": "PA",
+            "at": "2026-11-13T13:23:42Z",
+            "lng": -76.8861,
+            "lat": 40.2663
+          },
+          "answer": "Last reported in Harrisburg, PA (Fri 8:23 AM). ETA Sat 6:53 AM, inside the delivery window.",
+          "timeline": [
+            {
+              "at": "2026-11-13T13:23:42Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Harrisburg, PA \u2014 running on schedule, ETA 11-14 11:53",
+              "city": "Harrisburg",
+              "state": "PA"
+            },
+            {
+              "at": "2026-11-13T13:23:42Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Bedford, PA \u2014 running on schedule, ETA 11-14 11:53",
+              "city": "Bedford",
+              "state": "PA"
+            },
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-13T12:10:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Pittsburgh",
+              "state": "PA"
+            },
+            {
+              "at": "2026-11-13T11:25:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Pittsburgh",
+              "state": "PA"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300141",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-14",
+          "carrier": "High Plains Freightways",
+          "due": "Sun 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300178",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-17",
+          "carrier": null,
+          "due": "Wed 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300123",
+          "status": "DELIVERED",
+          "status_text": "Delivered",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-11",
+          "carrier": "Coastline LTL Systems",
+          "due": "Thu 4:00 PM",
+          "eta": "Thu 6:52 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Newark",
+            "state": "NJ",
+            "at": "2026-11-12T14:13:00Z",
+            "lng": -74.1724,
+            "lat": 40.7357
+          },
+          "answer": "Delivered in Newark, NJ.",
+          "timeline": [
+            {
+              "at": "2026-11-12T14:13:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_DELIVERY \u2192 DELIVERED",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-12T11:52:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-12T05:07:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Harrisburg, PA \u2014 running on schedule, ETA 11-12 11:52",
+              "city": "Harrisburg",
+              "state": "PA"
+            },
+            {
+              "at": "2026-11-11T22:23:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Bedford, PA \u2014 running on schedule, ETA 11-12 11:52",
+              "city": "Bedford",
+              "state": "PA"
+            },
+            {
+              "at": "2026-11-11T15:39:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-11T14:54:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Pittsburgh",
+              "state": "PA"
+            }
+          ]
+        }
+      ]
     },
     {
       "hub_id": "LONESTARCH:LONESTAR-HOU",
@@ -7700,7 +8492,154 @@
         "loads": 10,
         "spend": 12276,
         "destinations": 1
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300158",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-12",
+          "carrier": "Lakeshore Carriers Inc.",
+          "due": "Fri 9:00 AM",
+          "eta": "Fri 6:43 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Corsicana",
+            "state": "TX",
+            "at": "2026-11-13T06:03:40Z",
+            "lng": -96.4647,
+            "lat": 32.0938
+          },
+          "answer": "Last reported in Corsicana, TX (Fri 12:03 AM). ETA was Fri 6:43 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T06:03:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Corsicana, TX \u2014 running on schedule, ETA 11-13 12:43",
+              "city": "Corsicana",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-12T23:24:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Huntsville, TX \u2014 running on schedule, ETA 11-13 12:43",
+              "city": "Huntsville",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-12T16:45:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Dallas",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-12T16:00:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Houston",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-12T13:58:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Houston",
+              "state": "TX"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300160",
+          "status": "AT_PICKUP",
+          "status_text": "At your dock",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-13",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Sat 7:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Houston",
+            "state": "TX",
+            "at": "2026-11-13T12:55:42Z",
+            "lng": -95.3677,
+            "lat": 29.7589
+          },
+          "answer": "Last reported in Houston, TX (Fri 6:55 AM). At your dock.",
+          "timeline": [
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Houston",
+              "state": "TX"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300130",
+          "status": "ON_HOLD",
+          "status_text": "On hold",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-12",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Fri 11:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Houston",
+            "state": "TX",
+            "at": "2026-11-12T15:47:00Z",
+            "lng": -95.3677,
+            "lat": 29.7589
+          },
+          "answer": "Last reported in Houston, TX (Thu 9:47 AM). On hold.",
+          "timeline": [
+            {
+              "at": "2026-11-12T15:47:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Houston",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-12T13:33:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Houston",
+              "state": "TX"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300173",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Dallas, TX",
+          "consignee": "Big-Box Retailer DC135",
+          "pickup": "2026-11-16",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Tue 8:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "PIONEERBLD:PIONEER-GRR",
@@ -9602,7 +10541,102 @@
         "loads": 10,
         "spend": 9432,
         "destinations": 2
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300146",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Columbus, OH",
+          "consignee": "Keystone Home & Garden - Columbus WH",
+          "pickup": "2026-11-12",
+          "carrier": "National LTL Freightways",
+          "due": "Fri 4:00 PM",
+          "eta": "Fri 6:37 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Findlay",
+            "state": "OH",
+            "at": "2026-11-13T04:31:20Z",
+            "lng": -83.6504,
+            "lat": 41.0414
+          },
+          "answer": "Last reported in Findlay, OH (Thu 11:31 PM). ETA was Fri 6:37 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T04:31:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Findlay, OH \u2014 running on schedule, ETA 11-13 11:37",
+              "city": "Findlay",
+              "state": "OH"
+            },
+            {
+              "at": "2026-11-12T21:25:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Fort Wayne, IN \u2014 running on schedule, ETA 11-13 11:37",
+              "city": "Fort Wayne",
+              "state": "IN"
+            },
+            {
+              "at": "2026-11-12T14:20:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Columbus",
+              "state": "OH"
+            },
+            {
+              "at": "2026-11-12T13:35:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Grand Rapids",
+              "state": "MI"
+            },
+            {
+              "at": "2026-11-12T12:40:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Grand Rapids",
+              "state": "MI"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300152",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Columbus, OH",
+          "consignee": "Keystone Home & Garden - Columbus WH",
+          "pickup": "2026-11-14",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Sun 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300174",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Nashville, TN",
+          "consignee": "HomeGoods Depot Store 112 - Nashville",
+          "pickup": "2026-11-17",
+          "carrier": null,
+          "due": "Thu 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "MIDWAYDST:MIDWAY-MKC",
@@ -11475,7 +12509,116 @@
         "loads": 9,
         "spend": 19162,
         "destinations": 2
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300145",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Aurora, CO",
+          "consignee": "Grocer's Pride DC5",
+          "pickup": "2026-11-12",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Fri 8:00 AM",
+          "eta": "Fri 6:55 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Hays",
+            "state": "KS",
+            "at": "2026-11-13T06:48:40Z",
+            "lng": -99.3312,
+            "lat": 38.871
+          },
+          "answer": "Last reported in Hays, KS (Thu 11:48 PM). ETA was Fri 6:55 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T06:48:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Hays, KS \u2014 running on schedule, ETA 11-13 13:55",
+              "city": "Hays",
+              "state": "KS"
+            },
+            {
+              "at": "2026-11-12T23:42:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Salina, KS \u2014 running on schedule, ETA 11-13 13:55",
+              "city": "Salina",
+              "state": "KS"
+            },
+            {
+              "at": "2026-11-12T16:36:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Aurora",
+              "state": "CO"
+            },
+            {
+              "at": "2026-11-12T15:51:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Kansas City",
+              "state": "MO"
+            },
+            {
+              "at": "2026-11-12T13:42:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Kansas City",
+              "state": "MO"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300138",
+          "status": "AT_PICKUP",
+          "status_text": "At your dock",
+          "to": "Aurora, CO",
+          "consignee": "Grocer's Pride DC5",
+          "pickup": "2026-11-13",
+          "carrier": "Lakeshore Carriers Inc.",
+          "due": "Sat 9:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Kansas City",
+            "state": "MO",
+            "at": "2026-11-13T12:55:42Z",
+            "lng": -94.5781,
+            "lat": 39.1001
+          },
+          "answer": "Last reported in Kansas City, MO (Fri 5:55 AM). At your dock.",
+          "timeline": [
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Kansas City",
+              "state": "MO"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300175",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Aurora, CO",
+          "consignee": "Grocer's Pride DC5",
+          "pickup": "2026-11-18",
+          "carrier": null,
+          "due": "Thu 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "KEYSTONEHD:KEYSTONE-CMH",
@@ -12441,7 +13584,116 @@
         "loads": 9,
         "spend": 8886,
         "destinations": 1
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300144",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Charlotte, NC",
+          "consignee": "Grocer's Pride Store 88 - Charlotte",
+          "pickup": "2026-11-12",
+          "carrier": "Coastline LTL Systems",
+          "due": "Fri 4:00 PM",
+          "eta": "Fri 6:53 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Statesville",
+            "state": "NC",
+            "at": "2026-11-13T05:11:20Z",
+            "lng": -80.8874,
+            "lat": 35.7828
+          },
+          "answer": "Last reported in Statesville, NC (Fri 12:11 AM). ETA was Fri 6:53 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T05:11:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Statesville, NC \u2014 running on schedule, ETA 11-13 11:53",
+              "city": "Statesville",
+              "state": "NC"
+            },
+            {
+              "at": "2026-11-12T22:29:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Charleston, WV \u2014 running on schedule, ETA 11-13 11:53",
+              "city": "Charleston",
+              "state": "WV"
+            },
+            {
+              "at": "2026-11-12T15:48:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Charlotte",
+              "state": "NC"
+            },
+            {
+              "at": "2026-11-12T15:03:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Columbus",
+              "state": "OH"
+            },
+            {
+              "at": "2026-11-12T12:54:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Columbus",
+              "state": "OH"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300136",
+          "status": "AT_PICKUP",
+          "status_text": "At your dock",
+          "to": "Charlotte, NC",
+          "consignee": "Grocer's Pride Store 88 - Charlotte",
+          "pickup": "2026-11-13",
+          "carrier": "National LTL Freightways",
+          "due": "Sat 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Columbus",
+            "state": "OH",
+            "at": "2026-11-13T12:47:00Z",
+            "lng": -83.0007,
+            "lat": 39.9623
+          },
+          "answer": "Last reported in Columbus, OH (Fri 7:47 AM). At your dock.",
+          "timeline": [
+            {
+              "at": "2026-11-13T12:47:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Columbus",
+              "state": "OH"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300171",
+          "status": "BOOKED",
+          "status_text": "Booked, carrier being found",
+          "to": "Charlotte, NC",
+          "consignee": "Grocer's Pride Store 88 - Charlotte",
+          "pickup": "2026-11-16",
+          "carrier": null,
+          "due": "Tue 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Booked, carrier being found. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "REDROCKEL:REDROCK-PHX",
@@ -14403,7 +15655,144 @@
         "loads": 9,
         "spend": 14259,
         "destinations": 2
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300143",
+          "status": "AT_DELIVERY",
+          "status_text": "At delivery",
+          "to": "Scottsdale, AZ",
+          "consignee": "Residence - 7803 E Canyon Vista Dr",
+          "pickup": "2026-11-12",
+          "carrier": "MetroDash Couriers",
+          "due": "Fri 4:00 PM",
+          "eta": "Fri 5:55 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Scottsdale",
+            "state": "AZ",
+            "at": "2026-11-13T12:55:42Z",
+            "lng": -111.891,
+            "lat": 33.5967
+          },
+          "answer": "Last reported in Scottsdale, AZ (Fri 5:55 AM). ETA was Fri 5:55 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Scottsdale",
+              "state": "AZ"
+            },
+            {
+              "at": "2026-11-13T03:01:51Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Tempe, AZ \u2014 running on schedule, ETA 11-13 12:55",
+              "city": "Tempe",
+              "state": "AZ"
+            },
+            {
+              "at": "2026-11-12T17:08:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Scottsdale",
+              "state": "AZ"
+            },
+            {
+              "at": "2026-11-12T16:23:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Phoenix",
+              "state": "AZ"
+            },
+            {
+              "at": "2026-11-12T14:51:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Phoenix",
+              "state": "AZ"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300137",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "El Paso, TX",
+          "consignee": "Desert Gateway Distribution - El Paso",
+          "pickup": "2026-11-13",
+          "carrier": "Prairie Haul Lines",
+          "due": "Sat 4:00 PM",
+          "eta": "Sat 6:44 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Las Cruces",
+            "state": "NM",
+            "at": "2026-11-13T13:23:42Z",
+            "lng": -106.7798,
+            "lat": 32.314
+          },
+          "answer": "Last reported in Las Cruces, NM (Fri 6:23 AM). ETA Sat 6:44 AM, inside the delivery window.",
+          "timeline": [
+            {
+              "at": "2026-11-13T13:23:42Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Las Cruces, NM \u2014 running on schedule, ETA 11-14 13:44",
+              "city": "Las Cruces",
+              "state": "NM"
+            },
+            {
+              "at": "2026-11-13T13:23:42Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Tucson, AZ \u2014 running on schedule, ETA 11-14 13:44",
+              "city": "Tucson",
+              "state": "AZ"
+            },
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "El Paso",
+              "state": "TX"
+            },
+            {
+              "at": "2026-11-13T12:10:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Phoenix",
+              "state": "AZ"
+            },
+            {
+              "at": "2026-11-13T11:25:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Phoenix",
+              "state": "AZ"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300169",
+          "status": "COVERED",
+          "status_text": "Carrier assigned",
+          "to": "El Paso, TX",
+          "consignee": "Desert Gateway Distribution - El Paso",
+          "pickup": "2026-11-16",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Tue 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Carrier assigned. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "SUNBELTAG:SUNBELT-FRS",
@@ -16297,7 +17686,158 @@
         "loads": 9,
         "spend": 14812,
         "destinations": 2
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300125",
+          "status": "AT_DELIVERY",
+          "status_text": "At delivery",
+          "to": "Salt Lake City, UT",
+          "consignee": "Evergreen Distribution - Salt Lake City",
+          "pickup": "2026-11-11",
+          "carrier": "High Plains Freightways",
+          "due": "Fri 4:00 PM",
+          "eta": "Fri 5:55 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Salt Lake City",
+            "state": "UT",
+            "at": "2026-11-13T12:55:42Z",
+            "lng": -111.8868,
+            "lat": 40.7596
+          },
+          "answer": "Last reported in Salt Lake City, UT (Fri 5:55 AM). ETA was Fri 5:55 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Salt Lake City",
+              "state": "UT"
+            },
+            {
+              "at": "2026-11-13T02:01:31Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Wendover, UT \u2014 running on schedule, ETA 11-13 12:55",
+              "city": "Wendover",
+              "state": "UT"
+            },
+            {
+              "at": "2026-11-12T15:07:21Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Reno, NV \u2014 running on schedule, ETA 11-13 12:55",
+              "city": "Reno",
+              "state": "NV"
+            },
+            {
+              "at": "2026-11-12T04:13:10Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Sacramento, CA \u2014 running on schedule, ETA 11-13 12:55",
+              "city": "Sacramento",
+              "state": "CA"
+            },
+            {
+              "at": "2026-11-11T17:19:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Salt Lake City",
+              "state": "UT"
+            },
+            {
+              "at": "2026-11-11T16:34:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Fresno",
+              "state": "CA"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300167",
+          "status": "COVERED",
+          "status_text": "Carrier assigned",
+          "to": "Ontario, CA",
+          "consignee": "HomeGoods Depot DC08",
+          "pickup": "2026-11-15",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Mon 11:00 AM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Carrier assigned. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300131",
+          "status": "DELIVERED",
+          "status_text": "Delivered",
+          "to": "Ontario, CA",
+          "consignee": "HomeGoods Depot DC08",
+          "pickup": "2026-11-11",
+          "carrier": "Acme Carrier Inc.",
+          "due": "Thu 9:00 AM",
+          "eta": "Thu 6:40 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Ontario",
+            "state": "CA",
+            "at": "2026-11-12T16:18:00Z",
+            "lng": -117.6107,
+            "lat": 34.0309
+          },
+          "answer": "Delivered in Ontario, CA.",
+          "timeline": [
+            {
+              "at": "2026-11-12T16:18:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_DELIVERY \u2192 DELIVERED",
+              "city": "Ontario",
+              "state": "CA"
+            },
+            {
+              "at": "2026-11-12T14:40:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Ontario",
+              "state": "CA"
+            },
+            {
+              "at": "2026-11-12T04:21:30Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Bakersfield, CA \u2014 running on schedule, ETA 11-12 14:40",
+              "city": "Bakersfield",
+              "state": "CA"
+            },
+            {
+              "at": "2026-11-11T18:03:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Ontario",
+              "state": "CA"
+            },
+            {
+              "at": "2026-11-11T17:18:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Fresno",
+              "state": "CA"
+            },
+            {
+              "at": "2026-11-11T15:44:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Fresno",
+              "state": "CA"
+            }
+          ]
+        }
+      ]
     },
     {
       "hub_id": "BLUEHARBOR:BLUEHARBOR-BOS",
@@ -17275,7 +18815,137 @@
         "loads": 9,
         "spend": 8485,
         "destinations": 1
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300142",
+          "status": "AT_DELIVERY",
+          "status_text": "At delivery",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-12",
+          "carrier": "Canyon Freight Systems",
+          "due": "Fri 4:00 PM",
+          "eta": "Fri 6:39 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Newark",
+            "state": "NJ",
+            "at": "2026-11-13T11:39:00Z",
+            "lng": -74.1724,
+            "lat": 40.7357
+          },
+          "answer": "Last reported in Newark, NJ (Fri 6:39 AM). ETA was Fri 6:39 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T11:39:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-13T00:54:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Hartford, CT \u2014 running on schedule, ETA 11-13 11:39",
+              "city": "Hartford",
+              "state": "CT"
+            },
+            {
+              "at": "2026-11-12T14:09:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-12T13:24:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Boston",
+              "state": "MA"
+            },
+            {
+              "at": "2026-11-12T12:39:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Boston",
+              "state": "MA"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300126",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-13",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Sat 4:00 PM",
+          "eta": "Sat 6:36 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": true,
+          "last_seen": {
+            "city": "Hartford",
+            "state": "CT",
+            "at": "2026-11-13T13:23:42Z",
+            "lng": -72.6733,
+            "lat": 41.7662
+          },
+          "answer": "Last reported in Hartford, CT (Fri 8:23 AM). ETA Sat 6:36 AM, inside the delivery window.",
+          "timeline": [
+            {
+              "at": "2026-11-13T13:23:42Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Hartford, CT \u2014 running on schedule, ETA 11-14 11:36",
+              "city": "Hartford",
+              "state": "CT"
+            },
+            {
+              "at": "2026-11-13T12:55:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Newark",
+              "state": "NJ"
+            },
+            {
+              "at": "2026-11-13T12:10:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Boston",
+              "state": "MA"
+            },
+            {
+              "at": "2026-11-13T11:25:42Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Boston",
+              "state": "MA"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300165",
+          "status": "COVERED",
+          "status_text": "Carrier assigned",
+          "to": "Newark, NJ",
+          "consignee": "Tri-State Crossdock - Newark",
+          "pickup": "2026-11-15",
+          "carrier": "Sunridge Trucking LLC",
+          "due": "Mon 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Carrier assigned. No location reported yet.",
+          "timeline": []
+        }
+      ]
     },
     {
       "hub_id": "CASCADEPKG:CASCADE-PDX",
@@ -18249,7 +19919,151 @@
         "loads": 9,
         "spend": 8192,
         "destinations": 1
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300155",
+          "status": "IN_TRANSIT",
+          "status_text": "On the road",
+          "to": "Kent, WA",
+          "consignee": "Cascade Packaging - Kent Distribution",
+          "pickup": "2026-11-12",
+          "carrier": "Coastline LTL Systems",
+          "due": "Fri 4:00 PM",
+          "eta": "Fri 6:33 AM",
+          "late": false,
+          "stale": true,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Tacoma",
+            "state": "WA",
+            "at": "2026-11-13T07:27:00Z",
+            "lng": -122.4383,
+            "lat": 47.2455
+          },
+          "answer": "Last reported in Tacoma, WA (Thu 11:27 PM). ETA was Fri 6:33 AM and nothing has been reported since. Needs a check call.",
+          "timeline": [
+            {
+              "at": "2026-11-13T07:27:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Tacoma, WA \u2014 running on schedule, ETA 11-13 14:33",
+              "city": "Tacoma",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-13T00:21:00Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Longview, WA \u2014 running on schedule, ETA 11-13 14:33",
+              "city": "Longview",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-12T17:15:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Kent",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-12T16:30:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Portland",
+              "state": "OR"
+            },
+            {
+              "at": "2026-11-12T15:45:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status DISPATCHED \u2192 AT_PICKUP",
+              "city": "Portland",
+              "state": "OR"
+            }
+          ]
+        },
+        {
+          "shipment_id": "7300151",
+          "status": "DISPATCHED",
+          "status_text": "Truck on the way to pick up",
+          "to": "Kent, WA",
+          "consignee": "Cascade Packaging - Kent Distribution",
+          "pickup": "2026-11-14",
+          "carrier": "Canyon Freight Systems",
+          "due": "Sun 4:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "Truck on the way to pick up. No location reported yet.",
+          "timeline": []
+        },
+        {
+          "shipment_id": "7300129",
+          "status": "DELIVERED",
+          "status_text": "Delivered",
+          "to": "Kent, WA",
+          "consignee": "Cascade Packaging - Kent Distribution",
+          "pickup": "2026-11-11",
+          "carrier": "Lakeshore Carriers Inc.",
+          "due": "Thu 4:00 PM",
+          "eta": "Thu 6:40 AM",
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": {
+            "city": "Kent",
+            "state": "WA",
+            "at": "2026-11-12T15:48:00Z",
+            "lng": -122.227,
+            "lat": 47.3827
+          },
+          "answer": "Delivered in Kent, WA.",
+          "timeline": [
+            {
+              "at": "2026-11-12T15:48:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_DELIVERY \u2192 DELIVERED",
+              "city": "Kent",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-12T14:40:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status IN_TRANSIT \u2192 AT_DELIVERY",
+              "city": "Kent",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-12T07:23:40Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Tacoma, WA \u2014 running on schedule, ETA 11-12 14:40",
+              "city": "Tacoma",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-12T00:07:20Z",
+              "type": "CHECK_CALL",
+              "text": "Driver through Longview, WA \u2014 running on schedule, ETA 11-12 14:40",
+              "city": "Longview",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-11T16:51:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status PICKED_UP \u2192 IN_TRANSIT",
+              "city": "Kent",
+              "state": "WA"
+            },
+            {
+              "at": "2026-11-11T16:06:00Z",
+              "type": "STATUS_CHANGE",
+              "text": "Status AT_PICKUP \u2192 PICKED_UP",
+              "city": "Portland",
+              "state": "OR"
+            }
+          ]
+        }
+      ]
     },
     {
       "hub_id": "FROSTLINE:FROSTLINE-RFD",
@@ -20182,7 +21996,26 @@
         "loads": 17,
         "spend": 63548,
         "destinations": 2
-      }
+      },
+      "wismo": [
+        {
+          "shipment_id": "7300177",
+          "status": "ON_HOLD",
+          "status_text": "On hold",
+          "to": "Aurora, CO",
+          "consignee": "Grocer's Pride DC5",
+          "pickup": "2026-11-16",
+          "carrier": null,
+          "due": "Wed 2:00 PM",
+          "eta": null,
+          "late": false,
+          "stale": false,
+          "tracking_overdue": false,
+          "last_seen": null,
+          "answer": "On hold. No location reported yet.",
+          "timeline": []
+        }
+      ]
     }
   ]
 }

@@ -36,6 +36,9 @@ function Action({ action, busy, onDecide }) {
         </span>
       </div>
       {action.summary && <p>{action.summary}</p>}
+      {action.risk?.reasons?.length > 0 && action.status === 'pending' && (
+        <p className="ib-held">Auto mode held this for you: {action.risk.reasons.join(' · ')}</p>
+      )}
       {action.confidence != null && <span className="ib-muted">{Math.round(action.confidence * 100)}% confident</span>}
       {action.reasoning && (
         <>

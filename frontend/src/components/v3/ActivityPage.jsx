@@ -234,15 +234,15 @@ export default function ActivityPage({ onClose, focusPath }) {
       out.push({
         key: `ac-${a.action_id}`,
         date,
-        actor: 'human',
-        group: 'people',
+        actor: a.decided_by === 'ai' ? 'agent' : 'human',
+        group: a.decided_by === 'ai' ? 'agent' : 'people',
         write,
         tone: a.status === 'done' ? 'green' : 'red',
         text:
           a.status === 'done'
             ? write
-              ? `Approved → written to Meridian: ${label}`
-              : `Approved: ${label}`
+              ? `${a.decided_by === 'ai' ? `Done by the agent (${a.mode} mode)` : 'Approved'} → written to Meridian: ${label}`
+              : `${a.decided_by === 'ai' ? `Done by the agent (${a.mode} mode)` : 'Approved'}: ${label}`
             : a.status === 'rejected'
               ? `Rejected: ${a.title || humanize(a.kind)}`
               : `Failed: ${a.title || humanize(a.kind)}`,
