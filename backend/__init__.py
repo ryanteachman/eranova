@@ -18,8 +18,12 @@ def create_app():
 
     @app.get("/api/health")
     def health():
-        """Report that the server is up and whether Meridian credentials were found."""
-        return {"ok": True, "meridian_configured": bool(config.TMS_API_BASE and config.TMS_API_KEY)}
+        """Report that the server is up and whether Meridian and OpenAI credentials were found."""
+        return {
+            "ok": True,
+            "meridian_configured": bool(config.TMS_API_BASE and config.TMS_API_KEY),
+            "openai_configured": bool(config.OPENAI_API_KEY),
+        }
 
     @app.after_request
     def add_cors_headers(response):
