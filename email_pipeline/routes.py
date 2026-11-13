@@ -9,6 +9,7 @@ from flask import Blueprint, Flask, abort, jsonify, request
 
 from email_pipeline import store
 from email_pipeline.deps import STUBBED
+from email_pipeline.haggle import haggle
 from email_pipeline.parse import parse_file
 from email_pipeline.pipeline import process_email
 from email_pipeline.tools import inbox_row
@@ -77,6 +78,16 @@ def simulate():
     if not name or not path.is_file():
         return jsonify({"error": "not_found", "detail": f"No sample email '{name}'"}), 404
     return process_email(parse_file(path))
+
+
+@email_bp.post("/<email_id>/haggle")
+def haggle_route(email_id):
+    """Stretch: negotiate with the simulated carrier on a CARRIER_OFFER email {target_pay_min?, target_pay_max?}."""
+    data = request.get_json(silent=True) or {}
+    try:
+        return haggle(email_id, data.get("target_pay_min"), data.get("target_pay_max"))
+    except ValueError as exc:
+        return jsonify({"error": "conflict", "detail": str(exc)}), 409
 
 
 def create_dev_app():

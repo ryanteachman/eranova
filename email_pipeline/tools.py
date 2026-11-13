@@ -3,7 +3,7 @@
 Ryan's backend/agent/tools.py imports this module so the @tool decorators run.
 """
 
-from email_pipeline import pipeline, reply, store
+from email_pipeline import haggle, pipeline, reply, store
 from email_pipeline.deps import tool
 
 
@@ -88,3 +88,25 @@ def send_reply(reply_id):
     """Mark the reply approved_sent, filling in the quote price; runs only after human approval."""
     return reply.send_reply(reply_id)
 
+
+@tool(
+    name="haggle_with_carrier",
+    description="Negotiate by e-mail with the carrier behind a CARRIER_OFFER email (simulated carrier), staying "
+                "inside a target pay range from lane history; a deal is queued as a cover_load action.",
+    schema={
+        "type": "object",
+        "properties": {
+            "email_id": {"type": "string"},
+            "target_pay_min": {"type": "number"},
+            "target_pay_max": {"type": "number"},
+        },
+        "required": ["email_id"],
+    },
+    tier="auto",
+)
+def haggle_with_carrier(email_id, target_pay_min=None, target_pay_max=None):
+    """Return the haggle transcript, the deal amount and any cover_load action id."""
+    try:
+        return haggle.haggle(email_id, target_pay_min, target_pay_max)
+    except ValueError as exc:
+        return {"error": str(exc)}
