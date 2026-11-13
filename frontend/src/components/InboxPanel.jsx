@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { api } from '../api.js'
 import usePoll from '../usePoll.js'
 
-const SAMPLES = ['01', '02', '03', '04', '05', '06']
+// "01_quote_dallas_returns.json" -> "Quote dallas returns"
+const sampleLabel = (file) => {
+  const s = file.replace(/\.json$/, '').replace(/^(email_)?\d+_?/, '').replace(/_/g, ' ')
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : file.replace(/\.json$/, '')
+}
 
 // snake_case -> "Snake case"
 function humanize(key) {
@@ -83,6 +87,7 @@ function MailDetail({ email, drafts, actionsById, onDecide, busy }) {
 export default function InboxPanel({ onToast, onActionsCreated }) {
   const inbox = usePoll(() => api.getInbox(), 5000)
   const outbox = usePoll(() => api.getOutbox(), 5000)
+  const samples = usePoll(() => api.getEmailSamples(), 0)
   const allActions = usePoll(() => api.getActions(), 3000)
   const actionsById = Object.fromEntries((allActions.data?.items || []).map((a) => [a.action_id, a]))
   const [deciding, setDeciding] = useState(false)
@@ -116,11 +121,11 @@ export default function InboxPanel({ onToast, onActionsCreated }) {
     if (!selectedId && emails.length) setSelectedId(emails[0].id)
   }, [selectedId, emails])
 
-  async function simulate(n) {
-    setRunning(n)
+  async function simulate(file) {
+    setRunning(file)
     try {
-      const { email, actions_created } = await api.simulateEmail(`email_${n}.json`)
-      onToast(`New ${email.kind.replace('_', ' ')} from ${email.from_name}`, 'success')
+      const { email, actions_created } = await api.simulateEmail(file)
+      onToast(`New ${humanize(email.kind).toLowerCase()} from ${email.from_name}${actions_created?.length ? ` · ${actions_created.length} action${actions_created.length > 1 ? 's' : ''} for you` : ''}`, 'success')
       await Promise.all([inbox.refresh(), outbox.refresh()])
       setSelectedId(email.id)
       if (actions_created?.length) onActionsCreated()
@@ -135,9 +140,9 @@ export default function InboxPanel({ onToast, onActionsCreated }) {
     <div>
       <div className="section-title" style={{ marginTop: 0 }}>Simulate an incoming email</div>
       <div className="sim-buttons">
-        {SAMPLES.map((n) => (
-          <button key={n} className="btn small" disabled={running !== null} onClick={() => simulate(n)}>
-            {running === n ? 'Reading…' : n}
+        {(samples.data?.items || []).map((f) => (
+          <button key={f} className="btn small" disabled={running !== null} onClick={() => simulate(f)} title={f}>
+            {running === f ? 'Reading…' : sampleLabel(f)}
           </button>
         ))}
       </div>

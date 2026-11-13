@@ -42,6 +42,7 @@ function brokerItems(tours) {
     stats: [
       ['Truck loaded', `${t.totals.loaded_pct}% (was ${t.totals.one_by_one_loaded_pct}%)`],
       ['You collect · pay', `${usd0(t.totals.sell)} · ${usd0(t.totals.buy)}`],
+      ['Your profit', usd0(t.totals.gp)],
       ['Home', day(t.window.home_by)],
     ],
     action: 'Book this loop',

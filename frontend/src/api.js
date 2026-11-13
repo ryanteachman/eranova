@@ -216,6 +216,9 @@ const mock = {
     await wait(150)
     return { items: clone(db.outbox) }
   },
+  async getEmailSamples() {
+    return { items: ['email_01.json', 'email_02.json', 'email_03.json', 'email_04.json', 'email_05.json', 'email_06.json'] }
+  },
   async simulateEmail(file) {
     await wait(900)
     const result = clone(emailResultMock)
@@ -358,17 +361,54 @@ for (const name of NOT_IN_BACKEND_YET) {
     }
   }
 }
-// Asher's email routes aren't merged yet: show an empty inbox rather than example emails
-for (const name of ['getInbox', 'getOutbox']) {
-  const live = real[name]
-  real[name] = async () => {
-    try {
-      return await live()
-    } catch (e) {
-      if (e.status === 404) return { items: [], not_connected: true }
-      throw e
-    }
+// Asher's email routes (contracts/email_*.json) use their own field names: translate them here.
+const nameOf = (addr = '') => {
+  const m = String(addr).match(/^\s*"?([^"<]+?)"?\s*<[^>]+>/)
+  if (m) return m[1].trim()
+  const domain = String(addr).split('@')[1] || addr
+  return domain.split('.')[0].replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+const toInboxRow = (e) => ({
+  id: e.email_id,
+  from: e.from_addr,
+  from_name: nameOf(e.from_addr),
+  subject: e.subject,
+  received_at: e.received_at,
+  kind: String(e.kind || 'other').toLowerCase(),
+  confidence: e.confidence ?? 0,
+  status: e.status,
+  body: e.body,
+  extracted: e.extracted || {},
+  matched: e.matched,
+  action_ids: e.action_ids || [],
+})
+real.getInbox = async () => {
+  try {
+    const list = await request('/api/email/inbox')
+    // the list has no body or extracted fields; the detail route does (only a handful of emails)
+    const details = await Promise.all(list.items.map((e) => request(`/api/email/${e.email_id}`).catch(() => e)))
+    return { items: details.map(toInboxRow) }
+  } catch (e) {
+    if (e.status === 404) return { items: [], not_connected: true }
+    throw e
   }
+}
+real.getOutbox = async () => {
+  try {
+    const out = await request('/api/email/outbox')
+    return {
+      items: out.items.map((r) => ({ id: r.reply_id, in_reply_to: r.email_id, to: r.to_addr, subject: r.subject, body: r.body, status: r.status, action_id: r.action_id })),
+    }
+  } catch (e) {
+    if (e.status === 404) return { items: [] }
+    throw e
+  }
+}
+real.getEmailSamples = () => request('/api/email/samples')
+real.simulateEmail = async (file) => {
+  const r = await request('/api/email/simulate', { method: 'POST', body: { file } })
+  const detail = await request(`/api/email/${r.email_id}`).catch(() => r)
+  return { email: toInboxRow({ ...detail, ...r }), actions_created: r.actions_created || [] }
 }
 // book_tour actions live in the mock queue until the backend has them
 const liveApprove = real.approve
