@@ -1,0 +1,76 @@
+{
+  "city": "Dallas",
+  "inbound": 37,
+  "outbound": 0,
+  "prospects": [
+    {
+      "carrier_id": "ACMECARR",
+      "category": "SCRAP",
+      "customer_id": "NORTHSTAR",
+      "customer_name": "Northstar Manufacturing",
+      "destination": {
+        "city": "Chicago",
+        "state": "IL"
+      },
+      "equipment": "V",
+      "est_buy": 1767.46,
+      "est_sell": 1905.26,
+      "gp_pct": 7.2,
+      "miles": 925,
+      "miles_saved": 925,
+      "ok": true,
+      "origin": {
+        "city": "Dallas",
+        "state": "TX"
+      },
+      "outbound_file": "7300156",
+      "prospect_id": "TX:Dallas:NORTHSTAR:SCRAP:Dallas:Chicago:7300156",
+      "reasons": [
+        "Dry V matches dry SCRAP freight.",
+        "30,761 lb / 10 pallets fits the V.",
+        "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+        "Warm lead: Northstar Manufacturing already ships with us (27 loads on this pattern).",
+        "Saves 925 empty miles (100% of the trip home).",
+        "Equipment match: this freight usually moves on V.",
+        "Source: reverse logistics: steel scrap and offcuts from Big-Box Retailer DC135 back to Chicago, IL."
+      ],
+      "score": 98,
+      "target_margin_pct": 10
+    },
+    {
+      "carrier_id": "ACMECARR",
+      "category": "RETAIL_RETURNS",
+      "customer_id": "KEYSTONE-TX",
+      "customer_name": "Keystone Home & Garden - Texas Division",
+      "destination": {
+        "city": "Columbus",
+        "state": "OH"
+      },
+      "equipment": "V",
+      "est_buy": 1858.5,
+      "est_sell": 1998.5,
+      "gp_pct": 7.0,
+      "miles": 1050,
+      "miles_saved": 557,
+      "ok": true,
+      "origin": {
+        "city": "Fort Worth",
+        "state": "TX"
+      },
+      "outbound_file": "7300156",
+      "prospect_id": "TX:Dallas:KEYSTONE-TX:RETAIL_RETURNS:Fort Worth:Columbus:7300156",
+      "reasons": [
+        "Dry V matches dry RETAIL_RETURNS freight.",
+        "24,266 lb / 12 pallets fits the V.",
+        "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+        "Warm lead: Keystone Home & Garden - Texas Division already ships with us (11 loads on this pattern).",
+        "Saves 557 empty miles (60% of the trip home).",
+        "Equipment match: this freight usually moves on V.",
+        "Source: reverse logistics: retail returns from Keystone Home & Garden - Fort Worth WH back to Columbus, OH."
+      ],
+      "score": 87,
+      "target_margin_pct": 10
+    }
+  ],
+  "state": "TX"
+}
