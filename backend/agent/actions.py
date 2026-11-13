@@ -119,7 +119,7 @@ def reject(action_id, reason=None, actor="human"):
 def create_return_quote(payload):
     """Create the backhaul quote in Meridian: POST /quotes, price it, then add a note."""
     outbound = payload["outbound_file"]
-    quote = meridian.post("/quotes", {
+    body = {
         "customer_id": payload["customer_id"],
         "mode": "TL",
         "equipment_type": payload["equipment_type"],
@@ -127,7 +127,12 @@ def create_return_quote(payload):
         "destination": payload["destination"],
         "miles": payload["miles"],
         "target_margin_pct": payload["target_margin_pct"],
-    })
+    }
+    # Optional: dates from the Hours of Service estimate (or the email), and freight lines from an email.
+    for field in ("pickup_date", "delivery_date_target", "freight_lines"):
+        if payload.get(field):
+            body[field] = payload[field]
+    quote = meridian.post("/quotes", body)
     quote_id = quote["quote_id"]
     try:
         meridian.post(f"/quotes/{quote_id}/price", {

@@ -85,6 +85,8 @@ def create_return_quote(prospect_id):
             "outbound_file": prospect["outbound_file"],
             "target_margin_pct": prospect["target_margin_pct"],
             "buy_lines": prospect["buy_lines"],
+            "pickup_date": prospect.get("pickup_date"),
+            "delivery_date_target": prospect.get("delivery_date_target"),
         },
         "confidence": round(prospect["score"] / 100, 2),
         "reasoning": " ".join(prospect["reasons"]),

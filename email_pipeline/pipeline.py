@@ -68,6 +68,7 @@ def _quote_payload(email_id, extracted, matched):
         "target_margin_pct": p["target_margin_pct"],
         "buy_lines": p["buy_lines"],
         "pickup_date": extracted.get("pickup_date"),
+        "delivery_date_target": p.get("delivery_date_target"),
         "freight_lines": lines,
         "references": extracted.get("references") or [],
         "accessorials": _with_facility_requirements(extracted.get("accessorials") or [], p["origin"], p["destination"]),
@@ -95,6 +96,8 @@ def _carrier_payload(email_id, extracted, matched):
         "buy_lines": p["buy_lines"],
         "carrier_id": carrier["entity_id"],
         "trailer_number": extracted.get("trailer_number"),
+        "pickup_date": p.get("pickup_date"),
+        "delivery_date_target": p.get("delivery_date_target"),
     }
 
 
