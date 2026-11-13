@@ -1,0 +1,66 @@
+{
+  "items": [
+    {
+      "id": "M-01",
+      "from": "dispatch@blueridge.example",
+      "from_name": "Blue Ridge Transport",
+      "subject": "Freight out of Dallas Thursday?",
+      "received_at": "2026-11-13T11:57:00Z",
+      "kind": "carrier_capacity",
+      "confidence": 0.91,
+      "status": "processed",
+      "body": "Hi team, our truck on 7300117 empties in Dallas Thursday afternoon. 53' dry van, last load was steel parts. Anything heading back toward Chicago? - Mike",
+      "extracted": {
+        "shipment_id": "7300117",
+        "empty_city": "Dallas, TX",
+        "empty_at": "2026-11-14T14:00",
+        "equipment": "V",
+        "last_load": "steel parts",
+        "wants_lane": "-> Chicago, IL"
+      },
+      "action_ids": [
+        "A-1005"
+      ]
+    },
+    {
+      "id": "M-02",
+      "from": "logistics@keystonehg.example",
+      "from_name": "Keystone Home & Garden",
+      "subject": "Pallet returns from Fort Worth",
+      "received_at": "2026-11-13T11:40:00Z",
+      "kind": "quote_request",
+      "confidence": 0.88,
+      "status": "processed",
+      "body": "We have 22 pallets of seasonal returns plus empties at the Fort Worth WH going back to Columbus. Can you quote a truck for Monday?",
+      "extracted": {
+        "customer_id": "KEYSTONE-TX",
+        "origin": "Fort Worth, TX",
+        "destination": "Columbus, OH",
+        "pallets": 22,
+        "pickup_date": "2026-11-16",
+        "equipment": "V"
+      },
+      "action_ids": [
+        "A-1006"
+      ]
+    },
+    {
+      "id": "M-03",
+      "from": "ops@sunridge.example",
+      "from_name": "Sunridge Trucking",
+      "subject": "Washout cert trailer 53251",
+      "received_at": "2026-11-13T11:20:00Z",
+      "kind": "washout_certificate",
+      "confidence": 0.62,
+      "status": "needs_review",
+      "body": "Attached is the washout for trailer 53251 (scan is a bit blurry). Cleaned in Newark this morning.",
+      "extracted": {
+        "trailer": "53251",
+        "washed_at": "2026-11-13",
+        "location": "Newark, NJ",
+        "attachment": "washout_53251.pdf"
+      },
+      "action_ids": []
+    }
+  ]
+}

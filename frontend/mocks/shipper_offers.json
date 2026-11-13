@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "offer_id": "O-001",
+      "shipper": {
+        "id": "KEYSTONE-TX",
+        "name": "Keystone Home & Garden - Columbus WH",
+        "type": "Shipper"
+      },
+      "kind": "flex_date",
+      "status": "open",
+      "tour_id": null,
+      "shipment_id": "7300154",
+      "title": "Pick up 1 day later and a truck is already there",
+      "detail": "SUNRIDGE truck 345 delivers 7300152 in Columbus on Sun 11/15. If 7300154 picks up Sun 11/15 instead of Sat 11/14, the same truck takes it.",
+      "lane": {
+        "origin": {
+          "city": "Columbus",
+          "state": "OH",
+          "lat": 39.96,
+          "lng": -83.0
+        },
+        "destination": {
+          "city": "Fort Worth",
+          "state": "TX",
+          "lat": 32.75,
+          "lng": -97.33
+        }
+      },
+      "date": "2026-11-15",
+      "original_date": "2026-11-14",
+      "price": 3696,
+      "market_price": 3696,
+      "savings": 402,
+      "empty_miles_saved": 177,
+      "reasons": [
+        "0 mi from where truck 345 empties",
+        "Saves 177 empty miles (\u2248 $402 at $2.27/mi)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,882 @@
+{
+  "generated_at": "2026-11-13T12:00:00Z",
+  "totals": {
+    "loads": 160,
+    "one_way_cities": 16,
+    "empty_miles": 93395,
+    "empty_cost_usd": 186790,
+    "cost_per_empty_mile": 2.0
+  },
+  "arcs": [
+    {
+      "id": "IL-Chicago__TX-Dallas",
+      "origin": {
+        "city": "Chicago",
+        "state": "IL",
+        "lat": 41.88,
+        "lng": -87.63
+      },
+      "destination": {
+        "city": "Dallas",
+        "state": "TX",
+        "lat": 32.78,
+        "lng": -96.8
+      },
+      "loads": 27,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 22,
+        "SB": 5
+      },
+      "dominant_equipment": "V",
+      "miles": 925,
+      "empty_miles": 24975,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Machined steel components, palletized",
+        "Point-of-sale display units, crated",
+        "Sample cartons and packaging, toted"
+      ]
+    },
+    {
+      "id": "IL-Rockford__CO-Aurora",
+      "origin": {
+        "city": "Rockford",
+        "state": "IL",
+        "lat": 42.27,
+        "lng": -89.09
+      },
+      "destination": {
+        "city": "Aurora",
+        "state": "CO",
+        "lat": 39.73,
+        "lng": -104.83
+      },
+      "loads": 16,
+      "reverse_loads": 0,
+      "equipment": {
+        "R": 16
+      },
+      "dominant_equipment": "R",
+      "miles": 1000,
+      "empty_miles": 16000,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Frozen prepared foods",
+        "Retail shelving hardware, palletized",
+        "Replacement parts, boxed"
+      ]
+    },
+    {
+      "id": "OH-Columbus__TX-Fort_Worth",
+      "origin": {
+        "city": "Columbus",
+        "state": "OH",
+        "lat": 39.96,
+        "lng": -83.0
+      },
+      "destination": {
+        "city": "Fort Worth",
+        "state": "TX",
+        "lat": 32.75,
+        "lng": -97.33
+      },
+      "loads": 11,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 11
+      },
+      "dominant_equipment": "V",
+      "miles": 1050,
+      "empty_miles": 11550,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Patio furniture sets, cartoned"
+      ]
+    },
+    {
+      "id": "PA-Pittsburgh__NJ-Newark",
+      "origin": {
+        "city": "Pittsburgh",
+        "state": "PA",
+        "lat": 40.44,
+        "lng": -79.99
+      },
+      "destination": {
+        "city": "Newark",
+        "state": "NJ",
+        "lat": 40.74,
+        "lng": -74.17
+      },
+      "loads": 10,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 6,
+        "F": 4
+      },
+      "dominant_equipment": "V",
+      "miles": 370,
+      "empty_miles": 3700,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Fabricated steel brackets",
+        "Retail shelving hardware, palletized"
+      ]
+    },
+    {
+      "id": "TX-Houston__TX-Dallas",
+      "origin": {
+        "city": "Houston",
+        "state": "TX",
+        "lat": 29.76,
+        "lng": -95.37
+      },
+      "destination": {
+        "city": "Dallas",
+        "state": "TX",
+        "lat": 32.78,
+        "lng": -96.8
+      },
+      "loads": 10,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 10
+      },
+      "dominant_equipment": "V",
+      "miles": 240,
+      "empty_miles": 2400,
+      "hazmat_loads": 10,
+      "commodities": [
+        "Industrial cleaning compound (UN1760)",
+        "Replacement parts, boxed",
+        "Retail shelving hardware, palletized"
+      ]
+    },
+    {
+      "id": "OR-Portland__WA-Kent",
+      "origin": {
+        "city": "Portland",
+        "state": "OR",
+        "lat": 45.52,
+        "lng": -122.68
+      },
+      "destination": {
+        "city": "Kent",
+        "state": "WA",
+        "lat": 47.38,
+        "lng": -122.23
+      },
+      "loads": 10,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 10
+      },
+      "dominant_equipment": "V",
+      "miles": 170,
+      "empty_miles": 1700,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Corrugated cartons, baled",
+        "Replacement parts, boxed"
+      ]
+    },
+    {
+      "id": "OH-Columbus__NC-Charlotte",
+      "origin": {
+        "city": "Columbus",
+        "state": "OH",
+        "lat": 39.96,
+        "lng": -83.0
+      },
+      "destination": {
+        "city": "Charlotte",
+        "state": "NC",
+        "lat": 35.23,
+        "lng": -80.84
+      },
+      "loads": 9,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 9
+      },
+      "dominant_equipment": "V",
+      "miles": 425,
+      "empty_miles": 3825,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Garden tools and seasonal goods",
+        "Replacement parts, boxed"
+      ]
+    },
+    {
+      "id": "MA-Boston__NJ-Newark",
+      "origin": {
+        "city": "Boston",
+        "state": "MA",
+        "lat": 42.36,
+        "lng": -71.06
+      },
+      "destination": {
+        "city": "Newark",
+        "state": "NJ",
+        "lat": 40.74,
+        "lng": -74.17
+      },
+      "loads": 9,
+      "reverse_loads": 0,
+      "equipment": {
+        "R": 9
+      },
+      "dominant_equipment": "R",
+      "miles": 225,
+      "empty_miles": 2025,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Frozen seafood, palletized",
+        "Point-of-sale display units, crated",
+        "Sample cartons and packaging, toted"
+      ]
+    },
+    {
+      "id": "MO-Kansas_City__CO-Aurora",
+      "origin": {
+        "city": "Kansas City",
+        "state": "MO",
+        "lat": 39.1,
+        "lng": -94.58
+      },
+      "destination": {
+        "city": "Aurora",
+        "state": "CO",
+        "lat": 39.73,
+        "lng": -104.83
+      },
+      "loads": 8,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 8
+      },
+      "dominant_equipment": "V",
+      "miles": 605,
+      "empty_miles": 4840,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Mixed grocery dry goods",
+        "Point-of-sale display units, crated"
+      ]
+    },
+    {
+      "id": "AZ-Phoenix__TX-El_Paso",
+      "origin": {
+        "city": "Phoenix",
+        "state": "AZ",
+        "lat": 33.45,
+        "lng": -112.07
+      },
+      "destination": {
+        "city": "El Paso",
+        "state": "TX",
+        "lat": 31.76,
+        "lng": -106.49
+      },
+      "loads": 7,
+      "reverse_loads": 0,
+      "equipment": {
+        "SV": 3,
+        "V": 4
+      },
+      "dominant_equipment": "V",
+      "miles": 430,
+      "empty_miles": 3010,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Consumer electronics, shrink-wrapped"
+      ]
+    },
+    {
+      "id": "CA-Fresno__CA-Ontario",
+      "origin": {
+        "city": "Fresno",
+        "state": "CA",
+        "lat": 36.74,
+        "lng": -119.79
+      },
+      "destination": {
+        "city": "Ontario",
+        "state": "CA",
+        "lat": 34.06,
+        "lng": -117.65
+      },
+      "loads": 7,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 7
+      },
+      "dominant_equipment": "V",
+      "miles": 250,
+      "empty_miles": 1750,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Bagged fertilizer, palletized",
+        "Replacement parts, boxed"
+      ]
+    },
+    {
+      "id": "IL-Chicago__GA-McDonough",
+      "origin": {
+        "city": "Chicago",
+        "state": "IL",
+        "lat": 41.88,
+        "lng": -87.63
+      },
+      "destination": {
+        "city": "McDonough",
+        "state": "GA",
+        "lat": 33.45,
+        "lng": -84.15
+      },
+      "loads": 6,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 6
+      },
+      "dominant_equipment": "V",
+      "miles": 730,
+      "empty_miles": 4380,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Machined steel components, palletized"
+      ]
+    },
+    {
+      "id": "MI-Grand_Rapids__OH-Columbus",
+      "origin": {
+        "city": "Grand Rapids",
+        "state": "MI",
+        "lat": 42.96,
+        "lng": -85.67
+      },
+      "destination": {
+        "city": "Columbus",
+        "state": "OH",
+        "lat": 39.96,
+        "lng": -83.0
+      },
+      "loads": 6,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 6
+      },
+      "dominant_equipment": "V",
+      "miles": 265,
+      "empty_miles": 1590,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Composite decking bundles"
+      ]
+    },
+    {
+      "id": "IA-Des_Moines__CO-Aurora",
+      "origin": {
+        "city": "Des Moines",
+        "state": "IA",
+        "lat": 41.59,
+        "lng": -93.62
+      },
+      "destination": {
+        "city": "Aurora",
+        "state": "CO",
+        "lat": 39.73,
+        "lng": -104.83
+      },
+      "loads": 5,
+      "reverse_loads": 0,
+      "equipment": {
+        "R": 5
+      },
+      "dominant_equipment": "R",
+      "miles": 640,
+      "empty_miles": 3200,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Refrigerated dairy products",
+        "Sample cartons and packaging, toted"
+      ]
+    },
+    {
+      "id": "IA-Des_Moines__IL-Joliet",
+      "origin": {
+        "city": "Des Moines",
+        "state": "IA",
+        "lat": 41.59,
+        "lng": -93.62
+      },
+      "destination": {
+        "city": "Joliet",
+        "state": "IL",
+        "lat": 41.53,
+        "lng": -88.08
+      },
+      "loads": 5,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 5
+      },
+      "dominant_equipment": "V",
+      "miles": 320,
+      "empty_miles": 1600,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Shelf-stable food products",
+        "Replacement parts, boxed",
+        "Retail shelving hardware, palletized"
+      ]
+    },
+    {
+      "id": "MI-Grand_Rapids__TN-Nashville",
+      "origin": {
+        "city": "Grand Rapids",
+        "state": "MI",
+        "lat": 42.96,
+        "lng": -85.67
+      },
+      "destination": {
+        "city": "Nashville",
+        "state": "TN",
+        "lat": 36.16,
+        "lng": -86.78
+      },
+      "loads": 4,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 4
+      },
+      "dominant_equipment": "V",
+      "miles": 530,
+      "empty_miles": 2120,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Cabinet hardware, boxed"
+      ]
+    },
+    {
+      "id": "IA-Des_Moines__TN-Memphis",
+      "origin": {
+        "city": "Des Moines",
+        "state": "IA",
+        "lat": 41.59,
+        "lng": -93.62
+      },
+      "destination": {
+        "city": "Memphis",
+        "state": "TN",
+        "lat": 35.15,
+        "lng": -90.05
+      },
+      "loads": 3,
+      "reverse_loads": 0,
+      "equipment": {
+        "V": 3
+      },
+      "dominant_equipment": "V",
+      "miles": 560,
+      "empty_miles": 1680,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Shelf-stable food products",
+        "Replacement parts, boxed",
+        "Retail shelving hardware, palletized"
+      ]
+    },
+    {
+      "id": "CA-Fresno__UT-Salt_Lake_City",
+      "origin": {
+        "city": "Fresno",
+        "state": "CA",
+        "lat": 36.74,
+        "lng": -119.79
+      },
+      "destination": {
+        "city": "Salt Lake City",
+        "state": "UT",
+        "lat": 40.76,
+        "lng": -111.89
+      },
+      "loads": 3,
+      "reverse_loads": 0,
+      "equipment": {
+        "F": 3
+      },
+      "dominant_equipment": "F",
+      "miles": 800,
+      "empty_miles": 2400,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Irrigation pipe and fittings"
+      ]
+    },
+    {
+      "id": "AZ-Phoenix__AZ-Scottsdale",
+      "origin": {
+        "city": "Phoenix",
+        "state": "AZ",
+        "lat": 33.45,
+        "lng": -112.07
+      },
+      "destination": {
+        "city": "Scottsdale",
+        "state": "AZ",
+        "lat": 33.49,
+        "lng": -111.93
+      },
+      "loads": 2,
+      "reverse_loads": 0,
+      "equipment": {
+        "HS": 2
+      },
+      "dominant_equipment": "HS",
+      "miles": 25,
+      "empty_miles": 50,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Rack-mount server crate"
+      ]
+    },
+    {
+      "id": "MO-Kansas_City__IL-Naperville",
+      "origin": {
+        "city": "Kansas City",
+        "state": "MO",
+        "lat": 39.1,
+        "lng": -94.58
+      },
+      "destination": {
+        "city": "Naperville",
+        "state": "IL",
+        "lat": 41.75,
+        "lng": -88.15
+      },
+      "loads": 1,
+      "reverse_loads": 0,
+      "equipment": {
+        "SB": 1
+      },
+      "dominant_equipment": "SB",
+      "miles": 510,
+      "empty_miles": 510,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Home fitness equipment"
+      ]
+    },
+    {
+      "id": "IL-Rockford__IL-Bedford_Park",
+      "origin": {
+        "city": "Rockford",
+        "state": "IL",
+        "lat": 42.27,
+        "lng": -89.09
+      },
+      "destination": {
+        "city": "Bedford Park",
+        "state": "IL",
+        "lat": 41.77,
+        "lng": -87.8
+      },
+      "loads": 1,
+      "reverse_loads": 0,
+      "equipment": {
+        "R": 1
+      },
+      "dominant_equipment": "R",
+      "miles": 90,
+      "empty_miles": 90,
+      "hazmat_loads": 0,
+      "commodities": [
+        "Frozen prepared foods"
+      ]
+    }
+  ],
+  "cities": [
+    {
+      "city": "Dallas",
+      "state": "TX",
+      "lat": 32.78,
+      "lng": -96.8,
+      "id": "TX-Dallas",
+      "inbound": 37,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Aurora",
+      "state": "CO",
+      "lat": 39.73,
+      "lng": -104.83,
+      "id": "CO-Aurora",
+      "inbound": 29,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Newark",
+      "state": "NJ",
+      "lat": 40.74,
+      "lng": -74.17,
+      "id": "NJ-Newark",
+      "inbound": 19,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Fort Worth",
+      "state": "TX",
+      "lat": 32.75,
+      "lng": -97.33,
+      "id": "TX-Fort_Worth",
+      "inbound": 11,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Kent",
+      "state": "WA",
+      "lat": 47.38,
+      "lng": -122.23,
+      "id": "WA-Kent",
+      "inbound": 10,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Charlotte",
+      "state": "NC",
+      "lat": 35.23,
+      "lng": -80.84,
+      "id": "NC-Charlotte",
+      "inbound": 9,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "El Paso",
+      "state": "TX",
+      "lat": 31.76,
+      "lng": -106.49,
+      "id": "TX-El_Paso",
+      "inbound": 7,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Ontario",
+      "state": "CA",
+      "lat": 34.06,
+      "lng": -117.65,
+      "id": "CA-Ontario",
+      "inbound": 7,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "McDonough",
+      "state": "GA",
+      "lat": 33.45,
+      "lng": -84.15,
+      "id": "GA-McDonough",
+      "inbound": 6,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Joliet",
+      "state": "IL",
+      "lat": 41.53,
+      "lng": -88.08,
+      "id": "IL-Joliet",
+      "inbound": 5,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Nashville",
+      "state": "TN",
+      "lat": 36.16,
+      "lng": -86.78,
+      "id": "TN-Nashville",
+      "inbound": 4,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Salt Lake City",
+      "state": "UT",
+      "lat": 40.76,
+      "lng": -111.89,
+      "id": "UT-Salt_Lake_City",
+      "inbound": 3,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Memphis",
+      "state": "TN",
+      "lat": 35.15,
+      "lng": -90.05,
+      "id": "TN-Memphis",
+      "inbound": 3,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Scottsdale",
+      "state": "AZ",
+      "lat": 33.49,
+      "lng": -111.93,
+      "id": "AZ-Scottsdale",
+      "inbound": 2,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Bedford Park",
+      "state": "IL",
+      "lat": 41.77,
+      "lng": -87.8,
+      "id": "IL-Bedford_Park",
+      "inbound": 1,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Naperville",
+      "state": "IL",
+      "lat": 41.75,
+      "lng": -88.15,
+      "id": "IL-Naperville",
+      "inbound": 1,
+      "outbound": 0,
+      "one_way": true
+    },
+    {
+      "city": "Phoenix",
+      "state": "AZ",
+      "lat": 33.45,
+      "lng": -112.07,
+      "id": "AZ-Phoenix",
+      "inbound": 0,
+      "outbound": 9,
+      "one_way": false
+    },
+    {
+      "city": "Kansas City",
+      "state": "MO",
+      "lat": 39.1,
+      "lng": -94.58,
+      "id": "MO-Kansas_City",
+      "inbound": 0,
+      "outbound": 9,
+      "one_way": false
+    },
+    {
+      "city": "Boston",
+      "state": "MA",
+      "lat": 42.36,
+      "lng": -71.06,
+      "id": "MA-Boston",
+      "inbound": 0,
+      "outbound": 9,
+      "one_way": false
+    },
+    {
+      "city": "Houston",
+      "state": "TX",
+      "lat": 29.76,
+      "lng": -95.37,
+      "id": "TX-Houston",
+      "inbound": 0,
+      "outbound": 10,
+      "one_way": false
+    },
+    {
+      "city": "Fresno",
+      "state": "CA",
+      "lat": 36.74,
+      "lng": -119.79,
+      "id": "CA-Fresno",
+      "inbound": 0,
+      "outbound": 10,
+      "one_way": false
+    },
+    {
+      "city": "Portland",
+      "state": "OR",
+      "lat": 45.52,
+      "lng": -122.68,
+      "id": "OR-Portland",
+      "inbound": 0,
+      "outbound": 10,
+      "one_way": false
+    },
+    {
+      "city": "Grand Rapids",
+      "state": "MI",
+      "lat": 42.96,
+      "lng": -85.67,
+      "id": "MI-Grand_Rapids",
+      "inbound": 0,
+      "outbound": 10,
+      "one_way": false
+    },
+    {
+      "city": "Pittsburgh",
+      "state": "PA",
+      "lat": 40.44,
+      "lng": -79.99,
+      "id": "PA-Pittsburgh",
+      "inbound": 0,
+      "outbound": 10,
+      "one_way": false
+    },
+    {
+      "city": "Des Moines",
+      "state": "IA",
+      "lat": 41.59,
+      "lng": -93.62,
+      "id": "IA-Des_Moines",
+      "inbound": 0,
+      "outbound": 13,
+      "one_way": false
+    },
+    {
+      "city": "Columbus",
+      "state": "OH",
+      "lat": 39.96,
+      "lng": -83.0,
+      "id": "OH-Columbus",
+      "inbound": 6,
+      "outbound": 20,
+      "one_way": false
+    },
+    {
+      "city": "Rockford",
+      "state": "IL",
+      "lat": 42.27,
+      "lng": -89.09,
+      "id": "IL-Rockford",
+      "inbound": 0,
+      "outbound": 17,
+      "one_way": false
+    },
+    {
+      "city": "Chicago",
+      "state": "IL",
+      "lat": 41.88,
+      "lng": -87.63,
+      "id": "IL-Chicago",
+      "inbound": 0,
+      "outbound": 33,
+      "one_way": false
+    }
+  ]
+}

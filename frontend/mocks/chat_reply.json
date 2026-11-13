@@ -1,0 +1,29 @@
+{
+  "reply": "9 trucks empty out in Dallas over the next 7 days, mostly dry vans from Chicago that hauled steel and display units. Best fit: Big-Box Retailer DC135 store returns back to Chicago (score 94), then Keystone Texas seasonal returns to Columbus (88). I blocked Midway's grocery load because the only available trailer last hauled UN1760 corrosive, so FSMA requires a washout first.",
+  "tool_calls": [
+    {
+      "name": "get_city_flows",
+      "args": {
+        "city": "Dallas",
+        "state": "TX"
+      },
+      "result_preview": "37 in, 0 out; 22 dry van, 5 box truck"
+    },
+    {
+      "name": "find_backhauls",
+      "args": {
+        "city": "Dallas",
+        "state": "TX",
+        "days": 7
+      },
+      "result_preview": "5 prospects, 3 compatible, 2 blocked"
+    },
+    {
+      "name": "check_compat",
+      "args": {
+        "prospect_id": "P-DAL-004"
+      },
+      "result_preview": "FAIL trailer_history: last load UN1760"
+    }
+  ]
+}

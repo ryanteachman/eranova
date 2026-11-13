@@ -1,0 +1,44 @@
+{
+  "email": {
+    "id": "M-04",
+    "from": "claims@grocerspride.example",
+    "from_name": "Grocer's Pride",
+    "subject": "Need a reefer Aurora -> Des Moines",
+    "received_at": "2026-11-13T12:10:00Z",
+    "kind": "quote_request",
+    "confidence": 0.84,
+    "status": "processed",
+    "body": "We have 18 pallets of returned dairy at DC5 in Aurora that need to go back to Des Moines, 34F. Pickup tomorrow.",
+    "extracted": {
+      "origin": "Aurora, CO",
+      "destination": "Des Moines, IA",
+      "pallets": 18,
+      "temperature_f": 34,
+      "equipment": "R",
+      "pickup_date": "2026-11-14"
+    },
+    "action_ids": [
+      "A-1008"
+    ]
+  },
+  "actions_created": [
+    {
+      "action_id": "A-1008",
+      "type": "create_quote",
+      "status": "pending",
+      "tier": "write",
+      "title": "Create return quote: Grocer's Pride",
+      "summary": "TL reefer Aurora, CO -> Des Moines, IA for returned dairy at 34F",
+      "confidence": 0.84,
+      "reasoning": "Valiant's reefers deliver dairy into Aurora (5 loads) and drive home to Des Moines empty. Same commodity family, same temperature range, so no washout is needed.",
+      "payload": {
+        "origin": "Aurora, CO",
+        "destination": "Des Moines, IA",
+        "equipment_type": "R"
+      },
+      "miles": 690,
+      "created_at": "2026-11-13T12:10:00Z",
+      "created_by": "agent"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "id": "E-31",
+      "at": "2026-11-13T12:06:00Z",
+      "actor": "ali",
+      "kind": "approve",
+      "text": "Approved A-1004: quote 7300178 for Ironpeak"
+    },
+    {
+      "id": "E-30",
+      "at": "2026-11-13T12:04:00Z",
+      "actor": "agent",
+      "kind": "propose",
+      "text": "Proposed A-1006: return quote for Keystone Texas"
+    },
+    {
+      "id": "E-29",
+      "at": "2026-11-13T12:02:00Z",
+      "actor": "agent",
+      "kind": "block",
+      "text": "Blocked P-DAL-004: FSMA washout required (trailer last hauled UN1760)"
+    },
+    {
+      "id": "E-28",
+      "at": "2026-11-13T11:58:00Z",
+      "actor": "agent",
+      "kind": "email",
+      "text": "Classified email from Blue Ridge Transport as carrier_capacity (0.91)"
+    },
+    {
+      "id": "E-27",
+      "at": "2026-11-13T11:55:00Z",
+      "actor": "agent",
+      "kind": "sync",
+      "text": "Synced 160 shipments, 30 facilities, 18 carriers from Meridian"
+    }
+  ]
+}

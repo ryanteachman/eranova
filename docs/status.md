@@ -27,3 +27,20 @@
 ## Asher (email)
 
 ## Ali (frontend)
+
+**Updated 2026-11-13**
+
+**Done**
+- v3 map-first UI: Broker (ready loops, empty trips to fill, my loops with money in/out/margin/saved),
+  Carrier (fleet + driver phone), Manufacturer (date-shift offers), weekly Reports, inbox actions.
+- 3D map (MapLibre + deck.gl): real road routes (OSRM), status-colored direction arcs, overview of all loops.
+- All loop, lane, report and learning numbers come from real Meridian data
+  (`frontend/tools/plan_loops.py`, `frontend/tools/learn.py`). Earlier made-up loops are gone.
+
+**Doing**
+- Switching `api.js` from mocks to Ryan's live routes (contract field differences listed in `docs/requests.md`).
+
+**Blocked**
+- Tours, return lanes, reports and learned routes are frontend-only until ported to the backend.
+- Inbox and agent chat show example data until Asher's `email_pipeline` lands.
+

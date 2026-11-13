@@ -1,0 +1,515 @@
+{
+  "loads_learned_from": 118,
+  "headline": {
+    "on_time_pct": 91,
+    "avg_late_h_when_late": 19.3,
+    "avg_dwell_h": 1.8,
+    "detention_hours": 53.3,
+    "avg_lead_days": 3.0
+  },
+  "carriers": [
+    {
+      "carrier_id": "COASTLTL",
+      "name": "Coastline LTL Systems",
+      "loads": 14,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 15.1,
+      "revenue_paid": 11666
+    },
+    {
+      "carrier_id": "NATLTLFW",
+      "name": "National LTL Freightways",
+      "loads": 11,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 14.3,
+      "revenue_paid": 8722
+    },
+    {
+      "carrier_id": "PRAIRIEHL",
+      "name": "Prairie Haul Lines",
+      "loads": 7,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 20.8,
+      "revenue_paid": 17716
+    },
+    {
+      "carrier_id": "BLUERIDGE",
+      "name": "Blue Ridge Transport",
+      "loads": 7,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 15.3,
+      "revenue_paid": 14832
+    },
+    {
+      "carrier_id": "BADWOLF",
+      "name": "Bad Wolf Logistics LLC",
+      "loads": 3,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 25.3,
+      "revenue_paid": 6614
+    },
+    {
+      "carrier_id": "WINDYCART",
+      "name": "Windy City Cartage",
+      "loads": 2,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 20.0,
+      "revenue_paid": 4480
+    },
+    {
+      "carrier_id": "RAPIDLINE",
+      "name": "RapidLine Hotshot LLC",
+      "loads": 2,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 15.4,
+      "revenue_paid": 1945
+    },
+    {
+      "carrier_id": "SWIFTARRW",
+      "name": "Swift Arrow Expedite",
+      "loads": 1,
+      "on_time_pct": 100,
+      "avg_late_h": null,
+      "avg_mph": 21.5,
+      "revenue_paid": 1212
+    },
+    {
+      "carrier_id": "ACMECARR",
+      "name": "Acme Carrier Inc.",
+      "loads": 16,
+      "on_time_pct": 90,
+      "avg_late_h": 12.8,
+      "avg_mph": 15.5,
+      "revenue_paid": 28581
+    },
+    {
+      "carrier_id": "CANYONFRT",
+      "name": "Canyon Freight Systems",
+      "loads": 22,
+      "on_time_pct": 89,
+      "avg_late_h": 24.2,
+      "avg_mph": 17.8,
+      "revenue_paid": 45523
+    },
+    {
+      "carrier_id": "SUNRIDGE",
+      "name": "Sunridge Trucking LLC",
+      "loads": 28,
+      "on_time_pct": 86,
+      "avg_late_h": 20.7,
+      "avg_mph": 18.8,
+      "revenue_paid": 60581
+    },
+    {
+      "carrier_id": "LAKESHORE",
+      "name": "Lakeshore Carriers Inc.",
+      "loads": 17,
+      "on_time_pct": 86,
+      "avg_late_h": 16.4,
+      "avg_mph": 16.7,
+      "revenue_paid": 34493
+    },
+    {
+      "carrier_id": "HIGHPLAIN",
+      "name": "High Plains Freightways",
+      "loads": 7,
+      "on_time_pct": 83,
+      "avg_late_h": 11.7,
+      "avg_mph": 16.2,
+      "revenue_paid": 12755
+    },
+    {
+      "carrier_id": "GULFSTRMX",
+      "name": "Gulfstream Express Carriers",
+      "loads": 7,
+      "on_time_pct": 83,
+      "avg_late_h": 17.2,
+      "avg_mph": 16.8,
+      "revenue_paid": 17837
+    },
+    {
+      "carrier_id": "METRODASH",
+      "name": "MetroDash Couriers",
+      "loads": 4,
+      "on_time_pct": 75,
+      "avg_late_h": 28.6,
+      "avg_mph": 14.3,
+      "revenue_paid": 6423
+    }
+  ],
+  "facilities": [
+    {
+      "facility_id": "HGD-ST112",
+      "name": "HomeGoods Depot Store 112 - Nashville",
+      "visits": 3,
+      "avg_dwell_h": 2.8,
+      "detention_pct": 67,
+      "detention_hours": 3.1
+    },
+    {
+      "facility_id": "DESERTGATE-ELP",
+      "name": "Desert Gateway Distribution - El Paso",
+      "visits": 5,
+      "avg_dwell_h": 2.7,
+      "detention_pct": 80,
+      "detention_hours": 3.5
+    },
+    {
+      "facility_id": "GP-ST88",
+      "name": "Grocer's Pride Store 88 - Charlotte",
+      "visits": 6,
+      "avg_dwell_h": 2.4,
+      "detention_pct": 67,
+      "detention_hours": 3.2
+    },
+    {
+      "facility_id": "GP-DC5",
+      "name": "Grocer's Pride DC5",
+      "visits": 23,
+      "avg_dwell_h": 2.4,
+      "detention_pct": 57,
+      "detention_hours": 13.0
+    },
+    {
+      "facility_id": "HGD-DC08",
+      "name": "HomeGoods Depot DC08",
+      "visits": 5,
+      "avg_dwell_h": 2.3,
+      "detention_pct": 60,
+      "detention_hours": 2.2
+    },
+    {
+      "facility_id": "KEYSTONE-FTW",
+      "name": "Keystone Home & Garden - Fort Worth WH",
+      "visits": 7,
+      "avg_dwell_h": 2.3,
+      "detention_pct": 43,
+      "detention_hours": 3.6
+    },
+    {
+      "facility_id": "TRISTATE-EWR",
+      "name": "Tri-State Crossdock - Newark",
+      "visits": 13,
+      "avg_dwell_h": 2.2,
+      "detention_pct": 77,
+      "detention_hours": 4.6
+    },
+    {
+      "facility_id": "BBR-DC135",
+      "name": "Big-Box Retailer DC135",
+      "visits": 26,
+      "avg_dwell_h": 2.2,
+      "detention_pct": 58,
+      "detention_hours": 13.6
+    },
+    {
+      "facility_id": "CASCADE-SEA",
+      "name": "Cascade Packaging - Kent Distribution",
+      "visits": 7,
+      "avg_dwell_h": 2.0,
+      "detention_pct": 43,
+      "detention_hours": 1.9
+    },
+    {
+      "facility_id": "VMART-DC22",
+      "name": "ValueMart Stores DC22",
+      "visits": 4,
+      "avg_dwell_h": 1.9,
+      "detention_pct": 25,
+      "detention_hours": 0.3
+    }
+  ],
+  "shippers": [
+    {
+      "customer_id": "NORTHSTAR",
+      "name": "Northstar Manufacturing - Chicago Dock",
+      "loads": 33,
+      "spend": 104416,
+      "avg_lead_days": 3.1,
+      "on_time_pct": 92,
+      "avg_late_h": 25.2
+    },
+    {
+      "customer_id": "FROSTLINE",
+      "name": "Frostline Cold Storage - Rockford",
+      "loads": 17,
+      "spend": 63548,
+      "avg_lead_days": 3.2,
+      "on_time_pct": 88,
+      "avg_late_h": 20.7
+    },
+    {
+      "customer_id": "VALIANTFD",
+      "name": "Valiant Foods - Des Moines Plant",
+      "loads": 13,
+      "spend": 26094,
+      "avg_lead_days": 2.8,
+      "on_time_pct": 89,
+      "avg_late_h": null
+    },
+    {
+      "customer_id": "KEYSTONE-TX",
+      "name": "Keystone Home & Garden - Columbus WH",
+      "loads": 11,
+      "spend": 38800,
+      "avg_lead_days": 2.8,
+      "on_time_pct": 100,
+      "avg_late_h": null
+    },
+    {
+      "customer_id": "IRONPEAK",
+      "name": "Ironpeak Fabrication - Plant 1",
+      "loads": 10,
+      "spend": 12145,
+      "avg_lead_days": 3,
+      "on_time_pct": 86,
+      "avg_late_h": 11.7
+    },
+    {
+      "customer_id": "PIONEERBLD",
+      "name": "Pioneer Building Products - Kentwood Plant",
+      "loads": 10,
+      "spend": 9432,
+      "avg_lead_days": 3,
+      "on_time_pct": 100,
+      "avg_late_h": null
+    },
+    {
+      "customer_id": "LONESTARCH",
+      "name": "Lone Star Chemical - Jacintoport Plant",
+      "loads": 10,
+      "spend": 12276,
+      "avg_lead_days": 2.7,
+      "on_time_pct": 100,
+      "avg_late_h": null
+    },
+    {
+      "customer_id": "MIDWAYDST",
+      "name": "Midway Distributors - KC Warehouse",
+      "loads": 9,
+      "spend": 19162,
+      "avg_lead_days": 3,
+      "on_time_pct": 100,
+      "avg_late_h": null
+    },
+    {
+      "customer_id": "KEYSTONEHD",
+      "name": "Keystone Home & Garden - Columbus WH",
+      "loads": 9,
+      "spend": 8886,
+      "avg_lead_days": 3.1,
+      "on_time_pct": 100,
+      "avg_late_h": null
+    },
+    {
+      "customer_id": "REDROCKEL",
+      "name": "Red Rock Electronics - Buckeye Rd Plant",
+      "loads": 9,
+      "spend": 14259,
+      "avg_lead_days": 3.3,
+      "on_time_pct": 71,
+      "avg_late_h": 12.0
+    },
+    {
+      "customer_id": "SUNBELTAG",
+      "name": "Sunbelt Agri Supply - Fresno Yard",
+      "loads": 9,
+      "spend": 14812,
+      "avg_lead_days": 2.2,
+      "on_time_pct": 75,
+      "avg_late_h": 24.2
+    },
+    {
+      "customer_id": "BLUEHARBOR",
+      "name": "Blue Harbor - Fish Pier Cold Store",
+      "loads": 9,
+      "spend": 8485,
+      "avg_lead_days": 3.2,
+      "on_time_pct": 86,
+      "avg_late_h": 17.2
+    },
+    {
+      "customer_id": "CASCADEPKG",
+      "name": "Cascade Packaging - Portland Plant",
+      "loads": 9,
+      "spend": 8192,
+      "avg_lead_days": 2.9,
+      "on_time_pct": 100,
+      "avg_late_h": null
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "Chicago, IL \u2192 Dallas, TX",
+      "loads": 27,
+      "avg_transit_h": 48.3,
+      "on_time_pct": 90,
+      "fastest_carrier": "Prairie Haul Lines",
+      "fastest_h": 44.9,
+      "carriers": 8
+    },
+    {
+      "lane": "Rockford, IL \u2192 Aurora, CO",
+      "loads": 16,
+      "avg_transit_h": 49.6,
+      "on_time_pct": 87,
+      "fastest_carrier": "Canyon Freight Systems",
+      "fastest_h": 46.2,
+      "carriers": 3
+    },
+    {
+      "lane": "Columbus, OH \u2192 Fort Worth, TX",
+      "loads": 11,
+      "avg_transit_h": 46.7,
+      "on_time_pct": 100,
+      "fastest_carrier": "Acme Carrier Inc.",
+      "fastest_h": 46.5,
+      "carriers": 5
+    },
+    {
+      "lane": "Pittsburgh, PA \u2192 Newark, NJ",
+      "loads": 10,
+      "avg_transit_h": 24.6,
+      "on_time_pct": 86,
+      "fastest_carrier": "National LTL Freightways",
+      "fastest_h": 20.9,
+      "carriers": 3
+    },
+    {
+      "lane": "Houston, TX \u2192 Dallas, TX",
+      "loads": 10,
+      "avg_transit_h": 22.1,
+      "on_time_pct": 100,
+      "fastest_carrier": "Canyon Freight Systems",
+      "fastest_h": 20.8,
+      "carriers": 4
+    },
+    {
+      "lane": "Columbus, OH \u2192 Charlotte, NC",
+      "loads": 9,
+      "avg_transit_h": 21.6,
+      "on_time_pct": 100,
+      "fastest_carrier": "Coastline LTL Systems",
+      "fastest_h": 21.5,
+      "carriers": 2
+    },
+    {
+      "lane": "Boston, MA \u2192 Newark, NJ",
+      "loads": 9,
+      "avg_transit_h": 25.8,
+      "on_time_pct": 86,
+      "fastest_carrier": "Sunridge Trucking LLC",
+      "fastest_h": 21.6,
+      "carriers": 3
+    },
+    {
+      "lane": "Portland, OR \u2192 Kent, WA",
+      "loads": 9,
+      "avg_transit_h": 21.6,
+      "on_time_pct": 100,
+      "fastest_carrier": "Acme Carrier Inc.",
+      "fastest_h": 21.3,
+      "carriers": 4
+    },
+    {
+      "lane": "Kansas City, MO \u2192 Aurora, CO",
+      "loads": 8,
+      "avg_transit_h": 22.7,
+      "on_time_pct": 100,
+      "fastest_carrier": "Lakeshore Carriers Inc.",
+      "fastest_h": 22.5,
+      "carriers": 4
+    },
+    {
+      "lane": "Phoenix, AZ \u2192 El Paso, TX",
+      "loads": 7,
+      "avg_transit_h": 28.7,
+      "on_time_pct": 60,
+      "fastest_carrier": "RapidLine Hotshot LLC",
+      "fastest_h": 19.8,
+      "carriers": 5
+    },
+    {
+      "lane": "Fresno, CA \u2192 Ontario, CA",
+      "loads": 6,
+      "avg_transit_h": 32.0,
+      "on_time_pct": 60,
+      "fastest_carrier": "Acme Carrier Inc.",
+      "fastest_h": 21.9,
+      "carriers": 2
+    },
+    {
+      "lane": "Chicago, IL \u2192 McDonough, GA",
+      "loads": 6,
+      "avg_transit_h": 44.7,
+      "on_time_pct": 100,
+      "fastest_carrier": "Canyon Freight Systems",
+      "fastest_h": 43.8,
+      "carriers": 4
+    }
+  ],
+  "rules": [
+    {
+      "area": "timing",
+      "text": "Add 3 h at HomeGoods Depot Store 112 - Nashville before chaining the next pickup",
+      "evidence": "Average wait 2.8 h over 3 visits; 67% ran into detention"
+    },
+    {
+      "area": "timing",
+      "text": "Add 3 h at Desert Gateway Distribution - El Paso before chaining the next pickup",
+      "evidence": "Average wait 2.7 h over 5 visits; 80% ran into detention"
+    },
+    {
+      "area": "timing",
+      "text": "Add 2 h at Grocer's Pride Store 88 - Charlotte before chaining the next pickup",
+      "evidence": "Average wait 2.4 h over 6 visits; 67% ran into detention"
+    },
+    {
+      "area": "carrier",
+      "text": "Offer Chicago, IL \u2192 Dallas, TX to Prairie Haul Lines first",
+      "evidence": "Fastest on this lane: 44.9 h door to door vs 48.3 h average over 27 loads"
+    },
+    {
+      "area": "carrier",
+      "text": "Offer Rockford, IL \u2192 Aurora, CO to Canyon Freight Systems first",
+      "evidence": "Fastest on this lane: 46.2 h door to door vs 49.6 h average over 16 loads"
+    },
+    {
+      "area": "carrier",
+      "text": "Offer Columbus, OH \u2192 Fort Worth, TX to Acme Carrier Inc. first",
+      "evidence": "Fastest on this lane: 46.5 h door to door vs 46.7 h average over 11 loads"
+    },
+    {
+      "area": "carrier",
+      "text": "Rank High Plains Freightways lower on time-critical loops",
+      "evidence": "On time 83% over 7 loads"
+    },
+    {
+      "area": "carrier",
+      "text": "Rank Gulfstream Express Carriers lower on time-critical loops",
+      "evidence": "On time 83% over 7 loads"
+    },
+    {
+      "area": "lead_time",
+      "text": "Expect Northstar Manufacturing - Chicago Dock loads about 3 days before pickup",
+      "evidence": "Average booking lead time over 33 loads"
+    },
+    {
+      "area": "lead_time",
+      "text": "Expect Frostline Cold Storage - Rockford loads about 3 days before pickup",
+      "evidence": "Average booking lead time over 17 loads"
+    },
+    {
+      "area": "lead_time",
+      "text": "Expect Valiant Foods - Des Moines Plant loads about 3 days before pickup",
+      "evidence": "Average booking lead time over 13 loads"
+    }
+  ]
+}

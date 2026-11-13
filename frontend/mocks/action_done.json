@@ -1,0 +1,28 @@
+{
+  "action_id": "A-1007",
+  "status": "done",
+  "approved_by": "ali",
+  "approved_at": "2026-11-13T12:06:00Z",
+  "result": {
+    "summary": "Quote 7300179 created for Big-Box Retailer DC135: Dallas, TX -> Chicago, IL",
+    "quote_id": "7300179",
+    "sell_total": 3630.79,
+    "gp_pct": 18.0,
+    "miles": 925.0,
+    "meridian_path": "/quotes/7300179",
+    "lane": {
+      "origin": {
+        "city": "Dallas",
+        "state": "TX",
+        "lat": 32.78,
+        "lng": -96.8
+      },
+      "destination": {
+        "city": "Chicago",
+        "state": "IL",
+        "lat": 41.88,
+        "lng": -87.63
+      }
+    }
+  }
+}

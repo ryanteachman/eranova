@@ -1,0 +1,245 @@
+{
+  "city": "Dallas",
+  "state": "TX",
+  "inbound": 37,
+  "outbound": 0,
+  "empty_trucks_next_7d": 9,
+  "summary": "37 loads in, 0 out. Inbound trucks are mostly dry vans from Chicago carrying machined steel and display units.",
+  "prospects": [
+    {
+      "prospect_id": "P-DAL-001",
+      "customer": "Big-Box Retailer DC135",
+      "customer_id": null,
+      "facility_id": "BBR-DC135",
+      "lane": {
+        "origin": {
+          "city": "Dallas",
+          "state": "TX",
+          "lat": 32.78,
+          "lng": -96.8
+        },
+        "destination": {
+          "city": "Chicago",
+          "state": "IL",
+          "lat": 41.88,
+          "lng": -87.63
+        }
+      },
+      "equipment": "V",
+      "category": "retail_returns",
+      "commodity": "Store returns and salvage, palletized",
+      "miles": 925.0,
+      "est_buy": 2977.25,
+      "est_sell": 3630.79,
+      "gp_pct": 18.0,
+      "transit_days": 2,
+      "score": 94,
+      "ok": true,
+      "reasons": [
+        {
+          "check": "equipment",
+          "passed": true,
+          "text": "Dry van matches 22 of 27 Chicago -> Dallas trucks"
+        },
+        {
+          "check": "trailer_history",
+          "passed": true,
+          "text": "Last loads were steel and display units, no washout needed"
+        },
+        {
+          "check": "lane_fit",
+          "passed": true,
+          "text": "Exact reverse of Meridian's busiest lane (27 loads)"
+        },
+        {
+          "check": "warm_lead",
+          "passed": true,
+          "text": "Meridian already delivers here 9x a month"
+        }
+      ]
+    },
+    {
+      "prospect_id": "P-DAL-002",
+      "customer": "Keystone Home & Garden - Texas Division",
+      "customer_id": "KEYSTONE-TX",
+      "facility_id": "KEYSTONE-FTW",
+      "lane": {
+        "origin": {
+          "city": "Fort Worth",
+          "state": "TX",
+          "lat": 32.75,
+          "lng": -97.33
+        },
+        "destination": {
+          "city": "Columbus",
+          "state": "OH",
+          "lat": 39.96,
+          "lng": -83.0
+        }
+      },
+      "equipment": "V",
+      "category": "home_garden",
+      "commodity": "Seasonal returns and empty pallets back to Columbus WH",
+      "miles": 1050.0,
+      "est_buy": 3048.5,
+      "est_sell": 3629.17,
+      "gp_pct": 16.0,
+      "transit_days": 2,
+      "score": 88,
+      "ok": true,
+      "reasons": [
+        {
+          "check": "equipment",
+          "passed": true,
+          "text": "Dry van, same trailers that run Columbus -> Fort Worth"
+        },
+        {
+          "check": "trailer_history",
+          "passed": true,
+          "text": "Last load was patio furniture, compatible"
+        },
+        {
+          "check": "warm_lead",
+          "passed": true,
+          "text": "Existing customer, already set up as shipper and consignee"
+        },
+        {
+          "check": "lane_fit",
+          "passed": true,
+          "text": "Reverse of an 11-load lane, 32 mi from Dallas"
+        }
+      ]
+    },
+    {
+      "prospect_id": "P-DAL-003",
+      "customer": "Lone Star Chemical Co.",
+      "customer_id": "LONESTARCH",
+      "facility_id": "LONESTAR-HOU",
+      "lane": {
+        "origin": {
+          "city": "Houston",
+          "state": "TX",
+          "lat": 29.76,
+          "lng": -95.37
+        },
+        "destination": {
+          "city": "Chicago",
+          "state": "IL",
+          "lat": 41.88,
+          "lng": -87.63
+        }
+      },
+      "equipment": "V",
+      "category": "chemical",
+      "commodity": "Industrial cleaning compound (UN1760), drums",
+      "miles": 1085.0,
+      "est_buy": 3068.45,
+      "est_sell": 3884.11,
+      "gp_pct": 21.0,
+      "transit_days": 2,
+      "score": 71,
+      "ok": true,
+      "reasons": [
+        {
+          "check": "equipment",
+          "passed": true,
+          "text": "Dry van"
+        },
+        {
+          "check": "hazmat",
+          "passed": true,
+          "text": "UN1760 class 8: needs a hazmat-qualified carrier (ACMECARR qualifies)"
+        },
+        {
+          "check": "trailer_history",
+          "passed": true,
+          "text": "Steel and display loads before, no food after this either"
+        },
+        {
+          "check": "deadhead",
+          "passed": false,
+          "text": "240 mi empty from Dallas to Houston before pickup"
+        }
+      ]
+    },
+    {
+      "prospect_id": "P-DAL-004",
+      "customer": "Midway Distributors",
+      "customer_id": "MIDWAYDST",
+      "facility_id": "BBR-DC135",
+      "lane": {
+        "origin": {
+          "city": "Dallas",
+          "state": "TX",
+          "lat": 32.78,
+          "lng": -96.8
+        },
+        "destination": {
+          "city": "Kansas City",
+          "state": "MO",
+          "lat": 39.1,
+          "lng": -94.58
+        }
+      },
+      "equipment": "V",
+      "category": "food",
+      "commodity": "Mixed grocery dry goods",
+      "miles": 505.0,
+      "est_buy": 2737.85,
+      "est_sell": 3338.84,
+      "gp_pct": 18.0,
+      "transit_days": 1,
+      "score": 0,
+      "ok": false,
+      "reasons": [
+        {
+          "check": "equipment",
+          "passed": true,
+          "text": "Dry van"
+        },
+        {
+          "check": "trailer_history",
+          "passed": false,
+          "text": "FSMA: the available trailer last hauled UN1760 corrosive (7300160). Washout certificate required before food."
+        }
+      ]
+    },
+    {
+      "prospect_id": "P-DAL-005",
+      "customer": "Frostline Cold Storage",
+      "customer_id": "FROSTLINE",
+      "facility_id": "BBR-DC135",
+      "lane": {
+        "origin": {
+          "city": "Dallas",
+          "state": "TX",
+          "lat": 32.78,
+          "lng": -96.8
+        },
+        "destination": {
+          "city": "Rockford",
+          "state": "IL",
+          "lat": 42.27,
+          "lng": -89.09
+        }
+      },
+      "equipment": "R",
+      "category": "frozen_food",
+      "commodity": "Frozen food returns",
+      "miles": 925.0,
+      "est_buy": 2977.25,
+      "est_sell": 3630.79,
+      "gp_pct": 18.0,
+      "transit_days": 2,
+      "score": 0,
+      "ok": false,
+      "reasons": [
+        {
+          "check": "equipment",
+          "passed": false,
+          "text": "Needs a reefer: every truck emptying in Dallas this week is a dry van or box truck"
+        }
+      ]
+    }
+  ]
+}
