@@ -1,0 +1,109 @@
+{
+  "summary": {
+    "emails": 0,
+    "calls": 0,
+    "signals": 0,
+    "lanes": 0,
+    "avg_loop_discount_pct": 0,
+    "source": "Meridian rate engine"
+  },
+  "signals": [],
+  "lanes": [
+    {
+      "lane": {
+        "origin": {
+          "city": "Des Moines",
+          "state": "IA",
+          "lat": 41.59,
+          "lng": -93.62
+        },
+        "destination": {
+          "city": "Joliet",
+          "state": "IL",
+          "lat": 41.53,
+          "lng": -88.08
+        }
+      },
+      "equipment": "V",
+      "market_buy": 1087.4,
+      "one_way_buy": 1087.4,
+      "recommended_buy": 1287.8,
+      "discount_pct": 0,
+      "confidence": 1,
+      "signals": [],
+      "note": "Meridian rate engine: market $1,020\u2013$1,164; carrier rate in Meridian."
+    },
+    {
+      "lane": {
+        "origin": {
+          "city": "Chicago",
+          "state": "IL",
+          "lat": 41.88,
+          "lng": -87.63
+        },
+        "destination": {
+          "city": "McDonough",
+          "state": "GA",
+          "lat": 33.45,
+          "lng": -84.15
+        }
+      },
+      "equipment": "V",
+      "market_buy": 2231.1,
+      "one_way_buy": 2231.1,
+      "recommended_buy": 2231.1,
+      "discount_pct": 0,
+      "confidence": 1,
+      "signals": [],
+      "note": "Meridian rate engine: market $2,067\u2013$2,405; market rate used until a carrier is assigned."
+    },
+    {
+      "lane": {
+        "origin": {
+          "city": "Grand Rapids",
+          "state": "MI",
+          "lat": 42.96,
+          "lng": -85.67
+        },
+        "destination": {
+          "city": "Columbus",
+          "state": "OH",
+          "lat": 39.96,
+          "lng": -83.0
+        }
+      },
+      "equipment": "V",
+      "market_buy": 921.05,
+      "one_way_buy": 921.05,
+      "recommended_buy": 956.65,
+      "discount_pct": 0,
+      "confidence": 1,
+      "signals": [],
+      "note": "Meridian rate engine: market $852\u2013$972; carrier rate in Meridian."
+    },
+    {
+      "lane": {
+        "origin": {
+          "city": "Columbus",
+          "state": "OH",
+          "lat": 39.96,
+          "lng": -83.0
+        },
+        "destination": {
+          "city": "Fort Worth",
+          "state": "TX",
+          "lat": 32.75,
+          "lng": -97.33
+        }
+      },
+      "equipment": "V",
+      "market_buy": 3098.5,
+      "one_way_buy": 3098.5,
+      "recommended_buy": 3098.5,
+      "discount_pct": 0,
+      "confidence": 1,
+      "signals": [],
+      "note": "Meridian rate engine: market $2,888\u2013$3,322; market rate used until a carrier is assigned."
+    }
+  ]
+}

@@ -45,4 +45,22 @@ One line per ask: date/time, from → to, what, why.
   One edit in your folder: `haggle.py` now adds `target_pay_min` / `target_pay_max` to the
   `confirm_carrier_rate` payload, so auto mode can check the deal is at or under the target max.
 - **2026-11-13** Asher → Ryan: `.env.example` could list `OPENAI_MODEL_FAST=gpt-4o-mini` (the email pipeline's extraction model; it defaults to that when unset).
+- **Ali → Ryan (frontend, 2026-11-13):** the v3 UI reads these routes. Today they are served by
+  frontend mocks generated from real Meridian data by `frontend/tools/plan_loops.py` and
+  `frontend/tools/learn.py`; the logic is in those two scripts, ready to port into `backend/brain/`.
+  - [ ] `GET /api/tours`: loops built only from real loads (a truck already on a load chains into
+    loads that still need a carrier). Shape: `frontend/mocks/tours.json`.
+  - [ ] approve on a `book_tour` action covers each `needs_carrier` leg with the loop's carrier.
+    Shape: `frontend/mocks/tour_actions.json`.
+  - [ ] `GET /api/return-lanes`: one-way lanes with trucks home empty, empty miles, rate-engine
+    market rate and real Meridian accounts in the city as leads (`return_lanes.json`).
+  - [ ] `GET /api/network/backtest`: the whole-history replay, one by one vs loops
+    (`network_backtest.json`).
+  - [ ] `GET /api/carrier-weeks` and `POST /api/carrier-weeks/<tour_id>/respond`
+    (`carrier_weeks.json`).
+  - [ ] `GET /api/offers` and `POST /api/offers/<offer_id>/respond`: real date-shift offers
+    (`shipper_offers.json`).
+  - [ ] `GET /api/reports/weekly` and `GET /api/learned`: weekly reports and learned rules
+    (`reports.json`, `learned.json`).
+  - [ ] Only constant that is not Meridian data: `EMPTY_COST_PER_MILE = 2.27` (ATRI industry average).
 - **2026-11-13** Asher → Ryan: ~~Wire HOS into `find_backhauls`.~~ Done with Ryan's OK: `find_backhauls` runs `hos.earliest_backhaul` per pairing; prospects gained `pickup_date`, `delivery_date_target`, `est_pickup`, `est_delivery` (contract updated). Original note: New module `backend/brain/hos.py` (FMCSA Hours of Service simulator, with `backend/tests/test_hos.py`), written by Asher in `backend/` since both the backhaul finder and email matching need it. Email matching uses it now. Worth adding to `find_backhauls` / `check_compat` so the Fill flow also blocks trucks that can't legally make a pickup; documented in `docs/backend.md` › *Hours of Service*.

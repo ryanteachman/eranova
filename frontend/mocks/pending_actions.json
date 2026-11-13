@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "action_id": "A-1006",
+      "type": "create_quote",
+      "status": "pending",
+      "tier": "write",
+      "title": "Create return quote: Keystone Home & Garden - Texas Division",
+      "summary": "TL dry van Fort Worth, TX -> Columbus, OH, sell $3,629.17 at 16.0% GP",
+      "confidence": 0.86,
+      "prospect_id": "P-DAL-002",
+      "miles": 1050.0,
+      "reasoning": "Keystone's Texas Division receives 11 loads a month from Columbus and is set up as a shipper. Dry vans arriving in Fort Worth carried patio furniture, so no washout is needed. Priced at 16% GP because this is a new lane for the customer.",
+      "payload": {
+        "customer_id": "KEYSTONE-TX",
+        "mode": "TL",
+        "equipment_type": "V",
+        "origin": "Fort Worth, TX",
+        "destination": "Columbus, OH"
+      },
+      "created_at": "2026-11-13T12:04:00Z",
+      "created_by": "agent"
+    },
+    {
+      "action_id": "A-1005",
+      "type": "send_email",
+      "status": "pending",
+      "tier": "external",
+      "title": "Reply to Blue Ridge Transport: confirm return load",
+      "summary": "Draft reply offering the Dallas -> Chicago return at $3,050",
+      "confidence": 0.74,
+      "reasoning": "Blue Ridge asked for freight out of Dallas after 7300117 delivers. Offer stays inside the target pay band of the matching prospect.",
+      "payload": {
+        "to": "dispatch@blueridge.example",
+        "subject": "Re: Freight out of Dallas Thursday?"
+      },
+      "created_at": "2026-11-13T11:58:00Z",
+      "created_by": "agent"
+    }
+  ]
+}

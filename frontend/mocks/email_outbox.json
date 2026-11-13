@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "id": "D-01",
+      "in_reply_to": "M-01",
+      "to": "dispatch@blueridge.example",
+      "subject": "Re: Freight out of Dallas Thursday?",
+      "body": "Hi Mike, yes. Big-Box DC135 in Dallas has store returns going to Chicago Thursday 3 pm. Dry van is fine and your last load needs no washout. We can offer $3,050 all-in. Want it?",
+      "status": "draft",
+      "action_id": "A-1005"
+    }
+  ]
+}

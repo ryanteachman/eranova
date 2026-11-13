@@ -1,0 +1,38 @@
+{
+  "loads": 130,
+  "loaded_miles": 82805,
+  "one_by_one": {
+    "empty_miles": 85556,
+    "loaded_pct": 49
+  },
+  "as_loops": {
+    "empty_miles": 84975,
+    "loaded_pct": 49
+  },
+  "empty_miles_saved": 582,
+  "pct_saved": 0.7,
+  "loads_in_loops": 12,
+  "loops": 6,
+  "trucks_needed": {
+    "one_by_one": 130,
+    "as_loops": 124
+  },
+  "cost_per_empty_mile": 2.27,
+  "cost_saved_usd": 1321,
+  "period": {
+    "from": "2026-01-17",
+    "to": "2026-11-18"
+  },
+  "rules": {
+    "max_deadhead_mi": 300,
+    "max_gap_days": 2,
+    "tour_max_days": 10
+  },
+  "return_lanes": {
+    "lanes": 15,
+    "empty_miles": 84690,
+    "share_of_empty": 99.0,
+    "freight_value_usd": 325099,
+    "months": 10
+  }
+}

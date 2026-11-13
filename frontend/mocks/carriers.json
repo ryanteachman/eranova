@@ -1,0 +1,99 @@
+{
+  "items": [
+    {
+      "base_score": 87,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.5,
+      "damage": 0,
+      "last_city": {
+        "city": "Newark",
+        "date": "2026-11-14",
+        "shipment_id": "7300139",
+        "state": "NJ"
+      },
+      "late_by_cause": {
+        "carrier": 0,
+        "excused": 0,
+        "unknown": 0
+      },
+      "legal_name": "Coastline LTL Systems",
+      "loads": 11,
+      "on_time_actual_pct": 100,
+      "on_time_stored_pct": 90,
+      "quality": 0.988,
+      "reasons": [
+        "100% on time across 10 loads",
+        "No carrier-fault lates, bounces or damage",
+        "Profile says 90% on time; actual loads say 100%",
+        "No target pay on file; cost scored neutral",
+        "1 detention/layover charge"
+      ],
+      "reliability": 0.986,
+      "tonu": 0,
+      "vendor_id": "COASTLTL"
+    },
+    {
+      "base_score": 87,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.55,
+      "damage": 0,
+      "last_city": {
+        "city": "El Paso",
+        "date": "2026-09-13",
+        "shipment_id": "7300070",
+        "state": "TX"
+      },
+      "late_by_cause": {
+        "carrier": 0,
+        "excused": 0,
+        "unknown": 0
+      },
+      "legal_name": "RapidLine Hotshot LLC",
+      "loads": 2,
+      "on_time_actual_pct": 100,
+      "on_time_stored_pct": 92,
+      "quality": 0.975,
+      "reasons": [
+        "100% on time across 2 loads",
+        "No carrier-fault lates, bounces or damage",
+        "Paid 16% under target minimum on average (2 loads)"
+      ],
+      "reliability": 0.971,
+      "tonu": 0,
+      "vendor_id": "RAPIDLINE"
+    },
+    {
+      "base_score": 86,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.5,
+      "damage": 0,
+      "last_city": {
+        "city": "Charlotte",
+        "date": "2026-11-14",
+        "shipment_id": "7300136",
+        "state": "NC"
+      },
+      "late_by_cause": {
+        "carrier": 0,
+        "excused": 0,
+        "unknown": 0
+      },
+      "legal_name": "National LTL Freightways",
+      "loads": 9,
+      "on_time_actual_pct": 100,
+      "on_time_stored_pct": 91,
+      "quality": 0.987,
+      "reasons": [
+        "100% on time across 9 loads",
+        "No carrier-fault lates, bounces or damage",
+        "No target pay on file; cost scored neutral"
+      ],
+      "reliability": 0.985,
+      "tonu": 0,
+      "vendor_id": "NATLTLFW"
+    }
+  ]
+}

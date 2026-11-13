@@ -1,0 +1,1167 @@
+{
+  "week": "2026-11-09",
+  "week_end": "2026-11-15",
+  "previous_week": "2026-11-02",
+  "series": [
+    {
+      "week": "2026-01-12",
+      "loads": 1,
+      "revenue": 3475,
+      "carrier_cost": 3000,
+      "margin": 475,
+      "on_time_pct": 100,
+      "empty_miles": 1000
+    },
+    {
+      "week": "2026-01-19",
+      "loads": 3,
+      "revenue": 4706,
+      "carrier_cost": 4062,
+      "margin": 644,
+      "on_time_pct": 67,
+      "empty_miles": 1295
+    },
+    {
+      "week": "2026-02-02",
+      "loads": 1,
+      "revenue": 2802,
+      "carrier_cost": 2435,
+      "margin": 367,
+      "on_time_pct": 100,
+      "empty_miles": 925
+    },
+    {
+      "week": "2026-02-09",
+      "loads": 2,
+      "revenue": 1327,
+      "carrier_cost": 1126,
+      "margin": 200,
+      "on_time_pct": 100,
+      "empty_miles": 250
+    },
+    {
+      "week": "2026-02-16",
+      "loads": 3,
+      "revenue": 4458,
+      "carrier_cost": 3873,
+      "margin": 586,
+      "on_time_pct": 100,
+      "empty_miles": 1040
+    },
+    {
+      "week": "2026-02-23",
+      "loads": 3,
+      "revenue": 6101,
+      "carrier_cost": 5296,
+      "margin": 805,
+      "on_time_pct": 100,
+      "empty_miles": 1895
+    },
+    {
+      "week": "2026-03-02",
+      "loads": 3,
+      "revenue": 4879,
+      "carrier_cost": 3936,
+      "margin": 943,
+      "on_time_pct": 67,
+      "empty_miles": 1295
+    },
+    {
+      "week": "2026-03-09",
+      "loads": 1,
+      "revenue": 1994,
+      "carrier_cost": 1763,
+      "margin": 231,
+      "on_time_pct": 100,
+      "empty_miles": 605
+    },
+    {
+      "week": "2026-03-16",
+      "loads": 1,
+      "revenue": 3455,
+      "carrier_cost": 2970,
+      "margin": 485,
+      "on_time_pct": 100,
+      "empty_miles": 1000
+    },
+    {
+      "week": "2026-04-06",
+      "loads": 2,
+      "revenue": 4819,
+      "carrier_cost": 4257,
+      "margin": 562,
+      "on_time_pct": 100,
+      "empty_miles": 1530
+    },
+    {
+      "week": "2026-04-20",
+      "loads": 2,
+      "revenue": 1518,
+      "carrier_cost": 1263,
+      "margin": 256,
+      "on_time_pct": 100,
+      "empty_miles": 225
+    },
+    {
+      "week": "2026-04-27",
+      "loads": 1,
+      "revenue": 946,
+      "carrier_cost": 746,
+      "margin": 200,
+      "on_time_pct": 100,
+      "empty_miles": 0
+    },
+    {
+      "week": "2026-05-04",
+      "loads": 2,
+      "revenue": 4338,
+      "carrier_cost": 3865,
+      "margin": 472,
+      "on_time_pct": 50,
+      "empty_miles": 1225
+    },
+    {
+      "week": "2026-05-11",
+      "loads": 2,
+      "revenue": 4103,
+      "carrier_cost": 3574,
+      "margin": 529,
+      "on_time_pct": 100,
+      "empty_miles": 1165
+    },
+    {
+      "week": "2026-05-18",
+      "loads": 1,
+      "revenue": 860,
+      "carrier_cost": 770,
+      "margin": 90,
+      "on_time_pct": 100,
+      "empty_miles": 225
+    },
+    {
+      "week": "2026-05-25",
+      "loads": 1,
+      "revenue": 398,
+      "carrier_cost": 359,
+      "margin": 39,
+      "on_time_pct": 100,
+      "empty_miles": 90
+    },
+    {
+      "week": "2026-06-01",
+      "loads": 2,
+      "revenue": 3208,
+      "carrier_cost": 2855,
+      "margin": 354,
+      "on_time_pct": 100,
+      "empty_miles": 925
+    },
+    {
+      "week": "2026-06-08",
+      "loads": 2,
+      "revenue": 1707,
+      "carrier_cost": 1460,
+      "margin": 246,
+      "on_time_pct": 100,
+      "empty_miles": 410
+    },
+    {
+      "week": "2026-06-15",
+      "loads": 1,
+      "revenue": 3128,
+      "carrier_cost": 2834,
+      "margin": 293,
+      "on_time_pct": 100,
+      "empty_miles": 925
+    },
+    {
+      "week": "2026-06-22",
+      "loads": 2,
+      "revenue": 3312,
+      "carrier_cost": 2803,
+      "margin": 509,
+      "on_time_pct": 50,
+      "empty_miles": 800
+    },
+    {
+      "week": "2026-06-29",
+      "loads": 3,
+      "revenue": 7751,
+      "carrier_cost": 6835,
+      "margin": 916,
+      "on_time_pct": 100,
+      "empty_miles": 2100
+    },
+    {
+      "week": "2026-07-06",
+      "loads": 2,
+      "revenue": 5149,
+      "carrier_cost": 4257,
+      "margin": 892,
+      "on_time_pct": 100,
+      "empty_miles": 1480
+    },
+    {
+      "week": "2026-07-13",
+      "loads": 1,
+      "revenue": 553,
+      "carrier_cost": 436,
+      "margin": 117,
+      "on_time_pct": 100,
+      "empty_miles": 0
+    },
+    {
+      "week": "2026-07-20",
+      "loads": 3,
+      "revenue": 7790,
+      "carrier_cost": 6956,
+      "margin": 834,
+      "on_time_pct": 100,
+      "empty_miles": 1925
+    },
+    {
+      "week": "2026-07-27",
+      "loads": 3,
+      "revenue": 6097,
+      "carrier_cost": 5300,
+      "margin": 797,
+      "on_time_pct": 67,
+      "empty_miles": 1250
+    },
+    {
+      "week": "2026-08-03",
+      "loads": 2,
+      "revenue": 5108,
+      "carrier_cost": 4344,
+      "margin": 764,
+      "on_time_pct": 100,
+      "empty_miles": 1025
+    },
+    {
+      "week": "2026-08-10",
+      "loads": 3,
+      "revenue": 4550,
+      "carrier_cost": 3860,
+      "margin": 690,
+      "on_time_pct": 100,
+      "empty_miles": 810
+    },
+    {
+      "week": "2026-08-17",
+      "loads": 4,
+      "revenue": 7656,
+      "carrier_cost": 6641,
+      "margin": 1014,
+      "on_time_pct": 100,
+      "empty_miles": 1320
+    },
+    {
+      "week": "2026-08-24",
+      "loads": 5,
+      "revenue": 13234,
+      "carrier_cost": 11318,
+      "margin": 1916,
+      "on_time_pct": 80,
+      "empty_miles": 3540
+    },
+    {
+      "week": "2026-08-31",
+      "loads": 3,
+      "revenue": 11762,
+      "carrier_cost": 10226,
+      "margin": 1536,
+      "on_time_pct": 100,
+      "empty_miles": 2800
+    },
+    {
+      "week": "2026-09-07",
+      "loads": 7,
+      "revenue": 13343,
+      "carrier_cost": 11474,
+      "margin": 1870,
+      "on_time_pct": 86,
+      "empty_miles": 2900
+    },
+    {
+      "week": "2026-09-14",
+      "loads": 6,
+      "revenue": 13941,
+      "carrier_cost": 12326,
+      "margin": 1615,
+      "on_time_pct": 100,
+      "empty_miles": 3375
+    },
+    {
+      "week": "2026-09-21",
+      "loads": 4,
+      "revenue": 10080,
+      "carrier_cost": 8919,
+      "margin": 1161,
+      "on_time_pct": 75,
+      "empty_miles": 2225
+    },
+    {
+      "week": "2026-09-28",
+      "loads": 3,
+      "revenue": 7001,
+      "carrier_cost": 5872,
+      "margin": 1129,
+      "on_time_pct": 100,
+      "empty_miles": 1510
+    },
+    {
+      "week": "2026-10-05",
+      "loads": 2,
+      "revenue": 5095,
+      "carrier_cost": 4424,
+      "margin": 671,
+      "on_time_pct": 100,
+      "empty_miles": 1355
+    },
+    {
+      "week": "2026-10-12",
+      "loads": 5,
+      "revenue": 14448,
+      "carrier_cost": 12242,
+      "margin": 2206,
+      "on_time_pct": 80,
+      "empty_miles": 3825
+    },
+    {
+      "week": "2026-10-19",
+      "loads": 6,
+      "revenue": 12730,
+      "carrier_cost": 10873,
+      "margin": 1857,
+      "on_time_pct": 100,
+      "empty_miles": 3375
+    },
+    {
+      "week": "2026-10-26",
+      "loads": 5,
+      "revenue": 15713,
+      "carrier_cost": 13448,
+      "margin": 2265,
+      "on_time_pct": 80,
+      "empty_miles": 4235
+    },
+    {
+      "week": "2026-11-02",
+      "loads": 8,
+      "revenue": 20470,
+      "carrier_cost": 18404,
+      "margin": 2066,
+      "on_time_pct": 88,
+      "empty_miles": 4830
+    },
+    {
+      "week": "2026-11-09",
+      "loads": 37,
+      "revenue": 74965,
+      "carrier_cost": 59611,
+      "margin": 15354,
+      "on_time_pct": 100,
+      "empty_miles": 17290
+    },
+    {
+      "week": "2026-11-16",
+      "loads": 10,
+      "revenue": 21538,
+      "carrier_cost": 2367,
+      "margin": 19171,
+      "on_time_pct": null,
+      "empty_miles": 4810
+    }
+  ],
+  "broker": {
+    "this": {
+      "loads": 37,
+      "revenue": 74965,
+      "carrier_cost": 59611,
+      "margin": 15354,
+      "on_time_pct": 100,
+      "late_loads": 0,
+      "avg_dwell_h": 1.4,
+      "detention_hours": 1.3,
+      "miles": 19315
+    },
+    "prev": {
+      "loads": 8,
+      "revenue": 20470,
+      "carrier_cost": 18404,
+      "margin": 2066,
+      "on_time_pct": 88,
+      "late_loads": 1,
+      "avg_dwell_h": 2.0,
+      "detention_hours": 4.9,
+      "miles": 5520
+    },
+    "all": {
+      "loads": 158,
+      "revenue": 340507,
+      "carrier_cost": 273381,
+      "margin": 67127,
+      "on_time_pct": 91,
+      "late_loads": 11,
+      "avg_dwell_h": 1.8,
+      "detention_hours": 55.0,
+      "miles": 92975
+    },
+    "network": {
+      "loads": 130,
+      "loaded_miles": 82805,
+      "one_by_one": {
+        "empty_miles": 85556,
+        "loaded_pct": 49
+      },
+      "as_loops": {
+        "empty_miles": 84975,
+        "loaded_pct": 49
+      },
+      "empty_miles_saved": 582,
+      "pct_saved": 0.7,
+      "loads_in_loops": 12,
+      "loops": 6,
+      "trucks_needed": {
+        "one_by_one": 130,
+        "as_loops": 124
+      },
+      "cost_per_empty_mile": 2.27,
+      "cost_saved_usd": 1321,
+      "period": {
+        "from": "2026-01-17",
+        "to": "2026-11-18"
+      },
+      "rules": {
+        "max_deadhead_mi": 300,
+        "max_gap_days": 2,
+        "tour_max_days": 10
+      },
+      "return_lanes": {
+        "lanes": 15,
+        "empty_miles": 84690,
+        "share_of_empty": 99.0,
+        "freight_value_usd": 325099,
+        "months": 10
+      }
+    },
+    "top_return_lanes": null
+  },
+  "carriers": {
+    "ACMECARR": {
+      "name": "Acme Carrier Inc.",
+      "this": {
+        "loads": 5,
+        "revenue": 12528,
+        "carrier_cost": 11046,
+        "margin": 1482,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 0.2,
+        "miles": 3265
+      },
+      "all": {
+        "loads": 16,
+        "revenue": 33261,
+        "carrier_cost": 28581,
+        "margin": 4679,
+        "on_time_pct": 90,
+        "late_loads": 1,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 4.2,
+        "miles": 8860
+      }
+    },
+    "SUNRIDGE": {
+      "name": "Sunridge Trucking LLC",
+      "this": {
+        "loads": 7,
+        "revenue": 11379,
+        "carrier_cost": 10108,
+        "margin": 1272,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 1.3,
+        "detention_hours": 0.1,
+        "miles": 2860
+      },
+      "all": {
+        "loads": 28,
+        "revenue": 67664,
+        "carrier_cost": 60581,
+        "margin": 7082,
+        "on_time_pct": 86,
+        "late_loads": 3,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 11.1,
+        "miles": 17490
+      }
+    },
+    "PRAIRIEHL": {
+      "name": "Prairie Haul Lines",
+      "this": {
+        "loads": 3,
+        "revenue": 8868,
+        "carrier_cost": 7716,
+        "margin": 1152,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.1,
+        "detention_hours": 0,
+        "miles": 2405
+      },
+      "all": {
+        "loads": 7,
+        "revenue": 19985,
+        "carrier_cost": 17716,
+        "margin": 2269,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.5,
+        "detention_hours": 0.5,
+        "miles": 5590
+      }
+    },
+    "CANYONFRT": {
+      "name": "Canyon Freight Systems",
+      "this": {
+        "loads": 4,
+        "revenue": 5861,
+        "carrier_cost": 5232,
+        "margin": 628,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 0.8,
+        "detention_hours": 0,
+        "miles": 1355
+      },
+      "all": {
+        "loads": 22,
+        "revenue": 51762,
+        "carrier_cost": 45523,
+        "margin": 6239,
+        "on_time_pct": 89,
+        "late_loads": 2,
+        "avg_dwell_h": 2.0,
+        "detention_hours": 9.6,
+        "miles": 13495
+      }
+    },
+    "HIGHPLAIN": {
+      "name": "High Plains Freightways",
+      "this": {
+        "loads": 2,
+        "revenue": 4543,
+        "carrier_cost": 4028,
+        "margin": 514,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.0,
+        "detention_hours": 0,
+        "miles": 1170
+      },
+      "all": {
+        "loads": 7,
+        "revenue": 14488,
+        "carrier_cost": 12755,
+        "margin": 1733,
+        "on_time_pct": 83,
+        "late_loads": 1,
+        "avg_dwell_h": 1.6,
+        "detention_hours": 1.1,
+        "miles": 3880
+      }
+    },
+    "COASTLTL": {
+      "name": "Coastline LTL Systems",
+      "this": {
+        "loads": 4,
+        "revenue": 5117,
+        "carrier_cost": 4036,
+        "margin": 1081,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.6,
+        "detention_hours": 0.7,
+        "miles": 1335
+      },
+      "all": {
+        "loads": 14,
+        "revenue": 14770,
+        "carrier_cost": 11666,
+        "margin": 3105,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.9,
+        "detention_hours": 6.6,
+        "miles": 5110
+      }
+    },
+    "LAKESHORE": {
+      "name": "Lakeshore Carriers Inc.",
+      "this": {
+        "loads": 4,
+        "revenue": 7650,
+        "carrier_cost": 6763,
+        "margin": 887,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.2,
+        "detention_hours": 0.0,
+        "miles": 1940
+      },
+      "all": {
+        "loads": 17,
+        "revenue": 38991,
+        "carrier_cost": 34493,
+        "margin": 4498,
+        "on_time_pct": 86,
+        "late_loads": 2,
+        "avg_dwell_h": 1.7,
+        "detention_hours": 6.0,
+        "miles": 10600
+      }
+    },
+    "NATLTLFW": {
+      "name": "National LTL Freightways",
+      "this": {
+        "loads": 2,
+        "revenue": 1922,
+        "carrier_cost": 1516,
+        "margin": 406,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 0.9,
+        "detention_hours": 0,
+        "miles": 690
+      },
+      "all": {
+        "loads": 11,
+        "revenue": 11058,
+        "carrier_cost": 8722,
+        "margin": 2336,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 4.2,
+        "miles": 3735
+      }
+    },
+    "METRODASH": {
+      "name": "MetroDash Couriers",
+      "this": {
+        "loads": 1,
+        "revenue": 1197,
+        "carrier_cost": 850,
+        "margin": 347,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.5,
+        "detention_hours": 0,
+        "miles": 25
+      },
+      "all": {
+        "loads": 4,
+        "revenue": 8838,
+        "carrier_cost": 6423,
+        "margin": 2415,
+        "on_time_pct": 75,
+        "late_loads": 1,
+        "avg_dwell_h": 2.0,
+        "detention_hours": 2.4,
+        "miles": 2385
+      }
+    },
+    "GULFSTRMX": {
+      "name": "Gulfstream Express Carriers",
+      "this": {
+        "loads": 1,
+        "revenue": 2634,
+        "carrier_cost": 2340,
+        "margin": 294,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 2.0,
+        "detention_hours": 0.0,
+        "miles": 640
+      },
+      "all": {
+        "loads": 7,
+        "revenue": 20184,
+        "carrier_cost": 17837,
+        "margin": 2348,
+        "on_time_pct": 83,
+        "late_loads": 1,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 3.0,
+        "miles": 5090
+      }
+    },
+    "BLUERIDGE": {
+      "name": "Blue Ridge Transport",
+      "this": {
+        "loads": 2,
+        "revenue": 6850,
+        "carrier_cost": 5976,
+        "margin": 873,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 1.6,
+        "detention_hours": 0.2,
+        "miles": 1850
+      },
+      "all": {
+        "loads": 7,
+        "revenue": 16909,
+        "carrier_cost": 14832,
+        "margin": 2077,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.5,
+        "detention_hours": 1.4,
+        "miles": 4500
+      }
+    },
+    "WINDYCART": {
+      "name": "Windy City Cartage",
+      "this": {
+        "loads": 0,
+        "revenue": 0,
+        "carrier_cost": 0,
+        "margin": 0,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": null,
+        "detention_hours": 0,
+        "miles": 0
+      },
+      "all": {
+        "loads": 2,
+        "revenue": 5883,
+        "carrier_cost": 4480,
+        "margin": 1403,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 0.9,
+        "miles": 1850
+      }
+    },
+    "RAPIDLINE": {
+      "name": "RapidLine Hotshot LLC",
+      "this": {
+        "loads": 0,
+        "revenue": 0,
+        "carrier_cost": 0,
+        "margin": 0,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": null,
+        "detention_hours": 0,
+        "miles": 0
+      },
+      "all": {
+        "loads": 2,
+        "revenue": 2700,
+        "carrier_cost": 1945,
+        "margin": 755,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 2.1,
+        "detention_hours": 0.5,
+        "miles": 455
+      }
+    },
+    "SWIFTARRW": {
+      "name": "Swift Arrow Expedite",
+      "this": {
+        "loads": 0,
+        "revenue": 0,
+        "carrier_cost": 0,
+        "margin": 0,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": null,
+        "detention_hours": 0,
+        "miles": 0
+      },
+      "all": {
+        "loads": 1,
+        "revenue": 1695,
+        "carrier_cost": 1212,
+        "margin": 483,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 2.4,
+        "detention_hours": 1.1,
+        "miles": 430
+      }
+    },
+    "BADWOLF": {
+      "name": "Bad Wolf Logistics LLC",
+      "this": {
+        "loads": 0,
+        "revenue": 0,
+        "carrier_cost": 0,
+        "margin": 0,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": null,
+        "detention_hours": 0,
+        "miles": 0
+      },
+      "all": {
+        "loads": 3,
+        "revenue": 7435,
+        "carrier_cost": 6614,
+        "margin": 820,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 2.0,
+        "detention_hours": 2.6,
+        "miles": 2260
+      }
+    }
+  },
+  "shippers": {
+    "MIDWAYDST": {
+      "name": "Midway Distributors - KC Warehouse",
+      "this": {
+        "loads": 2,
+        "revenue": 4649,
+        "carrier_cost": 4163,
+        "margin": 486,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 2.1,
+        "detention_hours": 0.1,
+        "miles": 1210
+      },
+      "all": {
+        "loads": 9,
+        "revenue": 19162,
+        "carrier_cost": 14683,
+        "margin": 4479,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.9,
+        "detention_hours": 3.6,
+        "miles": 5350
+      },
+      "avg_lead_days": 3
+    },
+    "VALIANTFD": {
+      "name": "Valiant Foods - Des Moines Plant",
+      "this": {
+        "loads": 3,
+        "revenue": 6829,
+        "carrier_cost": 6089,
+        "margin": 740,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 2.0,
+        "detention_hours": 0.0,
+        "miles": 1600
+      },
+      "all": {
+        "loads": 13,
+        "revenue": 26094,
+        "carrier_cost": 21882,
+        "margin": 4212,
+        "on_time_pct": 89,
+        "late_loads": 1,
+        "avg_dwell_h": 1.5,
+        "detention_hours": 0.5,
+        "miles": 6480
+      },
+      "avg_lead_days": 2.8
+    },
+    "IRONPEAK": {
+      "name": "Ironpeak Fabrication - Plant 1",
+      "this": {
+        "loads": 3,
+        "revenue": 4136,
+        "carrier_cost": 3360,
+        "margin": 776,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 0.5,
+        "miles": 1110
+      },
+      "all": {
+        "loads": 10,
+        "revenue": 12145,
+        "carrier_cost": 9188,
+        "margin": 2957,
+        "on_time_pct": 86,
+        "late_loads": 1,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 2.1,
+        "miles": 3700
+      },
+      "avg_lead_days": 3
+    },
+    "NORTHSTAR": {
+      "name": "Northstar Manufacturing - Chicago Dock",
+      "this": {
+        "loads": 8,
+        "revenue": 26437,
+        "carrier_cost": 20988,
+        "margin": 5449,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.4,
+        "detention_hours": 0.2,
+        "miles": 7205
+      },
+      "all": {
+        "loads": 33,
+        "revenue": 104416,
+        "carrier_cost": 84953,
+        "margin": 19463,
+        "on_time_pct": 92,
+        "late_loads": 2,
+        "avg_dwell_h": 1.7,
+        "detention_hours": 10.6,
+        "miles": 29355
+      },
+      "avg_lead_days": 3.1
+    },
+    "PIONEERBLD": {
+      "name": "Pioneer Building Products - Kentwood Plant",
+      "this": {
+        "loads": 2,
+        "revenue": 1863,
+        "carrier_cost": 1588,
+        "margin": 275,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 0.9,
+        "detention_hours": 0,
+        "miles": 530
+      },
+      "all": {
+        "loads": 10,
+        "revenue": 9432,
+        "carrier_cost": 6844,
+        "margin": 2588,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 4.2,
+        "miles": 3710
+      },
+      "avg_lead_days": 3
+    },
+    "FROSTLINE": {
+      "name": "Frostline Cold Storage - Rockford",
+      "this": {
+        "loads": 0,
+        "revenue": 0,
+        "carrier_cost": 0,
+        "margin": 0,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": null,
+        "detention_hours": 0,
+        "miles": 0
+      },
+      "all": {
+        "loads": 17,
+        "revenue": 63548,
+        "carrier_cost": 52854,
+        "margin": 10694,
+        "on_time_pct": 88,
+        "late_loads": 2,
+        "avg_dwell_h": 2.0,
+        "detention_hours": 11.0,
+        "miles": 16090
+      },
+      "avg_lead_days": 3.2
+    },
+    "LONESTARCH": {
+      "name": "Lone Star Chemical - Jacintoport Plant",
+      "this": {
+        "loads": 3,
+        "revenue": 3922,
+        "carrier_cost": 3431,
+        "margin": 491,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 2.1,
+        "detention_hours": 0.3,
+        "miles": 720
+      },
+      "all": {
+        "loads": 10,
+        "revenue": 12276,
+        "carrier_cost": 10703,
+        "margin": 1573,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 4.3,
+        "miles": 2400
+      },
+      "avg_lead_days": 2.7
+    },
+    "KEYSTONEHD": {
+      "name": "Keystone Home & Garden - Columbus WH",
+      "this": {
+        "loads": 2,
+        "revenue": 2363,
+        "carrier_cost": 1864,
+        "margin": 499,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 2.1,
+        "detention_hours": 0.1,
+        "miles": 850
+      },
+      "all": {
+        "loads": 9,
+        "revenue": 8886,
+        "carrier_cost": 6386,
+        "margin": 2499,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.9,
+        "detention_hours": 3.6,
+        "miles": 3825
+      },
+      "avg_lead_days": 3.1
+    },
+    "KEYSTONE-TX": {
+      "name": "Keystone Home & Garden - Columbus WH",
+      "this": {
+        "loads": 3,
+        "revenue": 11014,
+        "carrier_cost": 6374,
+        "margin": 4641,
+        "on_time_pct": null,
+        "late_loads": 0,
+        "avg_dwell_h": 1.0,
+        "detention_hours": 0,
+        "miles": 3150
+      },
+      "all": {
+        "loads": 11,
+        "revenue": 38800,
+        "carrier_cost": 27704,
+        "margin": 11097,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 3.7,
+        "miles": 11550
+      },
+      "avg_lead_days": 2.8
+    },
+    "REDROCKEL": {
+      "name": "Red Rock Electronics - Buckeye Rd Plant",
+      "this": {
+        "loads": 2,
+        "revenue": 3010,
+        "carrier_cost": 2358,
+        "margin": 652,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.1,
+        "detention_hours": 0,
+        "miles": 455
+      },
+      "all": {
+        "loads": 9,
+        "revenue": 14259,
+        "carrier_cost": 10952,
+        "margin": 3306,
+        "on_time_pct": 71,
+        "late_loads": 2,
+        "avg_dwell_h": 2.1,
+        "detention_hours": 3.9,
+        "miles": 3060
+      },
+      "avg_lead_days": 3.3
+    },
+    "SUNBELTAG": {
+      "name": "Sunbelt Agri Supply - Fresno Yard",
+      "this": {
+        "loads": 3,
+        "revenue": 5143,
+        "carrier_cost": 4550,
+        "margin": 594,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.4,
+        "detention_hours": 0,
+        "miles": 1300
+      },
+      "all": {
+        "loads": 9,
+        "revenue": 14812,
+        "carrier_cost": 13028,
+        "margin": 1784,
+        "on_time_pct": 75,
+        "late_loads": 2,
+        "avg_dwell_h": 1.7,
+        "detention_hours": 2.5,
+        "miles": 3900
+      },
+      "avg_lead_days": 2.2
+    },
+    "BLUEHARBOR": {
+      "name": "Blue Harbor - Fish Pier Cold Store",
+      "this": {
+        "loads": 3,
+        "revenue": 2970,
+        "carrier_cost": 2653,
+        "margin": 317,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 0.8,
+        "detention_hours": 0,
+        "miles": 675
+      },
+      "all": {
+        "loads": 9,
+        "revenue": 8485,
+        "carrier_cost": 7445,
+        "margin": 1040,
+        "on_time_pct": 86,
+        "late_loads": 1,
+        "avg_dwell_h": 1.6,
+        "detention_hours": 2.7,
+        "miles": 2025
+      },
+      "avg_lead_days": 3.2
+    },
+    "CASCADEPKG": {
+      "name": "Cascade Packaging - Portland Plant",
+      "this": {
+        "loads": 3,
+        "revenue": 2628,
+        "carrier_cost": 2194,
+        "margin": 434,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 0.9,
+        "detention_hours": 0,
+        "miles": 510
+      },
+      "all": {
+        "loads": 9,
+        "revenue": 8192,
+        "carrier_cost": 6758,
+        "margin": 1435,
+        "on_time_pct": 100,
+        "late_loads": 0,
+        "avg_dwell_h": 1.8,
+        "detention_hours": 2.3,
+        "miles": 1530
+      },
+      "avg_lead_days": 2.9
+    }
+  }
+}

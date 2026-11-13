@@ -1,0 +1,59 @@
+/* weekly report sheet, v3 look */
+.rp-backdrop { position: absolute; inset: 0; z-index: 900; background: rgba(229, 231, 235, 0.55); backdrop-filter: blur(6px); display: grid; place-items: center; padding: 28px; }
+.rp { width: min(1100px, 100%); max-height: 100%; overflow: hidden; display: flex; flex-direction: column; background: #f9fafb; border-radius: 30px; box-shadow: 0 30px 80px rgba(17, 24, 39, 0.18); font-family: 'Outfit', system-ui, sans-serif; color: #111827; }
+.rp-head { display: flex; align-items: center; gap: 18px; padding: 22px 26px 14px; }
+.rp-head h2 { margin: 2px 0 0; font-size: 26px; font-weight: 500; letter-spacing: -0.01em; }
+.rp-kicker { font-size: 12.5px; color: #6b7280; }
+.rp-tabs { display: flex; gap: 4px; padding: 4px; border-radius: 99px; background: #eef0f3; margin-left: auto; }
+.rp-tabs button, .rp-pick button { border: 0; background: transparent; padding: 8px 16px; border-radius: 99px; font: inherit; font-size: 14px; color: #6b7280; cursor: pointer; }
+.rp-tabs button.on, .rp-pick button.on { background: #111827; color: #fff; }
+.rp-actions { display: flex; gap: 8px; }
+.rp-actions button { border: 0; background: #fff; padding: 9px 16px; border-radius: 99px; font: inherit; font-size: 14px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+.rp-actions .x { width: 38px; padding: 0; }
+.rp-pick { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 26px 10px; }
+.rp-pick button { background: #fff; font-size: 13px; padding: 7px 13px; }
+.rp-body { overflow-y: auto; padding: 6px 26px 22px; display: flex; flex-direction: column; gap: 18px; }
+.rp-foot { padding: 10px 26px 16px; font-size: 12px; color: #9ca3af; }
+
+.rp-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.rp-tile { background: #fff; border-radius: 20px; padding: 16px 18px; display: flex; flex-direction: column; gap: 2px; }
+.rp-tile small { font-size: 12.5px; color: #6b7280; }
+.rp-tile b { font-size: 34px; font-weight: 300; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.rp-delta { font-size: 12.5px; }
+.rp-delta.good { color: #16a34a; }
+.rp-delta.bad { color: #dc2626; }
+
+.rp-section { background: #fff; border-radius: 22px; padding: 18px 20px; }
+.rp-section h3 { margin: 0 0 4px; font-size: 17px; font-weight: 500; }
+.rp-sub { margin: 4px 0 0; font-size: 13.5px; color: #6b7280; line-height: 1.5; }
+.rp-impact { background: #2541ff; color: #fff; }
+.rp-impact .rp-sub { color: rgba(255,255,255,.85); margin-top: 12px; }
+.rp-impact .rp-tiles { margin-top: 12px; }
+.rp-impact .rp-tile { background: rgba(255,255,255,.12); }
+.rp-impact .rp-tile small { color: rgba(255,255,255,.8); }
+.rp-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: transparent; padding: 0; }
+
+.wk { position: relative; margin: 0; background: #fff; border-radius: 22px; padding: 14px 16px 8px; }
+.wk figcaption { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.wk svg { width: 100%; height: auto; display: block; }
+.wk-base { stroke: #e5e7eb; stroke-width: 1; }
+.wk-axis { font-size: 11px; fill: #9ca3af; }
+.wk-last { font-size: 12px; fill: #111827; font-weight: 500; }
+.wk-tip { position: absolute; top: 34px; transform: translateX(-50%); background: #111827; color: #fff; border-radius: 10px; padding: 6px 10px; font-size: 12px; display: flex; flex-direction: column; pointer-events: none; white-space: nowrap; }
+
+.rp-rules, .rp-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.rp-rules li { display: flex; gap: 12px; align-items: flex-start; background: #f9fafb; border-radius: 14px; padding: 10px 12px; }
+.rp-rules b, .rp-list b { font-weight: 500; font-size: 14.5px; display: block; }
+.rp-rules span, .rp-list span { font-size: 12.5px; color: #6b7280; }
+.rp-area { flex-shrink: 0; font-size: 11.5px; padding: 3px 9px; border-radius: 99px; background: #eef2ff; color: #2541ff !important; }
+.rp-area.timing { background: #fef3c7; color: #92400e !important; }
+.rp-area.lead_time { background: #dcfce7; color: #166534 !important; }
+.rp-list li { background: #f9fafb; border-radius: 14px; padding: 10px 12px; }
+
+@media print {
+  .v3-map, .v3-nav, .v3-under, .v3-more, .v3-cards, .v3-focus, .v3-legend, .v3-phone { display: none !important; }
+  .rp-backdrop { position: static; background: none; padding: 0; backdrop-filter: none; }
+  .rp { box-shadow: none; max-height: none; }
+  .rp-body { overflow: visible; }
+  .rp-actions { display: none; }
+}

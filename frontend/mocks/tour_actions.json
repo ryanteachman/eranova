@@ -1,0 +1,38 @@
+{
+  "items": [
+    {
+      "action_id": "A-L001",
+      "type": "book_tour",
+      "status": "pending",
+      "tier": "write",
+      "tour_id": "L-001",
+      "title": "Book loop L-001: Des Moines \u2192 Joliet \u2192 Chicago \u2192 McDonough",
+      "summary": "Canyon Freight Systems Truck 763 takes 2 loads, 122 empty miles saved",
+      "confidence": 0.9,
+      "steps": [
+        "Cover 7300153 with Canyon Freight Systems at market $2,231.10"
+      ],
+      "reasoning": "Canyon Freight Systems truck 763 (Joe Callahan) is already on 7300140. Give it 7300153 next, which still need a carrier, instead of sending it home empty.",
+      "miles": 122,
+      "created_at": "2026-11-13T12:00:00Z",
+      "created_by": "agent"
+    },
+    {
+      "action_id": "A-L002",
+      "type": "book_tour",
+      "status": "pending",
+      "tier": "write",
+      "tour_id": "L-002",
+      "title": "Book loop L-002: Grand Rapids \u2192 Columbus \u2192 Fort Worth",
+      "summary": "Sunridge Trucking LLC Truck 345 takes 2 loads, 287 empty miles saved",
+      "confidence": 0.9,
+      "steps": [
+        "Cover 7300170 with Sunridge Trucking LLC at market $3,098.50"
+      ],
+      "reasoning": "Sunridge Trucking LLC truck 345 (Darnell Weeks) is already on 7300152. Give it 7300170 next, which still need a carrier, instead of sending it home empty.",
+      "miles": 287,
+      "created_at": "2026-11-13T12:00:00Z",
+      "created_by": "agent"
+    }
+  ]
+}
