@@ -101,6 +101,11 @@ Shipments, carriers, customers, facilities and freight categories come from Ryan
   `status: "prospect"` with `prospect` and the `options`, or `"none_found"` with `reasons`. All blocked trucks
   are kept in `blocked`. The chosen truck is priced with Ryan's `pricing`: lane miles (Meridian's average on the
   lane, else his distance estimate), `backhaul_buy_lines`, the customer's `margin_for` and a local `estimate`.
+- **Hours of Service:** each truck also goes through `backend/brain/hos.py`: its driver's clocks are
+  estimated from its outbound load, then the backhaul (local deadhead, loading, loaded miles) is played
+  forward with the FMCSA break / 11-hour / 14-hour / 10-hour-reset rules. A truck whose earliest legal
+  pickup is after the pickup facility closes on the requested day is blocked (`Blocked: HOS: …`); one with
+  less than 2 hours of slack loses 10 points; every option gets `est_pickup` and `est_delivery`.
 - **Tiebreakers** (trucks with equal scores, in this order): same pickup facility (the truck delivers at the
   dock we pick up from) → load status (DELIVERED > AT_DELIVERY > IN_TRANSIT > PICKED_UP/AT_PICKUP > DISPATCHED >
   COVERED > BOOKED: how sure we are the truck shows up) → carrier compliance (GREEN > YELLOW > RED) → known

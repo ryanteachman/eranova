@@ -11,7 +11,7 @@ from datetime import date
 from functools import lru_cache
 
 from backend import db, meridian
-from backend.brain import classify, network, pricing
+from backend.brain import classify, hos, network, pricing
 from backend.brain.compat import CONTAMINANT_CATEGORIES, FOOD_CATEGORIES, check_compat
 
 from email_pipeline import store
@@ -279,6 +279,23 @@ def price_backhaul(origin, destination, customer_id, truck, rows):
             "est_buy": money["buy_total"], "est_sell": money["sell_total"], "gp_pct": money["gp_pct"]}
 
 
+def hos_check(truck, shipment, origin, loaded_miles, pickup_date, facilities):
+    """Hours of Service (backend/brain/hos.py) for this truck taking the backhaul after its outbound load.
+
+    Returns hos.backhaul_check's result, or None when the pickup date or the loaded miles are unknown.
+    """
+    if not (shipment and pickup_date and loaded_miles):
+        return None
+    try:
+        pickup_day = date.fromisoformat(pickup_date)
+    except ValueError:
+        return None
+    driver = hos.driver_after_outbound(shipment, facilities)
+    same_dock = origin.get("facility_id") and truck.get("delivery_facility_id") == origin["facility_id"]
+    deadhead = 0 if same_dock else hos.LOCAL_DEADHEAD_MILES
+    return hos.backhaul_check(driver, facilities.get(origin.get("facility_id")), pickup_day, loaded_miles, deadhead)
+
+
 def _candidate_from_request(extracted):
     """The freight in a quote request, shaped as a check_compat candidate."""
     lines = extracted.get("freight_lines") or []
@@ -295,8 +312,8 @@ def _candidate_from_request(extracted):
     }
 
 
-def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_city, home_state):
-    """Run check_compat for one arriving truck carrying the email's freight; returns an option dict."""
+def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_city, home_state, hos_result=None):
+    """Run check_compat and the HOS check for one arriving truck carrying the email's freight; returns an option dict."""
     carrier = get_vendor(truck["carrier_id"]) or {"vendor_id": truck["carrier_id"]}
     equipment = truck.get("equipment")
     last_category, last_note = truck.get("trailer_last_category"), truck.get("last_load_note")
@@ -313,6 +330,9 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
     if requested_equipment and equipment not in EQUIPMENT_FITS.get(requested_equipment, {requested_equipment}):
         ok = False
         reasons.append(f"Blocked: request needs equipment {requested_equipment}, truck is {equipment}.")
+    if hos_result:
+        reasons += hos_result["reasons"]
+        ok = ok and hos_result["ok"]
 
     score = 50 if ok else 0
     truck_home_city, truck_home_state = _city_state(truck.get("destination"))
@@ -332,6 +352,8 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
             reasons.append(f"Truck only empties {-gap} day(s) after the requested pickup.")
         else:
             reasons.append(f"Truck empties {gap} days before pickup (long wait).")
+    if hos_result and hos_result["tight"]:
+        score -= 10
     return {
         "outbound_file": truck.get("outbound_file"),
         "outbound_status": truck.get("outbound_status"),
@@ -342,6 +364,8 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
         "equipment": equipment,
         "trailer_last_category": last_category,
         "available_date": truck.get("available_date"),
+        "est_pickup": (hos_result or {}).get("pickup_at"),
+        "est_delivery": (hos_result or {}).get("arrive_at"),
         "heading_home_to": f"{truck_home_city}, {truck_home_state}",
         "ok": ok,
         "score": max(score, 0),
@@ -401,9 +425,13 @@ def match_quote_request(email_id, email, extracted):
     candidate = _candidate_from_request(extracted)
     rows = shipments()
     trucks = arriving_trucks(origin["city"], origin["state"], rows)
+    by_file = {s["shipment_id"]: s for s in rows}
+    facilities = _cached("facilities", "facility_id")
+    loaded_miles = lane_miles(origin, dest, rows)
+    pickup_date = extracted.get("pickup_date")
     options = [
-        _option_for_truck(t, candidate, extracted.get("equipment"), extracted.get("pickup_date"),
-                          dest["city"], dest["state"])
+        _option_for_truck(t, candidate, extracted.get("equipment"), pickup_date, dest["city"], dest["state"],
+                          hos_check(t, by_file.get(t["outbound_file"]), origin, loaded_miles, pickup_date, facilities))
         for t in trucks
     ]
     _rank_trucks(options, origin.get("facility_id"))
@@ -440,6 +468,8 @@ def match_quote_request(email_id, email, extracted):
         "carrier_id": best["carrier_id"],
         "trailer_number": best["trailer_number"],
         "score": best["score"],
+        "est_pickup": best["est_pickup"],
+        "est_delivery": best["est_delivery"],
         **price,
         "ok": True,
         "reasons": best["reasons"],
