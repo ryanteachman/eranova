@@ -108,7 +108,10 @@ Shipments, carriers, customers, facilities and freight categories come from Ryan
   less than 2 hours of slack loses 10 points; every option gets `est_pickup` and `est_delivery`, and the
   quote payload gets the estimated `delivery_date_target` (Ryan's executor sends it, the pickup date and the
   email's freight lines to Meridian).
-- **Tiebreakers** (trucks with equal scores, in this order): same pickup facility (the truck delivers at the
+- **Tiebreakers** (trucks with equal scores, in this order): carrier lane (the carrier's Meridian `lanes`,
+  state to state: this exact lane beats the reverse lane, which beats none; the reverse counts because a
+  carrier running Chicago→Dallas is the one whose trucks need to get home; few carriers list any lane) →
+  same pickup facility (the truck delivers at the
   dock we pick up from) → load status (DELIVERED > AT_DELIVERY > IN_TRANSIT > PICKED_UP/AT_PICKUP > DISPATCHED >
   COVERED > BOOKED: how sure we are the truck shows up) → carrier compliance (GREEN > YELLOW > RED) → known
   trailer number → lowest outbound file number (booked earliest; mainly keeps results the same from run to run).
