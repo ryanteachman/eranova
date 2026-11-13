@@ -139,6 +139,15 @@ def resolve_facility(location):
 
 # ---------- prospects ----------
 
+def _top_options(options):
+    """The ok options in their sorted order: the top MAX_OPTIONS plus any others tied with the last one's score."""
+    ok = [o for o in options if o["ok"]]
+    if len(ok) <= MAX_OPTIONS:
+        return ok
+    cutoff = ok[MAX_OPTIONS - 1]["score"] or 0
+    return [o for o in ok if (o["score"] or 0) >= cutoff]
+
+
 def _city_state(loc):
     """Prospect locations may be {city, state} dicts or 'City, ST' strings; return (city, state)."""
     if isinstance(loc, dict):
@@ -295,7 +304,7 @@ def match_quote_request(email_id, email, extracted):
         for t in trucks
     ]
     _rank_trucks(options, origin.get("facility_id"))
-    result["options"] = [o for o in options if o["ok"]][:MAX_OPTIONS]
+    result["options"] = _top_options(options)
     result["blocked"] = [o for o in options if not o["ok"]]
 
     best = options[0] if options and options[0]["ok"] else None
@@ -464,7 +473,7 @@ def match_last_load(email_id, email, extracted, email_text):
 
     equipment = (carrier or {}).get("equipment_types", ["V"])[0] if carrier else None
     options = _prospects_for_truck(city, state, extracted.get("last_commodity_category"), equipment, carrier, trailer)
-    result["options"] = [o for o in options if o["ok"]][:MAX_OPTIONS]
+    result["options"] = _top_options(options)
     result["blocked"] = [o for o in options if not o["ok"]]
     result["newly_blocked"] = _quote_options_now_blocked(email_id, trailer, extracted.get("last_commodity_category"))
     usable = [o for o in options if o["ok"]]
@@ -503,7 +512,7 @@ def match_carrier_offer(email_id, email, extracted, email_text):
             o["score"] += 30
             o["reasons"].append(f"Heads where the carrier wants to go ({extracted['preferred_direction']}).")
     options.sort(key=lambda o: (o["ok"], o["score"]), reverse=True)
-    result["options"] = [o for o in options if o["ok"]][:MAX_OPTIONS]
+    result["options"] = _top_options(options)
     result["blocked"] = [o for o in options if not o["ok"]]
     usable = [o for o in options if o["ok"]]
     result["prospect"] = usable[0] if usable else None

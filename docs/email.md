@@ -97,6 +97,8 @@ All Meridian calls are reads (`/search`, `/vendors/lookup`, `/vendors/{id}`, `/c
   COVERED > BOOKED: how sure we are the truck shows up) → carrier compliance (GREEN > YELLOW > RED) → known
   trailer number → lowest outbound file number (booked earliest; mainly keeps results the same from run to run).
   When a tie decides the winner, its reasons say which tiebreaker did it.
+- **Options kept:** the top 5 usable options, plus every other option tied with the 5th one's score
+  (already in tiebreak order), so a tie never silently drops a truck.
 - **Trailer history from email:** if a `LAST_LOAD_INFO` email named a trailer, that last load overrides
   Meridian's history for the trailer in later quote matching (the reason says so).
 - **WASHOUT_CERT:** insert into `washouts`; `unblocked` lists network prospects for that trailer that are now
