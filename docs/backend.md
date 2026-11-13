@@ -6,8 +6,10 @@ Flask app in `backend/`. Owner: Ryan. The HTTP contract is in `contracts/README.
 
 ```bash
 pip install -r requirements.txt
-python scripts/sync_data.py                     # first time: pull Meridian + classify
+python scripts/sync_data.py                     # first time: pull Meridian + events + classify
+python scripts/sync_data.py --refresh           # also re-pull events of closed shipments
 flask --app backend run --debug --port 5000
+python scripts/score_carriers.py                # carrier scorecards as a table
 python scripts/reset_demo.py                    # before a demo: decline Return Trip quotes
 ```
 
@@ -55,7 +57,14 @@ a labeled text file, not `KEY=VALUE`: the backend reads the first word after `Ba
   forces `HAZMAT`. The prompt defines every category and says all food, including dry and
   shelf-stable groceries, is `FOOD`, because the FSMA rule depends on it. A shipment that has
   not been classified yet is treated as `HAZMAT` if Meridian flags it, else `GENERAL`.
-- `brain/compat.py`: `check_compat(...)`, the rules below.
+- `brain/sync.py` › `sync_events(refresh=False)`: pulls `GET /shipments/{id}/events` (8 threads)
+  into the `events` table. Final shipments (`CLOSED`, `CANCELLED`, `TONU`) that already have
+  events are skipped unless `refresh`; open shipments are always re-pulled because a carrier
+  can still be bounced from them. Events of shipments no longer cached are deleted.
+- `brain/compat.py`: `check_compat(...)`, the rules below. Also `carrier_rule()` (the `/cover`
+  gate), `carrier_has_equipment()` and `EQUIPMENT_FITS` (which truck equipment serves a
+  requested type; the same table as `email_pipeline.match`).
+- `brain/carrier_score.py`: carrier scorecards and ranking; see *Carrier scoring*.
 - `brain/network.py`: `lane_flows()`, `one_way_cities()`, `trailer_history()`,
   `network_summary()`, `find_backhauls(city, state)`, `score_prospect()`, `city_detail()`,
   `find_prospect(prospect_id)`.
@@ -183,12 +192,97 @@ city in the data.
   | `search` | auto | `GET /search` |
   | `price_preview` | auto | `POST /quotes/price-preview` |
   | `add_shipment_note` | auto | `POST /shipments/{id}/notes` |
+  | `rank_carriers` | auto | Top 5 carriers for `{shipment_id}` or a lane, with reasons and exclusions |
 
 - `run_agent(trigger, message, context=None)`: OpenAI tool-calling loop, temperature 0, at most
   `MAX_TURNS` model calls. Meridian and API errors go back to the model as the tool result so
   it can correct itself. Every message, tool call and reply goes to `audit_log`.
 - Asher's code plugs in on import when present: `email_pipeline.tools` (tools and executors,
   e.g. `send_reply`) and `email_pipeline.routes.bp` (a Blueprint mounted at `/api/email`).
+
+## Carrier scoring
+
+`brain/carrier_score.py` ranks carriers by how they actually performed on our loads, not by
+their profile. Only carrier vendor types are scored (`TRUCKLOAD_CARRIER`, `LTL_CARRIER`,
+`CARTAGE_AGENT`, `EXPEDITE_CARRIER`): 16 of the 18 sandbox vendors.
+
+### Per-load rules
+
+Each is a small function in the module. Stats count shipments whose `carrier_id` is the
+carrier, plus bounces from events.
+
+| Stat | Rule |
+|---|---|
+| `loads` | Finished: `DELIVERED`, `POD_RECEIVED`, `CLOSED` |
+| `pod_loads` | Finished loads with `pod.received`; the denominator for lateness and damage |
+| late delivery | POD received and `pod.on_time` false (or `service_failure`). Code from `pod.late_reason_code`, else `service_failure_reason`, else `LATE`. Carrier fault: `AI`, `T3`, `D1`, `MECHANICAL` (counts 1). Excused: `AO`, `WEATHER`, `B1` (counts 0, shown in reasons). Anything else, including `NS` and `LATE`: unknown (counts 0.5) |
+| late pickup | TL/expedite only. `AT_SHIPPER` `event_at` (UTC, or local in `event_timezone`) after stop 1's `scheduled_window.latest_local` in its `timezone`. Skipped when data is missing or `AT_SHIPPER` shares its time with `LOADED` (a status jump) |
+| damage | POD `condition` in `SHORTAGE`, `DAMAGE`, `REFUSED` |
+| bounce | A `SYSTEM` event whose note starts `Uncovered`; the carrier is parsed from `was carrier X` (falling back to any known vendor id in the note), the reason from `reason_code` |
+| TONU | Status `TONU` with this carrier, **unless** `cancel_reason` is `CUSTOMER_CANCELLED` or `DUPLICATE` |
+| missed appointment | Any stop with `appointment.status == MISSED` |
+| extras | The carrier's non-cancelled `DET` / `LAY` cost lines (shown in reasons, not scored) |
+| pay ratio | The carrier's non-cancelled `FRT` pay ÷ `target_pay_min`; loads without targets are skipped |
+| truck position | Delivery city of the carrier's latest moving load (not `BOOKED`, `CANCELLED`, `TONU`), by `delivery_date_target` |
+
+### Score
+
+All weights and `K` are in `WEIGHTS` at the top of the module.
+
+- **Shrinkage:** every rate is `(events + K × fleet_rate) / (n + K)` with `K = 5`, where the
+  fleet rate pools all carriers. Rates: late delivery (weighted lates ÷ POD loads), late
+  pickup (÷ timed pickups), damage (÷ POD loads), bounce and TONU (÷ loads + bounces + TONUs),
+  missed appointment (÷ loads).
+- `reliability = 1 − (0.7 × late_delivery + 0.3 × late_pickup)`
+- `quality = 1 − min(1, damage + bounce + tonu + 0.5 × missed_appt)`
+- `cost = 0.5 + (fleet pay ratio − carrier pay ratio) / (2 × cost_band)`, clamped to 0–1, with
+  the carrier's pay ratio shrunk the same way and `cost_band = 0.10`. Paying the fleet average
+  scores 0.5 (the same as no data); 10 points of target cheaper than average scores 1.
+- `fit` (rank only): 0.4 when the carrier lists the lane's origin → destination states, plus
+  0.6 when its truck's last delivery is in the pickup city (0.3 for the same state). Max 1.
+- `base_score = round(100 × (0.4 × reliability + 0.2 × quality + 0.2 × cost) / 0.8)`
+- `score = round(100 × (0.4 × reliability + 0.2 × quality + 0.2 × cost + 0.2 × fit))`
+- `on_time_actual_pct` uses the same weighting without shrinkage: excused lates are on time,
+  unknown ones half late.
+
+**Hard gates** (rank only; a failure moves the carrier to `excluded` with the reason):
+`carrier_rule` (`ACTIVE` and an unexpired `CARGO` policy), mode (`TL` → truckload carriers,
+`LTL` → LTL carriers, `EXPEDITE` → expedite, truckload or cartage), equipment via
+`EQUIPMENT_FITS` (a reefer can serve a dry-van load), `hazmat_certified` for hazmat, and
+"already bounced this load" when ranking by `shipment_id`.
+
+**Reasons:** 3–5 strings: on-time %, late deliveries by cause, bounces, damage, late pickups,
+TONUs, "Profile says X% on time; actual loads say Y%" (when they differ by 10+ points), pay
+versus target, extras. Ranked cards put fit reasons first.
+
+### Carrier scoring — data notes
+
+Checked against API_DOCS and the live sandbox (2026-11-13):
+
+- Lateness is only known after `POST /pod` (it sets `pod.on_time` and `service_failure`): 111
+  of 115 finished loads have a POD. Late: 11 (`T3` ×5, `NS` ×3, `WEATHER` ×3). Damage: 2
+  `SHORTAGE`, 1 `DAMAGE`. No `MISSED` appointments.
+- `AT_SHIPPER` exists only for TL/expedite (111 loads). Its `event_at` is UTC with an
+  `event_timezone`; the docs allow a local `event_at` too. No late pickups in the data.
+- Events are paginated (`limit` ≤ 200). The one bounce is `7300154`:
+  `"Uncovered (FELL_THROUGH): … — was carrier BADWOLF, rate con RC-7300154-1, buy $2,583.00"`,
+  `reason_code: FELL_THROUGH`. Uncover also cancels that carrier's cost lines.
+- The one TONU (`7300118`, CANYONFRT) is `CUSTOMER_CANCELLED`, so it doesn't count against
+  the carrier.
+- **Every one of the 123 loads with targets paid under `target_pay_min`** (85–90% of it), so
+  the plan's `(paid − min) / (max − min)` clamped to 0–1 was 0 for everyone. Cost is scored
+  against the fleet average instead (above). LTL loads have no targets (cost 0.5).
+- Mode matches vendor type in every assignment: TL → truckload (113), LTL → LTL (25),
+  expedite → expedite (7), truckload (2), cartage (2). Hence the mode gate, which the plan
+  didn't have: without it, LTL carriers topped TL rankings.
+- `zoneinfo` needs the `tzdata` package on Windows (in `requirements.txt`).
+
+### Future work
+
+ML models beyond shrinkage, check-call responsiveness (`CHECK_CALL` events are already
+cached), per-lane carrier scores, using carrier scores in the backhaul finder's truck choice
+and in Asher's email matcher, and a cost measure against market rates once real pay sits
+inside the target ranges.
 
 ## Constants
 
@@ -210,6 +304,10 @@ city in the data.
 | HOS: default dock time / hours | 60 min, 06:00–18:00 | `hos.DEFAULT_DOCK_MINUTES`, `hos.DEFAULT_HOURS` |
 | HOS: local deadhead, tight slack | 15 mi, 2 h | `hos.LOCAL_DEADHEAD_MILES`, `hos.TIGHT_SLACK` |
 | HOS: days searched for a legal pickup | 3 | `hos.SEARCH_DAYS` |
+| Event sync threads | 8 | `sync.EVENT_WORKERS` |
+| Carrier score weights, `K` | see *Carrier scoring* | `carrier_score.WEIGHTS` |
+| Ranked carriers returned | 5 | `carrier_score.RANK_LIMIT` |
+| Profile gap shown in reasons | 10 points | `carrier_score.PROFILE_GAP_POINTS` |
 
 ## Known issues
 

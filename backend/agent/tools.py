@@ -3,7 +3,7 @@
 import importlib.util
 
 from .. import meridian
-from ..brain import network, pricing
+from ..brain import carrier_score, network, pricing
 from ..errors import Conflict, NotFound
 from .registry import tool
 
@@ -169,6 +169,36 @@ def price_preview(buy_lines, target_margin_pct):
 def add_shipment_note(shipment_id, text):
     """Append the note in Meridian and return the created event."""
     return meridian.post(f"/shipments/{shipment_id}/notes", {"note": text})
+
+
+@tool(
+    name="rank_carriers",
+    description="Rank carriers for a load by how they actually performed on our loads (on-time, "
+                "late causes, damage, bounces, cost) plus lane and truck-location fit. Pass "
+                "shipment_id for an existing file, or origin, destination and equipment_type. "
+                "Returns the top 5 eligible carriers with reasons and every excluded carrier with why.",
+    schema={
+        "type": "object",
+        "properties": {
+            "shipment_id": {"type": "string", "description": "7-digit file number"},
+            "origin": {"type": "object", "properties": {"city": {"type": "string"},
+                                                        "state": {"type": "string"}}},
+            "destination": {"type": "object", "properties": {"city": {"type": "string"},
+                                                             "state": {"type": "string"}}},
+            "equipment_type": {"type": "string", "description": "e.g. V, R, F"},
+            "mode": {"type": "string", "enum": ["TL", "LTL", "EXPEDITE"]},
+            "hazmat": {"type": "boolean"},
+        },
+        "additionalProperties": False,
+    },
+)
+def rank_carriers(**request):
+    """Return the ranked carriers, trimmed to what the model needs."""
+    result = carrier_score.rank_request(**request)
+    keep = ("vendor_id", "legal_name", "score", "base_score", "fit", "on_time_actual_pct",
+            "loads", "compliance_light", "reasons")
+    result["eligible"] = [{k: card[k] for k in keep} for card in result["eligible"]]
+    return result
 
 
 # Asher's email tools register themselves on import once email_pipeline is in the repo.

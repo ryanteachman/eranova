@@ -8,6 +8,7 @@ from .errors import ApiError
 from .meridian import MeridianError
 from .routes import actions as actions_routes
 from .routes import agent as agent_routes
+from .routes import carriers as carriers_routes
 from .routes import email as email_routes
 from .routes import network as network_routes
 
@@ -24,7 +25,7 @@ def create_app():
     app.config["DB_PATH"] = config.DB_PATH
     db.init_db()
 
-    for module in (network_routes, actions_routes, agent_routes, email_routes):
+    for module in (network_routes, actions_routes, agent_routes, carriers_routes, email_routes):
         app.register_blueprint(module.bp)
 
     @app.get("/api/health")
