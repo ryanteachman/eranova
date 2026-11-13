@@ -1,3 +1,7 @@
+# Project-specific ignores
+team03.txt
+secret.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
