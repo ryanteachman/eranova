@@ -1,17 +1,49 @@
 {
-  "action_id": "act_0001",
+  "action_id": "act_4f2ed401",
+  "confidence": 0.98,
+  "created_at": "2026-11-13T18:17:49Z",
   "kind": "create_return_quote",
-  "title": "Return quote: Dallas, TX -> Chicago, IL for KEYSTONE-TX",
-  "summary": "Backhaul for outbound file 7300176. 925 mi dry van, buy $2,158.75 / sell $2,520.95 / GP 14.4%.",
   "payload": {
-    "prospect_id": "DAL-CHI-KEYSTONE-TX-7300176",
-    "customer_id": "KEYSTONE-TX",
-    "outbound_file": "7300176"
+    "buy_lines": [
+      {
+        "amount": 1240.21,
+        "charge_code": "FRT",
+        "description": "Backhaul linehaul",
+        "quantity": 1,
+        "rate": 1240.21,
+        "rate_basis": "FLAT"
+      },
+      {
+        "amount": 527.25,
+        "charge_code": "FSC",
+        "description": "Fuel surcharge @ 0.57/mi",
+        "quantity": 925,
+        "rate": 0.57,
+        "rate_basis": "PER_MILE"
+      }
+    ],
+    "category": "SCRAP",
+    "customer_id": "NORTHSTAR",
+    "destination": {
+      "city": "Chicago",
+      "state": "IL"
+    },
+    "equipment_type": "V",
+    "miles": 925,
+    "origin": {
+      "city": "Dallas",
+      "state": "TX"
+    },
+    "outbound_file": "7300156",
+    "prospect_id": "TX:Dallas:NORTHSTAR:SCRAP:Dallas:Chicago:7300156",
+    "target_margin_pct": 10
   },
-  "tier": "approve",
-  "confidence": 0.86,
-  "reasoning": "Truck from file 7300176 arrives empty in Dallas; Keystone ships dry retail returns to Chicago and every compatibility rule passes.",
+  "reasoning": "Dry V matches dry SCRAP freight. 30,761 lb / 10 pallets fits the V. Carrier ACMECARR is ACTIVE with an unexpired CARGO policy. Warm lead: Northstar Manufacturing already ships with us (27 loads on this pattern). Saves 925 empty miles (100% of the trip home). Equipment match: this freight usually moves on V. Source: reverse logistics: steel scrap and offcuts from Big-Box Retailer DC135 back to Chicago, IL.",
+  "result": {
+    "reason": "Customer has no freight ready this week."
+  },
   "status": "rejected",
-  "result": {"reason": "Customer has no freight ready this week."},
-  "created_at": "2026-11-13T15:02:11Z"
+  "summary": "Backhaul for outbound file 7300156. 925 mi V, SCRAP, buy $1,767.46 / sell $1,905.26 / GP 7.2%.",
+  "tier": "approve",
+  "title": "Return quote: Dallas, TX -> Chicago, IL for NORTHSTAR"
 }

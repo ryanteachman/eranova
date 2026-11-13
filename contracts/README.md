@@ -1,8 +1,8 @@
 # Return Trip API contract
 
-The Flask backend serves these routes at `http://localhost:5000`. Each `.json` file in this
-folder is an example response. Build against the mocks now; the real routes will return the
-same shapes.
+The Flask backend serves these routes at `http://localhost:5000`. Every route is live. Each
+`.json` file in this folder is a real response captured from the backend against the Meridian
+sandbox (the web app URL is replaced with `<TMS_UI_URL>`).
 
 If a route or field changes, the mock JSON and this table are updated together, and the change
 is noted in `docs/status.md`.
@@ -27,10 +27,12 @@ Example: `GET /api/city/TX/Dallas`.
 
 **Network** (`/api/network`)
 
-- `totals`: `empty_miles` (return-leg miles of one-way lanes), `empty_cost_usd`
-  (`empty_miles × $2.00`), `one_way_lanes`, `loads`.
+- `totals`: `empty_miles` (truckload and expedite loads × miles on one-way lanes; LTL is
+  excluded), `empty_cost_usd` (`empty_miles × $2.00`), `one_way_lanes`, `loads` (active
+  shipments; cancelled and TONU are excluded).
 - `cities[]`: `{city, state, lat, lng, inbound, outbound}`.
-- `arcs[]`: `{from, to, loads, miles, equipment}`. `from`/`to` are `{city, state, lat, lng}`.
+- `arcs[]`: one per lane, `{from, to, loads, miles, equipment}`. `from`/`to` are
+  `{city, state, lat, lng}`.
   `equipment` maps Meridian equipment codes to load counts. The keys are whatever codes
   appear (`V`, `R`, `F`, `SB`, `SV`, …), not a fixed set.
 
@@ -38,7 +40,7 @@ Example: `GET /api/city/TX/Dallas`.
 
 | Field | Type | Notes |
 |---|---|---|
-| `prospect_id` | string | Pass this to `POST /api/fill`. |
+| `prospect_id` | string | Pass this to `POST /api/fill`. Treat it as opaque (it is `state:city:customer:category:pickup city:destination city:outbound file`). |
 | `customer_id`, `customer_name` | string | Meridian customer. |
 | `origin`, `destination` | `{city, state}` | The return leg. |
 | `equipment` | string | Equipment code of the truck going home. |
@@ -49,7 +51,13 @@ Example: `GET /api/city/TX/Dallas`.
 | `miles` | number | Return-leg miles. |
 | `outbound_file` | string | Meridian file number of the load that brought the truck in. |
 | `ok` | boolean | `false` means a compatibility rule blocked it. Show it, but don't offer Fill. |
-| `reasons` | string[] | Human-readable reasons. When `ok` is false, the first one says what blocked it. |
+| `reasons` | string[] | Human-readable reasons. When `ok` is false, the first one says what blocked it. The last one says where the freight comes from. |
+| `carrier_id` | string | Carrier of the truck that would haul it. |
+| `miles_saved` | number | Empty miles avoided on the trip home. |
+| `target_margin_pct` | number | Margin used for `est_sell` (the customer's margin floor). |
+
+`/api/city` returns one prospect per candidate load: the best compatible truck, or, when no
+truck is compatible, a blocked prospect (`ok: false`, `score: 0`) explaining why.
 
 **Action** (`/api/actions`, approve, reject)
 
@@ -62,8 +70,8 @@ Example: `GET /api/city/TX/Dallas`.
 | `tier` | string | `approve`. |
 | `confidence` | number | 0–1. |
 | `reasoning` | string | Why the agent proposed it. |
-| `status` | string | `pending`, `done`, `rejected`, `failed`. |
-| `result` | object or null | `null` while pending. On `done`: `{quote_id, summary, sell_total, meridian_url}`. On `rejected`: `{reason}`. On `failed`: `{error}`. |
+| `status` | string | `pending`, `running` (being approved right now), `done`, `rejected`, `failed`. |
+| `result` | object or null | `null` while pending. On `done`: `{quote_id, summary, sell_total, meridian_url}`. On `rejected`: `{reason}`. On `failed`: `{error, status}`, where `error` is Meridian's sentence. |
 | `created_at` | string | UTC ISO-8601. |
 
 **Chat** (`/api/agent/chat`)
@@ -74,6 +82,20 @@ Example: `GET /api/city/TX/Dallas`.
 
 ## Errors
 
-Every error returns `{"error": "<code>", "detail": "<sentence>"}` with status `400`, `404`,
-`409` or `500`. A `409` from Meridian is passed through unchanged; its `detail` says what to do
-next.
+Every error returns `{"error": "<code>", "detail": "<sentence>"}`:
+
+| Status | `error` | When |
+|---|---|---|
+| `400` | `bad_request` | Body is not a JSON object, or a required field is missing |
+| `404` | `not_found` | Unknown route, action or prospect |
+| `405` | `method_not_allowed` | Known route, wrong method |
+| `409` | `conflict` | Approving/rejecting an action that is not pending (including a double-clicked Approve), or filling a blocked prospect |
+| `4xx` | Meridian's code | A Meridian error, passed through with its `detail` unchanged |
+| `502` | Meridian's code | Meridian returned a server error |
+| `502` | `openai_error` | The language model call failed (chat) |
+| `503` | `meridian_unreachable` | Meridian could not be reached (timeout, connection error) |
+| `500` | `internal_error` | Unexpected backend error |
+
+`POST /api/actions/<id>/approve` returns `200` even when the Meridian write fails; check for
+`status: "failed"`. `POST /api/fill` for a prospect that already has a pending action returns
+that same action instead of queuing a duplicate.
