@@ -1,5 +1,6 @@
 """LLM freight classification, cached in the classifications table."""
 
+import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Literal
 
@@ -84,20 +85,26 @@ def classify_shipment(shipment, client=None):
     return result
 
 
-def save_classification(shipment_id, result):
+def input_hash(shipment):
+    """Return a short hash of the text sent to the model, so changed freight gets reclassified."""
+    return hashlib.sha256(describe_shipment(shipment).encode("utf-8")).hexdigest()[:16]
+
+
+def save_classification(shipment, result):
     """Store one shipment's classification in the cache."""
     with db.get_conn() as conn:
         conn.execute(
             "INSERT OR REPLACE INTO classifications "
-            "(shipment_id, category, temp_controlled, hazmat, confidence, rationale) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
+            "(shipment_id, category, temp_controlled, hazmat, confidence, rationale, input_hash) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
             (
-                shipment_id,
+                shipment["shipment_id"],
                 result.category,
                 int(result.temp_controlled),
                 int(result.hazmat),
                 result.confidence,
                 result.rationale,
+                input_hash(shipment),
             ),
         )
 
@@ -110,21 +117,24 @@ def get_classifications():
 
 
 def classify_all():
-    """Classify every cached shipment not classified yet and return {classified, skipped, failed}."""
+    """Classify shipments that are new or whose freight changed; return {classified, skipped, failed}."""
     done = get_classifications()
-    todo = [s for s in db.load_records("shipments") if s["shipment_id"] not in done]
-    client = _client()
+    shipments = db.load_records("shipments")
+    todo = [s for s in shipments
+            if done.get(s["shipment_id"], {}).get("input_hash") != input_hash(s)]
     failed = 0
-    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        futures = {pool.submit(classify_shipment, s, client): s["shipment_id"] for s in todo}
-        for future in as_completed(futures):
-            shipment_id = futures[future]
-            try:
-                save_classification(shipment_id, future.result())
-            except Exception as exc:
-                failed += 1
-                print(f"classify failed for {shipment_id}: {exc}")
-    counts = {"classified": len(todo) - failed, "skipped": len(done), "failed": failed}
+    if todo:
+        client = _client()
+        with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+            futures = {pool.submit(classify_shipment, s, client): s for s in todo}
+            for future in as_completed(futures):
+                shipment = futures[future]
+                try:
+                    save_classification(shipment, future.result())
+                except Exception as exc:
+                    failed += 1
+                    print(f"classify failed for {shipment['shipment_id']}: {exc}")
+    counts = {"classified": len(todo) - failed, "skipped": len(shipments) - len(todo), "failed": failed}
     print(f"classified {counts['classified']}, skipped {counts['skipped']}, failed {counts['failed']}")
     db.audit("system", "classify", str(counts))
     return counts

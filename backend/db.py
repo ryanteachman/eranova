@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS classifications (
     temp_controlled INTEGER NOT NULL,
     hazmat          INTEGER NOT NULL,
     confidence      REAL,
-    rationale       TEXT
+    rationale       TEXT,
+    input_hash      TEXT
 );
 
 CREATE TABLE IF NOT EXISTS actions (
@@ -64,18 +65,22 @@ def init_db():
     """Create all backend tables if they do not exist yet."""
     with get_conn() as conn:
         conn.executescript(SCHEMA)
+        # Databases created before input_hash existed need the column added.
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(classifications)")}
+        if "input_hash" not in columns:
+            conn.execute("ALTER TABLE classifications ADD COLUMN input_hash TEXT")
 
 
-def upsert_records(table, records, id_field):
-    """Insert or replace cached Meridian records in a cache table and return how many were written."""
+def replace_records(table, records, id_field):
+    """Replace a cache table's contents with these Meridian records and return how many were written."""
     if table not in CACHE_TABLES:
         raise ValueError(f"not a cache table: {table}")
     synced_at = now_iso()
     rows = [(str(r[id_field]), json.dumps(r), synced_at) for r in records]
+    # Meridian resets can delete records and change ids, so stale rows must not survive a sync.
     with get_conn() as conn:
-        conn.executemany(
-            f"INSERT OR REPLACE INTO {table} (id, data, synced_at) VALUES (?, ?, ?)", rows
-        )
+        conn.execute(f"DELETE FROM {table}")
+        conn.executemany(f"INSERT INTO {table} (id, data, synced_at) VALUES (?, ?, ?)", rows)
     return len(rows)
 
 
