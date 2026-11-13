@@ -153,7 +153,35 @@ EXTRACTORS = {
 def extract(kind, email):
     """Run the extractor for this kind; returns None for OTHER."""
     extractor = EXTRACTORS.get(kind)
-    return extractor(email) if extractor else None
+    if not extractor:
+        return None
+    data = _clean(extractor(email))
+    if "references" in data:
+        data["references"] = [ref for ref in data["references"] if ref.get("value")]
+    return data
+
+
+# ---------- clean-up of model output ----------
+
+NULL_WORDS = {"", "null", "none", "n/a", "unknown"}
+STATE_KEYS = {"state", "last_delivery_state", "empty_state"}
+
+
+def _clean(value, key=None):
+    """Turn the model's "null"-style strings into None and drop states that aren't 2-letter codes,
+    so later steps (like filling a state from the facility) see a missing value as missing."""
+    if isinstance(value, dict):
+        return {k: _clean(v, k) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_clean(v) for v in value]
+    if isinstance(value, str):
+        text = value.strip()
+        if text.lower() in NULL_WORDS:
+            return None
+        if key in STATE_KEYS:
+            return text.upper() if re.fullmatch(r"[A-Za-z]{2}", text) else None
+        return text
+    return value
 
 
 # ---------- guards against invented values ----------
