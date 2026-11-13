@@ -1,3 +1,9 @@
+# Project-specific ignores
+team03.txt
+secret.txt
+asher-sandbox/
+.env
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
