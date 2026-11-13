@@ -1,0 +1,91 @@
+{
+  "items": [
+    {
+      "action_ids": [
+        "act_a1b8910735"
+      ],
+      "confidence": 0.95,
+      "email_id": "em_23ff979b31",
+      "from_addr": "Lakeshore Carriers Dispatch <dispatch@lakeshorecarriers.example.com>",
+      "kind": "WASHOUT_CERT",
+      "received_at": "2026-11-13T21:05:00Z",
+      "status": "processed",
+      "subject": "washout cert trl 53661"
+    },
+    {
+      "action_ids": [
+        "act_8ab87900a7",
+        "act_c1e35ec636"
+      ],
+      "confidence": 0.9,
+      "email_id": "em_e371922664",
+      "from_addr": "Chip Delgado <cdelgado@midwaydist.example.com>",
+      "kind": "QUOTE_REQUEST",
+      "received_at": "2026-11-13T20:10:00Z",
+      "status": "processed",
+      "subject": "Dallas to KC dry grocery - Mon 11/16"
+    },
+    {
+      "action_ids": [],
+      "confidence": 0.7,
+      "email_id": "em_7a5f55a864",
+      "from_addr": "Skye Hollis <skye@truenorthgear.example.com>",
+      "kind": "QUOTE_REQUEST",
+      "received_at": "2026-11-13T19:30:00Z",
+      "status": "needs_review",
+      "subject": "trucks?"
+    },
+    {
+      "action_ids": [
+        "act_51c607648a",
+        "act_dba9998d30"
+      ],
+      "confidence": 0.9,
+      "email_id": "em_f3032ae75f",
+      "from_addr": "Gulfstream Express Carriers <loads@gulfstreamx.example.com>",
+      "kind": "CARRIER_OFFER",
+      "received_at": "2026-11-13T18:02:00Z",
+      "status": "processed",
+      "subject": "empty reefer Newark Thurs - need a load west"
+    },
+    {
+      "action_ids": [
+        "act_0c6c93f2c5",
+        "act_5e82c96ddc"
+      ],
+      "confidence": 0.9,
+      "email_id": "em_eaeaaaa763",
+      "from_addr": "Prairie Haul Lines <ops@prairiehaul.example.com>",
+      "kind": "LAST_LOAD_INFO",
+      "received_at": "2026-11-13T17:25:00Z",
+      "status": "processed",
+      "subject": "FYI trailer 53912 last load - for your compliance file"
+    },
+    {
+      "action_ids": [
+        "act_eae10e4b38",
+        "act_e490c5af57"
+      ],
+      "confidence": 0.9,
+      "email_id": "em_6ea6d42b46",
+      "from_addr": "Marcus Bell <mbell@valiantfoods.example.com>",
+      "kind": "QUOTE_REQUEST",
+      "received_at": "2026-11-13T16:40:00Z",
+      "status": "processed",
+      "subject": "truck needed - Aurora CO back to Des Moines, REFRIGERATED"
+    },
+    {
+      "action_ids": [
+        "act_28d75fc549",
+        "act_c7bc27a6ee"
+      ],
+      "confidence": 0.9,
+      "email_id": "em_817c52908a",
+      "from_addr": "Tasha Greer <tgreer.dc135@bigboxretail.example.com>",
+      "kind": "QUOTE_REQUEST",
+      "received_at": "2026-11-13T15:12:00Z",
+      "status": "processed",
+      "subject": "RE: returns pickup DC135 -> Chicago?? need truck Tue"
+    }
+  ]
+}

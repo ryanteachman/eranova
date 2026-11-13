@@ -1,0 +1,211 @@
+{
+  "action_ids": [
+    "act_28d75fc549",
+    "act_c7bc27a6ee"
+  ],
+  "attachments": [],
+  "body": "Hi team,\n\nFollowing up on my VM from this morning. We've got the Northstar RTV staged at door 41 -- store returns + salvage, mostly damaged POS display units and some shelving hardware that came back from stores. Northstar Manufacturing is paying for this move per their vendor return agreement (bill to Northstar, RA# RTV-135-20417).\n\nPick up: Big-Box DC135, 9800 Commerce Pkwy, Dallas TX 75241\nDeliver: Northstar Manufacturing - Chicago Dock, Chicago IL\nWhen: this Tue (11/17), any time after 0600. Live load, ~2 hrs\nFreight: 18 pallets, roughly 14,200 lbs total, all shrink wrapped, nothing hazardous. Std 53' dry van is fine\nDriver MUST have a seal, our gate is strict about it. Northstar's PO for the move is 4471882 if you need it.\n\nCan you get me a price today? Trying to get this off the dock before weekend volume hits.\n\nThanks\nTasha Greer\nReverse Logistics Coordinator | Big-Box Retailer DC135\n972-555-0141\n\n-----Original Message-----\nFrom: Tasha Greer\nSent: Thursday, November 12, 2026 4:02 PM\nSubject: returns pickup DC135 -> Chicago\nWho do I talk to about a backhaul out of DC135?",
+  "confidence": 0.9,
+  "email_id": "em_817c52908a",
+  "error": null,
+  "extracted": {
+    "accessorials": [
+      "live load"
+    ],
+    "category": "RETAIL_RETURNS",
+    "customer_hint": "Northstar Manufacturing",
+    "destination": {
+      "city": "Chicago",
+      "name": "Northstar Manufacturing - Chicago Dock",
+      "state": "IL",
+      "zip": null
+    },
+    "equipment": "V",
+    "freight_lines": [
+      {
+        "description": "store returns + salvage, mostly damaged POS display units and some shelving hardware",
+        "package_type": "PALLET",
+        "pieces": 18,
+        "weight_lb": 14200.0
+      }
+    ],
+    "hazmat": false,
+    "origin": {
+      "city": "Dallas",
+      "name": "Big-Box DC135",
+      "state": "TX",
+      "zip": "75241"
+    },
+    "pickup_date": "2026-11-17",
+    "references": [
+      {
+        "type": "RA",
+        "value": "RTV-135-20417"
+      },
+      {
+        "type": "PO",
+        "value": "4471882"
+      }
+    ],
+    "temp_controlled": false
+  },
+  "from_addr": "Tasha Greer <tgreer.dc135@bigboxretail.example.com>",
+  "kind": "QUOTE_REQUEST",
+  "matched": {
+    "blocked": [],
+    "customer": {
+      "alternatives": [],
+      "confidence": 0.9,
+      "entity_id": "NORTHSTAR",
+      "hint": "Northstar Manufacturing",
+      "label": "Northstar Manufacturing",
+      "method": "/search?q=Northstar Manufacturing (1 hit)"
+    },
+    "destination": {
+      "city": "Chicago",
+      "facility_id": "NORTHSTAR-CHI",
+      "name": "Northstar Manufacturing - Chicago Dock",
+      "state": "IL",
+      "zip": null
+    },
+    "options": [
+      {
+        "available_date": "2026-11-17",
+        "carrier_id": "ACMECARR",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300156",
+        "reasons": [
+          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 0 day(s) before the requested pickup."
+        ],
+        "score": 100,
+        "trailer_last_category": "STEEL",
+        "trailer_number": null
+      },
+      {
+        "available_date": "2026-11-16",
+        "carrier_id": "ACMECARR",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300147",
+        "reasons": [
+          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 1 day(s) before the requested pickup."
+        ],
+        "score": 100,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53631"
+      },
+      {
+        "available_date": "2026-11-13",
+        "carrier_id": "ACMECARR",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300132",
+        "reasons": [
+          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 4 days before pickup (long wait)."
+        ],
+        "score": 80,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53805"
+      },
+      {
+        "available_date": "2026-11-13",
+        "carrier_id": "PRAIRIEHL",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300122",
+        "reasons": [
+          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 4 days before pickup (long wait)."
+        ],
+        "score": 80,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53912"
+      },
+      {
+        "available_date": "2026-11-13",
+        "carrier_id": "BLUERIDGE",
+        "equipment": "V",
+        "heading_home_to": "Chicago, IL",
+        "ok": true,
+        "outbound_file": "7300119",
+        "reasons": [
+          "Equipment V can carry RETAIL_RETURNS freight.",
+          "Truck is heading home to Chicago, exactly where this freight goes.",
+          "Truck empties 4 days before pickup (long wait)."
+        ],
+        "score": 80,
+        "trailer_last_category": "STEEL",
+        "trailer_number": "53750"
+      }
+    ],
+    "origin": {
+      "city": "Dallas",
+      "facility_id": "BBR-DC135",
+      "name": "Big-Box DC135",
+      "state": "TX",
+      "zip": "75241"
+    },
+    "prospect": {
+      "carrier_id": "ACMECARR",
+      "category": "RETAIL_RETURNS",
+      "customer_id": "NORTHSTAR",
+      "customer_name": "Northstar Manufacturing",
+      "destination": {
+        "city": "Chicago",
+        "facility_id": "NORTHSTAR-CHI",
+        "name": "Northstar Manufacturing - Chicago Dock",
+        "state": "IL",
+        "zip": null
+      },
+      "equipment": "V",
+      "ok": true,
+      "origin": {
+        "city": "Dallas",
+        "facility_id": "BBR-DC135",
+        "name": "Big-Box DC135",
+        "state": "TX",
+        "zip": "75241"
+      },
+      "outbound_file": "7300156",
+      "prospect_id": "email-em_817c52908a",
+      "reasons": [
+        "Equipment V can carry RETAIL_RETURNS freight.",
+        "Truck is heading home to Chicago, exactly where this freight goes.",
+        "Truck empties 0 day(s) before the requested pickup."
+      ],
+      "score": 100,
+      "source": "email",
+      "trailer_number": null
+    },
+    "status": "prospect"
+  },
+  "rationale": "The email clearly asks for a price to move freight from Dallas TX to Chicago IL with specific details about the pickup and delivery.",
+  "received_at": "2026-11-13T15:12:00Z",
+  "replies": [
+    {
+      "action_id": "act_c7bc27a6ee",
+      "body": "Hi Tasha,\n\nThank you for your follow-up. We have noted the pickup at Big-Box DC135, 9800 Commerce Pkwy, Dallas TX 75241, and delivery to Northstar Manufacturing - Chicago Dock, Chicago IL, on Tuesday, 11/17, after 0600. The load consists of 18 pallets, approximately 14,200 lbs, and requires a standard 53' dry van with a seal. \n\nOur all-in rate is {{sell_total}}, valid for 7 days.\n\nBest regards,\nMeridian Logistics - Return Trip desk",
+      "created_at": "2026-11-13T17:55:33Z",
+      "email_id": "em_817c52908a",
+      "reply_id": "rp_8cd97390a1",
+      "status": "draft",
+      "subject": "Re: returns pickup DC135 -> Chicago?? need truck Tue",
+      "to_addr": "Tasha Greer <tgreer.dc135@bigboxretail.example.com>"
+    }
+  ],
+  "status": "processed",
+  "subject": "RE: returns pickup DC135 -> Chicago?? need truck Tue",
+  "to_addr": "quotes@meridianlogistics.example.com"
+}
