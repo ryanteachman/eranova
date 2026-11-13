@@ -1,7 +1,40 @@
 {
   "items": [
-    {"at": "2026-11-13T15:04:40Z", "actor": "human", "event": "action_approved", "detail": "act_0001 -> quote 7300201"},
-    {"at": "2026-11-13T15:02:11Z", "actor": "agent", "event": "tool_call", "detail": "create_return_quote {\"prospect_id\": \"DAL-CHI-KEYSTONE-TX-7300176\"} -> Queued for human approval as act_0001"},
-    {"at": "2026-11-13T15:02:09Z", "actor": "agent", "event": "tool_call", "detail": "find_backhauls {\"city\": \"Dallas\", \"state\": \"TX\"} -> 3 prospects, 1 compatible"}
+    {
+      "actor": "human",
+      "at": "2026-11-13T18:17:49Z",
+      "detail": "act_4f2ed401: Customer has no freight ready this week.",
+      "event": "action_rejected"
+    },
+    {
+      "actor": "human",
+      "at": "2026-11-13T18:17:49Z",
+      "detail": "act_4f2ed401 create_return_quote: Return quote: Dallas, TX -> Chicago, IL for NORTHSTAR",
+      "event": "action_proposed"
+    },
+    {
+      "actor": "system",
+      "at": "2026-11-13T18:17:45Z",
+      "detail": "{'classified': 0, 'skipped': 160, 'failed': 0}",
+      "event": "classify"
+    },
+    {
+      "actor": "system",
+      "at": "2026-11-13T18:17:45Z",
+      "detail": "{'shipments': 160, 'vendors': 18, 'facilities': 30, 'customers': 14}",
+      "event": "sync"
+    },
+    {
+      "actor": "system",
+      "at": "2026-11-13T18:17:38Z",
+      "detail": "{'classified': 160, 'skipped': 0, 'failed': 0}",
+      "event": "classify"
+    },
+    {
+      "actor": "system",
+      "at": "2026-11-13T18:17:19Z",
+      "detail": "{'shipments': 160, 'vendors': 18, 'facilities': 30, 'customers': 14}",
+      "event": "sync"
+    }
   ]
 }
