@@ -12,6 +12,7 @@ cp .env.example .env           # fill in keys, or keep secret.txt in the repo ro
 ## Run
 
 ```bash
+python scripts/sync_data.py                   # first time: pull Meridian data + classify
 flask --app backend run --debug --port 5000
 ```
 
