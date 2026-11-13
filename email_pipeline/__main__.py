@@ -4,15 +4,20 @@
     python -m email_pipeline run all            # every sample, in file order
     python -m email_pipeline inbox
     python -m email_pipeline outbox
-    python -m email_pipeline approve <action_id> # stub queue only, until Ryan's actions land
+    python -m email_pipeline approve <action_id> # Ryan's approval queue: approving a quote creates it in Meridian
+    python -m email_pipeline reject <action_id>
+
+Trucks and freight categories come from Ryan's cache, so run `python scripts/sync_data.py` once first.
 """
 
 import json
 import sys
 from pathlib import Path
 
+from backend import db
+from backend.agent import actions
+
 from email_pipeline import store
-from email_pipeline.deps import STUBBED
 from email_pipeline.parse import parse_file
 from email_pipeline.pipeline import process_email
 
@@ -40,8 +45,9 @@ def run(paths):
 def main(argv):
     """Entry point: dispatch on the first argument."""
     store.init_email_tables()
-    if STUBBED:
-        print(f"(using stubs for: {', '.join(STUBBED)})", file=sys.stderr)
+    if not db.load_records("shipments"):
+        print("(Ryan's shipment cache is empty: run `python scripts/sync_data.py` first, "
+              "or no trucks will match)", file=sys.stderr)
     if not argv or argv[0] in ("-h", "--help"):
         print(__doc__)
     elif argv[0] == "run":
@@ -52,8 +58,9 @@ def main(argv):
     elif argv[0] == "outbox":
         _print(store.list_replies())
     elif argv[0] == "approve":
-        from email_pipeline._stubs import approve
-        _print(approve(argv[1]))
+        _print(actions.approve(argv[1], actor="cli"))
+    elif argv[0] == "reject":
+        _print(actions.reject(argv[1], argv[2] if len(argv) > 2 else None, actor="cli"))
     else:
         print(__doc__)
 

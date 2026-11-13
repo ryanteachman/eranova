@@ -4,7 +4,8 @@ import json
 import uuid
 from datetime import datetime, timezone
 
-from email_pipeline.deps import get_conn
+from backend import db
+from backend.db import get_conn
 
 EMAIL_STATUSES = ("new", "processing", "processed", "needs_review", "failed")
 OUTBOX_STATUSES = ("draft", "approved_sent", "rejected")
@@ -19,7 +20,8 @@ def now_iso():
 
 
 def init_email_tables():
-    """Create the emails, outbox and washouts tables if they don't exist yet."""
+    """Create Ryan's tables (actions, audit_log, cache) and our emails, outbox and washouts tables."""
+    db.init_db()
     with get_conn() as conn:
         conn.executescript(
             """
@@ -155,6 +157,15 @@ def quote_action_for_email(email_id):
 
 # ---------- outbox ----------
 
+def sync_reply_statuses():
+    """Mark drafts whose send_reply action a person rejected in the approval queue as rejected."""
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE outbox SET status = 'rejected' WHERE status = 'draft' AND action_id IN "
+            "(SELECT action_id FROM actions WHERE status = 'rejected')"
+        )
+
+
 def insert_reply(email_id, to_addr, subject, body):
     """Store a draft reply in the outbox and return its reply_id."""
     reply_id = "rp_" + uuid.uuid4().hex[:10]
@@ -226,8 +237,4 @@ def audit(event, detail):
     """Write one line to Ryan's audit_log as actor 'email_pipeline'."""
     if not isinstance(detail, str):
         detail = json.dumps(detail, default=str)
-    with get_conn() as conn:
-        conn.execute(
-            "INSERT INTO audit_log (at, actor, event, detail) VALUES (?, 'email_pipeline', ?, ?)",
-            (now_iso(), event, detail),
-        )
+    db.audit("email_pipeline", event, detail)
