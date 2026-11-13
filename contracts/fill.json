@@ -1,4 +1,13 @@
 {
-  "action_id": "act_4f2ed401",
+  "action_id": "act_76278fd2",
+  "decided_by": null,
+  "mode": "approval",
+  "result": null,
+  "risk": {
+    "blockers": [],
+    "cap": null,
+    "level": "low",
+    "reasons": []
+  },
   "status": "pending"
 }

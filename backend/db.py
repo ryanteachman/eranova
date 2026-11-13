@@ -43,7 +43,15 @@ CREATE TABLE IF NOT EXISTS actions (
     status     TEXT NOT NULL,
     result     TEXT,
     created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    updated_at TEXT NOT NULL,
+    mode       TEXT,
+    decided_by TEXT,
+    risk       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS audit_log (
@@ -68,14 +76,22 @@ def get_conn():
     return conn
 
 
+# Columns added after the first release; older databases get them on init_db().
+ADDED_COLUMNS = {
+    "classifications": ["input_hash"],
+    "actions": ["mode", "decided_by", "risk"],
+}
+
+
 def init_db():
-    """Create all backend tables if they do not exist yet."""
+    """Create all backend tables if they do not exist yet, adding any columns older databases lack."""
     with get_conn() as conn:
         conn.executescript(SCHEMA)
-        # Databases created before input_hash existed need the column added.
-        columns = {row["name"] for row in conn.execute("PRAGMA table_info(classifications)")}
-        if "input_hash" not in columns:
-            conn.execute("ALTER TABLE classifications ADD COLUMN input_hash TEXT")
+        for table, added in ADDED_COLUMNS.items():
+            columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
+            for column in added:
+                if column not in columns:
+                    conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
 
 
 def replace_records(table, records, id_field):
@@ -97,6 +113,19 @@ def load_records(table):
         raise ValueError(f"not a cache table: {table}")
     with get_conn() as conn:
         return [json.loads(row["data"]) for row in conn.execute(f"SELECT data FROM {table}")]
+
+
+def get_setting(key, default=None):
+    """Return a stored setting's value, or default when it was never set."""
+    with get_conn() as conn:
+        row = conn.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
+    return row["value"] if row else default
+
+
+def set_setting(key, value):
+    """Store a setting's value."""
+    with get_conn() as conn:
+        conn.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, value))
 
 
 def load_events():
