@@ -67,7 +67,10 @@ function roadPath(l) {
   return greatCircle(l.origin, l.destination)
 }
 
+const EMPTY_RGB = [220, 38, 38] // empty drives are red everywhere: the line and the truck on it
+
 // One truck going round a tour's legs: 3 laps so the trail never pops at the wrap.
+// Each point carries its own colour, so the truck turns red while it drives empty.
 function buildTrip(tour, period, offset, color) {
   const legs = [...(tour.legs || [])].sort((a, b) => a.seq - b.seq)
   const segs = legs.map(roadPath)
@@ -75,18 +78,22 @@ function buildTrip(tour, period, offset, color) {
   if (!total) return null
   const path = []
   const timestamps = []
+  const colors = []
+  const alpha = color[3] ?? 255
   for (let lap = 0; lap < 3; lap++) {
     let run = 0
-    segs.forEach((g) => {
+    segs.forEach((g, li) => {
+      const c = legs[li].kind === 'empty' ? [...EMPTY_RGB, alpha] : color
       g.pts.forEach((p, i) => {
         if (i === 0 && path.length) return
         path.push(p)
+        colors.push(c)
         timestamps.push(lap * period + ((run + (g.d * i) / (g.pts.length - 1)) / total) * period - offset)
       })
       run += g.d
     })
   }
-  return { tour_id: tour.tour_id, path, timestamps, color }
+  return { tour_id: tour.tour_id, path, timestamps, color, colors }
 }
 
 function legLabel(l) {
@@ -134,8 +141,9 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
         if (isFocus) (l.status === 'missing' ? roadsFound : roads).push({ ...row, color: [...rgb, 255] })
       }
     }
+    const truckRgb = focus ? (focus.status === 'lane' ? STATUS_RGB.found : STATUS_RGB[tourState(focus)]) : BLUE
     const tripsFocus = focus
-      ? [0, LOOP / 2].map((o) => buildTrip(focus, LOOP, o, [...BLUE, 255])).filter(Boolean)
+      ? [0, LOOP / 2].map((o) => buildTrip(focus, LOOP, o, [...truckRgb, 255])).filter(Boolean)
       : []
     const stops = []
     const seen = new Set()
@@ -160,7 +168,7 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
     overlay.setProps({
       layers: [
         new PathLayer({
-          id: 'empties', data: d.empties, getPath: (x) => x.path, getColor: [...GREY, 230], getWidth: 2, ...road,
+          id: 'empties', data: d.empties, getPath: (x) => x.path, getColor: [...EMPTY_RGB, 235], getWidth: 3.5, ...road,
           getDashArray: [4, 4], dashJustified: true, extensions: [new PathStyleExtension({ dash: true })],
         }),
         new PathLayer({ id: 'roads-casing', data: [...d.roads, ...d.roadsFound], getPath: (x) => x.road, getColor: [255, 255, 255, 230], getWidth: 8, ...road }),
@@ -181,12 +189,12 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
         }),
         new TripsLayer({
           id: 'trips-glow', data: d.tripsFocus, getPath: (x) => x.path, getTimestamps: (x) => x.timestamps,
-          getColor: [...BLUE, 60], widthMinPixels: 16, capRounded: true, jointRounded: true,
+          getColor: (x) => x.colors.map((c) => [c[0], c[1], c[2], 60]), widthMinPixels: 16, capRounded: true, jointRounded: true,
           trailLength: LOOP * 0.15, currentTime: tFocus, fadeTrail: true,
         }),
         new TripsLayer({
           id: 'trips-focus', data: d.tripsFocus, getPath: (x) => x.path, getTimestamps: (x) => x.timestamps,
-          getColor: (x) => x.color, widthMinPixels: 6, capRounded: true, jointRounded: true,
+          getColor: (x) => x.colors, widthMinPixels: 6, capRounded: true, jointRounded: true,
           trailLength: LOOP * 0.15, currentTime: tFocus, fadeTrail: true,
         }),
         new ScatterplotLayer({

@@ -12,6 +12,7 @@ import InboxPanel from './components/InboxPanel.jsx'
 import AgentChat from './components/AgentChat.jsx'
 import Toasts from './components/Toasts.jsx'
 import Reports from './components/v3/Reports.jsx'
+import InboxPage from './components/v3/InboxPage.jsx'
 
 const ROLES = [
   { id: 'broker', label: 'Broker' },
@@ -135,6 +136,7 @@ export default function App() {
   const [view, setView] = useState('loops')
   const [targets, setTargets] = useState([])
   const [showReports, setShowReports] = useState(false)
+  const [showInbox, setShowInbox] = useState(false)
   const [focusOpen, setFocusOpen] = useState(true)
   const [drawer, setDrawer] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -293,9 +295,9 @@ export default function App() {
 
       <div className="v3-more">
         <button className="glass" onClick={() => setShowReports(true)}>Reports</button>
+        <button className="glass" onClick={() => { setDrawer(null); setShowInbox(true) }}>Inbox</button>
         {[
           ['approvals', 'Approvals'],
-          ['inbox', 'Inbox'],
           ['agent', 'Ask agent'],
         ].map(([id, label]) => (
           <button key={id} className={`glass ${drawer === id ? 'on' : ''}`} onClick={() => setDrawer(drawer === id ? null : id)}>
@@ -348,7 +350,8 @@ export default function App() {
         <div className="v3-legend glass">
           <span><i style={{ background: '#16a34a' }} />Booked</span>
           <span><i style={{ background: '#d97706' }} />Ready to book</span>
-          <span><i style={{ background: '#2541ff' }} />Found by the brain</span>
+          <span><i style={{ background: '#2541ff' }} />Empty trip to fill</span>
+          <span><i className="dash" />Empty drive</span>
           {focusOpen ? (
             <button onClick={() => setFocusOpen(false)}>See all loops</button>
           ) : null}
@@ -362,6 +365,16 @@ export default function App() {
         </div></div>
       )}
       <CardRow items={items} selectedId={focusOpen ? selected?.id : null} onSelect={select} />
+      {showInbox && (
+        <InboxPage
+          onToast={toast}
+          onActionsChanged={() => {
+            pending.refresh()
+            tours.refresh()
+          }}
+          onClose={() => setShowInbox(false)}
+        />
+      )}
       {showReports && (
         <Reports
           role={role}
