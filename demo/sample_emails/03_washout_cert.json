@@ -1,0 +1,14 @@
+{
+  "from": "Lakeshore Carriers Dispatch <dispatch@lakeshorecarriers.example.com>",
+  "to": "carriers@meridianlogistics.example.com",
+  "subject": "washout cert trl 53661",
+  "received_at": "2026-11-13T21:05:00Z",
+  "body": "Attached is the wash ticket for trailer 53661. Washed this afternoon after the Lone Star drums came off at DC135. Food grade wash + sanitize.\n\nTruck is sitting in Dallas, let us know if you have anything going north for it.\n\nDarnell Price\nLakeshore Carriers Inc. | MC-556019\nNight dispatch 312-555-0190",
+  "attachments": [
+    {
+      "filename": "WashTicket_53661.pdf",
+      "content_type": "application/pdf",
+      "text": "TRAILER WASHOUT CERTIFICATE\nCertificate No: WO-77841\nFacility: Lone Star Tank & Trailer Wash, 1100 Wintergreen Rd, Hutchins TX 75141\nCarrier: Lakeshore Carriers Inc.\nTrailer: 53661 (53' dry van)\nPrevious contents: Industrial cleaning compound, UN1760, Class 8\nWash type: FOOD GRADE - hot water rinse, detergent wash, sanitizer rinse, air dry\nDate/Time: 11/13/2026 14:20\nInspected by: R. Mendez\nTrailer released clean, odor free, dry."
+    }
+  ]
+}

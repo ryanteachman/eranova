@@ -24,6 +24,13 @@
 - New errors: `502 openai_error` (chat) and `503 meridian_unreachable`.
 - `arcs[].equipment` keys are any equipment code (`V`, `R`, `F`, `SB`, `SV`, `HS`).
 
-## Asher (email)
+## Asher (email pipeline)
+
+**2026-11-13**
+- **Done:** `email_pipeline/` specs 1–8 working end to end on stubs with live Meridian reads (parse, store, classify, extract, match, quote + reply proposals, tools, routes); 7 sample emails; contracts; `docs/email.md`. Stretch done too: carrier haggle → `confirm_carrier_rate`, and an IMAP poller behind `EMAIL_POLL_ENABLED`.
+- **Done (integration):** `email_pipeline` runs on Ryan's real backend: `routes.bp`, `@tool`/`@executor` registration, his approval queue, `check_compat`, pricing and shipment cache. All 7 samples run end to end; approve quote → real Meridian quote → reply sent with the price (tested once, quote declined after).
+- **Doing:** nothing.
+- **Blocked:** nothing. Two small asks for Ryan in `docs/requests.md` (his tool-list test, freight lines on quotes).
+- @Ali: contracts regenerated from the real backend (same shapes; `matched` now has prices and facility `requirements`; errors use `{error, detail}`; `GET /api/email/health` was removed). They are in `contracts/email_inbox.json`, `email_detail.json`, `email_outbox.json`, `email_process_result.json`. Extra routes: `GET /api/email/samples` (file names for the simulate buttons) and `POST /api/email/<id>/haggle`. Detail rows include `replies`.
 
 ## Ali (frontend)
