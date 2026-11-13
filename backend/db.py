@@ -24,6 +24,13 @@ CREATE TABLE IF NOT EXISTS classifications (
     input_hash      TEXT
 );
 
+CREATE TABLE IF NOT EXISTS events (
+    event_id    TEXT PRIMARY KEY,
+    shipment_id TEXT NOT NULL,
+    data        TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS events_by_shipment ON events (shipment_id);
+
 CREATE TABLE IF NOT EXISTS actions (
     action_id  TEXT PRIMARY KEY,
     kind       TEXT NOT NULL,
@@ -90,6 +97,12 @@ def load_records(table):
         raise ValueError(f"not a cache table: {table}")
     with get_conn() as conn:
         return [json.loads(row["data"]) for row in conn.execute(f"SELECT data FROM {table}")]
+
+
+def load_events():
+    """Return every cached Meridian shipment event as a list of dicts."""
+    with get_conn() as conn:
+        return [json.loads(row["data"]) for row in conn.execute("SELECT data FROM events")]
 
 
 def audit(actor, event, detail=""):

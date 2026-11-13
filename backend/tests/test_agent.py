@@ -59,7 +59,9 @@ def test_every_tool_is_registered_with_a_valid_schema():
     expected = {"network_overview": "auto", "find_backhauls": "auto",
                 "create_return_quote": "approve", "get_shipment": "auto", "search": "auto",
                 "price_preview": "auto", "add_shipment_note": "auto"}
-    assert {name: t["tier"] for name, t in TOOLS.items()} == expected
+    # Other packages (email_pipeline) register their own tools too; ours must all be present.
+    registered = {name: t["tier"] for name, t in TOOLS.items()}
+    assert expected.items() <= registered.items()
     for entry in openai_tools():
         assert entry["type"] == "function"
         assert entry["function"]["parameters"]["type"] == "object"

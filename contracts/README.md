@@ -19,6 +19,9 @@ is noted in `docs/status.md`.
 | POST | `/api/actions/<id>/reject` | `{reason}` | `Action` with `status: "rejected"` | `action_rejected.json` |
 | POST | `/api/agent/chat` | `{message}` | `{reply, tool_calls, actions_created}` | `agent_chat.json` |
 | GET | `/api/audit?limit=50` | — | `{items: [{at, actor, event, detail}]}`, newest first | `audit.json` |
+| GET | `/api/carriers` | — | `{items: [Scorecard]}`, best `base_score` first | `carriers.json` (first 3) |
+| GET | `/api/carriers/<vendor_id>` | — | `Scorecard` plus `per_load` and `bounced_loads` | `carrier_detail.json` |
+| POST | `/api/carriers/rank` | `{shipment_id}` or `{origin, destination, equipment_type, mode, hazmat}` | `{eligible: [Scorecard + fit + score], excluded: [{vendor_id, legal_name, reason}]}`, top 5 eligible | `carriers_rank.json` |
 | * | `/api/email/...` | — | Owned by Asher; see `email_pipeline/` | — |
 
 Example: `GET /api/city/TX/Dallas`.
@@ -79,6 +82,30 @@ truck is compatible, a blocked prospect (`ok: false`, `score: 0`) explaining why
 - `reply`: the agent's answer (plain text).
 - `tool_calls[]`: `{name, args, result_preview}` in call order.
 - `actions_created[]`: action IDs the agent queued. Show them as approval cards.
+
+**Scorecard** (`/api/carriers`, `/api/carriers/<vendor_id>`, items of `eligible[]`)
+
+| Field | Type | Notes |
+|---|---|---|
+| `vendor_id`, `legal_name` | string | Carrier. Only carrier vendor types are scored (not lumpers or insurance). |
+| `compliance_light` | string | `GREEN`, `YELLOW`, `RED` from Meridian. |
+| `loads` | integer | Finished loads (`DELIVERED`, `POD_RECEIVED`, `CLOSED`). |
+| `on_time_actual_pct` | integer or null | Percent of loads with a POD delivered on time. Excused lates count as on time, lates with no usable reason count as half late. `null` with no POD loads. |
+| `on_time_stored_pct` | integer | What the carrier's Meridian profile claims. |
+| `late_by_cause` | object | `{carrier, excused, unknown}` late delivery counts. |
+| `damage`, `bounces`, `tonu` | integer | POD shortage/damage/refused; times removed from a load; carrier-caused TONUs. |
+| `cost_score`, `reliability`, `quality` | number | Components, 0–1. |
+| `base_score` | integer | 0–100 performance score (no load-specific fit). |
+| `last_city` | object or null | `{city, state, shipment_id, date}`: where the carrier's latest load delivers. |
+| `reasons` | string[] | 3–5 plain-English reasons. |
+
+`/api/carriers/<vendor_id>` adds `per_load[]` (`{shipment_id, status, lane, pickup_date,
+late_delivery: {cause, code} | null, late_pickup, condition, cost_ratio, extra_charges}`,
+newest first) and `bounced_loads[]` (`{shipment_id, reason}`).
+
+`eligible[]` items add `fit` (0–1: lane match + truck location) and `score` (0–100 for this
+load). With `shipment_id`, the response also echoes `shipment_id`, and a carrier that already
+bounced that load is excluded.
 
 ## Errors
 

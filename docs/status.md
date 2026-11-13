@@ -8,11 +8,29 @@
 - Tested end to end: fill → approve created a real quote in Meridian (later declined with
   `scripts/reset_demo.py`); the agent finds Dallas, picks the top prospect and queues it.
 
+- **2026-11-13 Carrier scoring:** `brain/carrier_score.py` scores 16 carriers from actual
+  performance (on-time by late cause, late pickups, damage, bounces, TONUs, pay vs target)
+  with shrinkage and plain-English reasons. Shipment events are now synced. New routes
+  `GET /api/carriers`, `GET /api/carriers/<vendor_id>`, `POST /api/carriers/rank`, agent tool
+  `rank_carriers` ("who should haul 7300174?" works from chat), `scripts/score_carriers.py`.
+  Rules, weights and data notes in `docs/backend.md` › *Carrier scoring*.
+
 **Doing**
 - Nothing blocked. Next: tune scoring and the demo script with the team.
 
 **Blocked**
-- Waiting on Asher's `email_pipeline` interface (see `docs/requests.md`).
+- Nothing.
+
+**New UI data** (@Ali)
+- Carrier scorecards: `contracts/carriers.json`, `carrier_detail.json`, `carriers_rank.json`;
+  shapes in `contracts/README.md` › *Scorecard*. Good for a carrier leaderboard ("profile says
+  94% on time; actual loads say 89%") and a "who should haul this?" panel on a shipment.
+
+**For Haggle** (@Asher)
+- `rank_carriers` (auto tier) and `POST /api/carriers/rank` rank carriers for a lane or a
+  shipment. Haggle could use `base_score` to decide how far to stretch on a carrier's ask,
+  and the matcher could use it ahead of compliance light as a tiebreaker. Details in
+  `docs/requests.md`.
 
 **Contract changes** (@Ali)
 - Prospects have three extra fields: `carrier_id`, `miles_saved`, `target_margin_pct`.

@@ -1,0 +1,224 @@
+{
+  "eligible": [
+    {
+      "base_score": 79,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.45,
+      "damage": 2,
+      "fit": 0.4,
+      "last_city": {
+        "city": "Dallas",
+        "date": "2026-11-17",
+        "shipment_id": "7300173",
+        "state": "TX"
+      },
+      "late_by_cause": {
+        "carrier": 1,
+        "excused": 0,
+        "unknown": 0
+      },
+      "legal_name": "Acme Carrier Inc.",
+      "loads": 10,
+      "on_time_actual_pct": 89,
+      "on_time_stored_pct": 94,
+      "quality": 0.845,
+      "reasons": [
+        "Runs this lane (IL -> TX)",
+        "89% on time across 9 loads",
+        "1 late delivery, tractor or trailer not available (carrier fault)",
+        "2 damage or shortage claims at delivery",
+        "Paid 11% under target minimum on average (10 loads)"
+      ],
+      "reliability": 0.935,
+      "score": 71,
+      "tonu": 0,
+      "vendor_id": "ACMECARR"
+    },
+    {
+      "base_score": 86,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.51,
+      "damage": 0,
+      "fit": 0.0,
+      "last_city": {
+        "city": "Aurora",
+        "date": "2026-11-13",
+        "shipment_id": "7300128",
+        "state": "CO"
+      },
+      "late_by_cause": {
+        "carrier": 0,
+        "excused": 1,
+        "unknown": 0
+      },
+      "legal_name": "Gulfstream Express Carriers",
+      "loads": 6,
+      "on_time_actual_pct": 100,
+      "on_time_stored_pct": 93,
+      "quality": 0.984,
+      "reasons": [
+        "100% on time across 6 loads",
+        "1 late delivery excused: weather",
+        "No carrier-fault lates, bounces or damage",
+        "Paid 13% under target minimum on average (6 loads)"
+      ],
+      "reliability": 0.981,
+      "score": 69,
+      "tonu": 0,
+      "vendor_id": "GULFSTRMX"
+    },
+    {
+      "base_score": 86,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.52,
+      "damage": 0,
+      "fit": 0.0,
+      "last_city": {
+        "city": "Fort Worth",
+        "date": "2026-11-16",
+        "shipment_id": "7300166",
+        "state": "TX"
+      },
+      "late_by_cause": {
+        "carrier": 0,
+        "excused": 0,
+        "unknown": 0
+      },
+      "legal_name": "Prairie Haul Lines",
+      "loads": 5,
+      "on_time_actual_pct": 100,
+      "on_time_stored_pct": 92,
+      "quality": 0.981,
+      "reasons": [
+        "100% on time across 4 loads",
+        "No carrier-fault lates, bounces or damage",
+        "Paid 13% under target minimum on average (5 loads)",
+        "1 detention/layover charge"
+      ],
+      "reliability": 0.977,
+      "score": 69,
+      "tonu": 0,
+      "vendor_id": "PRAIRIEHL"
+    },
+    {
+      "base_score": 85,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.44,
+      "damage": 0,
+      "fit": 0.0,
+      "last_city": {
+        "city": "Dallas",
+        "date": "2026-11-13",
+        "shipment_id": "7300119",
+        "state": "TX"
+      },
+      "late_by_cause": {
+        "carrier": 0,
+        "excused": 0,
+        "unknown": 0
+      },
+      "legal_name": "Blue Ridge Transport",
+      "loads": 5,
+      "on_time_actual_pct": 100,
+      "on_time_stored_pct": 89,
+      "quality": 0.982,
+      "reasons": [
+        "100% on time across 5 loads",
+        "No carrier-fault lates, bounces or damage",
+        "Profile says 89% on time; actual loads say 100%",
+        "Paid 10% under target minimum on average (5 loads)",
+        "1 detention/layover charge"
+      ],
+      "reliability": 0.98,
+      "score": 68,
+      "tonu": 0,
+      "vendor_id": "BLUERIDGE"
+    },
+    {
+      "base_score": 85,
+      "bounces": 0,
+      "compliance_light": "GREEN",
+      "cost_score": 0.5,
+      "damage": 0,
+      "fit": 0.0,
+      "last_city": {
+        "city": "Aurora",
+        "date": "2026-11-15",
+        "shipment_id": "7300159",
+        "state": "CO"
+      },
+      "late_by_cause": {
+        "carrier": 1,
+        "excused": 1,
+        "unknown": 0
+      },
+      "legal_name": "Canyon Freight Systems",
+      "loads": 18,
+      "on_time_actual_pct": 94,
+      "on_time_stored_pct": 91,
+      "quality": 0.992,
+      "reasons": [
+        "94% on time across 18 loads",
+        "1 late delivery, tractor or trailer not available (carrier fault)",
+        "1 late delivery excused: weather",
+        "Paid 13% under target minimum on average (18 loads)"
+      ],
+      "reliability": 0.961,
+      "score": 68,
+      "tonu": 0,
+      "vendor_id": "CANYONFRT"
+    }
+  ],
+  "excluded": [
+    {
+      "legal_name": "Bad Wolf Logistics LLC",
+      "reason": "carrier BADWOLF is DO_NOT_USE, not ACTIVE.",
+      "vendor_id": "BADWOLF"
+    },
+    {
+      "legal_name": "Coastline LTL Systems",
+      "reason": "Does not haul TL (LTL_CARRIER)",
+      "vendor_id": "COASTLTL"
+    },
+    {
+      "legal_name": "High Plains Freightways",
+      "reason": "No equipment for V (has F, SD)",
+      "vendor_id": "HIGHPLAIN"
+    },
+    {
+      "legal_name": "MetroDash Couriers",
+      "reason": "Does not haul TL (EXPEDITE_CARRIER)",
+      "vendor_id": "METRODASH"
+    },
+    {
+      "legal_name": "National LTL Freightways",
+      "reason": "Does not haul TL (LTL_CARRIER)",
+      "vendor_id": "NATLTLFW"
+    },
+    {
+      "legal_name": "RapidLine Hotshot LLC",
+      "reason": "Does not haul TL (EXPEDITE_CARRIER)",
+      "vendor_id": "RAPIDLINE"
+    },
+    {
+      "legal_name": "Rusty Rig Transport Co.",
+      "reason": "carrier RUSTYRIG has no unexpired CARGO policy.",
+      "vendor_id": "RUSTYRIG"
+    },
+    {
+      "legal_name": "Swift Arrow Expedite",
+      "reason": "Does not haul TL (EXPEDITE_CARRIER)",
+      "vendor_id": "SWIFTARRW"
+    },
+    {
+      "legal_name": "Windy City Cartage",
+      "reason": "Does not haul TL (CARTAGE_AGENT)",
+      "vendor_id": "WINDYCART"
+    }
+  ],
+  "shipment_id": "7300176"
+}

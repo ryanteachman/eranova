@@ -12,6 +12,9 @@ FLATBED_CATEGORIES = {"STEEL", "WOOD", "MACHINERY", "SCRAP"}
 DRY_EQUIPMENT = {"V", "SB", "SV"}
 FLATBED_EQUIPMENT = {"F", "SD", "HS"}
 
+# Which truck equipment can serve a requested equipment type (same table as email_pipeline.match).
+EQUIPMENT_FITS = {"V": {"V", "R", "VC"}, "R": {"R"}, "F": {"F", "SD"}, "SD": {"SD"}, "VC": {"VC", "V"}}
+
 # (max weight lb, max pallet positions). V is the spec's 53' dry van limit.
 SIZE_LIMITS = {
     "V": (45000, 26),
@@ -65,7 +68,15 @@ def _fsma_rule(trailer_last_category, candidate, trailer_number, last_load_note)
     )
 
 
-def _carrier_rule(carrier, today):
+def carrier_has_equipment(carrier, equipment_type):
+    """Return True if any of the carrier's equipment types can serve the requested equipment type."""
+    fits = EQUIPMENT_FITS.get(equipment_type, {equipment_type})
+    return bool(fits & set(carrier.get("equipment_types") or []))
+
+
+def carrier_rule(carrier, today=None):
+    """Meridian's /cover gate: return (ok, reason) for an ACTIVE status and an unexpired CARGO policy."""
+    today = today or date.today().isoformat()
     name = carrier.get("vendor_id", "carrier")
     if carrier.get("status") != "ACTIVE":
         return False, f"Blocked: carrier {name} is {carrier.get('status')}, not ACTIVE."
@@ -108,5 +119,5 @@ def check_compat(trailer_last_category, equipment, candidate, carrier,
         else:
             record((True, f"{weight:,.0f} lb / {pallets} pallets fits the {equipment}."))
 
-    record(_carrier_rule(carrier, today))
+    record(carrier_rule(carrier, today))
     return not blocked, blocked + passed
