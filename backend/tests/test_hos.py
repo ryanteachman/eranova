@@ -114,3 +114,17 @@ def test_driver_after_outbound_waits_for_the_appointment():
     # 925 mi = 18.5 h of driving with a reset on the way; arrives early, waits for 07:00, unloads 2.5 h.
     assert d.now == datetime(2026, 11, 16, 9, 30, tzinfo=ZoneInfo("America/Chicago"))
     assert d.driven_shift == timedelta()                # the long wait before the appointment was a reset
+
+
+def test_earliest_backhaul_finds_the_first_legal_day():
+    d = hos.drive(hos.Driver(now=START), 550)           # out of hours Monday 17:30
+    result = hos.earliest_backhaul(d, facility(), loaded_miles=300, deadhead_miles=15)
+    assert result["ok"] and result["pickup_date"] == "2026-11-17"   # Monday is lost to the 10-hour reset
+    assert result["delivery_date"] == "2026-11-17"
+
+
+def test_earliest_backhaul_gives_up_after_the_search_window():
+    weekend_only = {"timezone": "America/Chicago", "avg_unload_minutes": 60,
+                    "operating_hours": {"sat": {"open": "06:00", "close": "18:00"}}}
+    result = hos.earliest_backhaul(hos.Driver(now=START), weekend_only, loaded_miles=100)  # Mon-Thu searched
+    assert not result["ok"] and result["reasons"][0].startswith("Blocked: HOS: no legal pickup within 3 days")

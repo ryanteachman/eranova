@@ -61,7 +61,8 @@ a labeled text file, not `KEY=VALUE`: the backend reads the first word after `Ba
   `find_prospect(prospect_id)`.
 - `brain/pricing.py`: `backhaul_buy_lines()`, `estimate()` (local), `preview()` (Meridian).
 - `brain/hos.py`: FMCSA Hours of Service simulator: `Driver`, `drive()`, `on_duty()`, `off_duty()`,
-  `rest()`, `driver_after_outbound(shipment, facilities)`, `backhaul_check(...)`. See *Hours of Service*.
+  `rest()`, `driver_after_outbound(shipment, facilities)`, `backhaul_check(...)`, `earliest_backhaul(...)`.
+  See *Hours of Service*.
 - `agent/registry.py`, `agent/tools.py`, `agent/loop.py`, `agent/actions.py`: see *Agent*.
 
 ## Compatibility rules (as implemented)
@@ -97,10 +98,25 @@ blocked when the earliest legal pickup is after the pickup facility closes on th
 is closed that day, from `operating_hours`), or the legal delivery misses `deliver_by`; `tight` when
 less than 2 hours remain before closing. Times in reasons are in the pickup facility's timezone.
 
+`earliest_backhaul(driver, pickup_facility, loaded_miles, deadhead_miles=0)` tries the day the truck
+empties and up to `SEARCH_DAYS` (3) days after, and returns the first day that works (or the last refusal,
+as `Blocked: HOS: no legal pickup within 3 days …`).
+
+**Where it runs:**
+- `find_backhauls` estimates each arriving truck's driver once (`driver_after_outbound`; a truck that
+  emptied in the past is treated as rested and available now, so dates never fall in the past) and runs
+  `earliest_backhaul` for every truck × candidate pairing: the pickup facility is the candidate's
+  `pickup_facility_id` (the consignee dock for reverse logistics, the usual shipper dock otherwise),
+  deadhead is 0 at the same dock, else the deadhead miles (at least 15). A pairing with no legal pickup
+  day is blocked (`ok: false`, score 0, the HOS reason first). Prospects get `pickup_date`,
+  `delivery_date_target`, `est_pickup`, `est_delivery` and an `HOS: …` reason.
+- The `create_return_quote` tool puts `pickup_date` / `delivery_date_target` in the payload, and the
+  executor sends them (and `freight_lines`, when an email supplied them) to `POST /quotes`.
+- The email pipeline checks the email's requested pickup date with `backhaul_check`.
+
 Not modelled: the 60/70-hour weekly cap and 34-hour restart (no driver history; every driver is
 assumed to have hours left in the week), sleeper-berth splits and the adverse-conditions extension
 (leaving them out only makes trips look slower, never illegal), and the short-haul exemption.
-Used by the email pipeline's truck matching; not yet by `find_backhauls` / `check_compat`.
 
 ## Backhaul finder
 
@@ -193,6 +209,7 @@ city in the data.
 | HOS: average truck speed | 50 mph | `hos.AVG_SPEED_MPH` |
 | HOS: default dock time / hours | 60 min, 06:00–18:00 | `hos.DEFAULT_DOCK_MINUTES`, `hos.DEFAULT_HOURS` |
 | HOS: local deadhead, tight slack | 15 mi, 2 h | `hos.LOCAL_DEADHEAD_MILES`, `hos.TIGHT_SLACK` |
+| HOS: days searched for a legal pickup | 3 | `hos.SEARCH_DAYS` |
 
 ## Known issues
 

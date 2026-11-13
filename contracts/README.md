@@ -55,6 +55,8 @@ Example: `GET /api/city/TX/Dallas`.
 | `carrier_id` | string | Carrier of the truck that would haul it. |
 | `miles_saved` | number | Empty miles avoided on the trip home. |
 | `target_margin_pct` | number | Margin used for `est_sell` (the customer's margin floor). |
+| `pickup_date`, `delivery_date_target` | string `YYYY-MM-DD` or `null` | Hours of Service estimate: earliest legal pickup day and the delivery day. `null` when HOS blocked it. |
+| `est_pickup`, `est_delivery` | string or `null` | The same estimate for display, in the pickup facility's local time, e.g. `"11/17 12:30 CST"`. |
 
 `/api/city` returns one prospect per candidate load: the best compatible truck, or, when no
 truck is compatible, a blocked prospect (`ok: false`, `score: 0`) explaining why.

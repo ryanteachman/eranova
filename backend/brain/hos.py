@@ -34,6 +34,7 @@ DEFAULT_HOURS = ("06:00", "18:00")     # when a facility has no operating hours
 DEFAULT_TZ = "America/Chicago"
 LOCAL_DEADHEAD_MILES = 15              # between two facilities in the same city
 TIGHT_SLACK = timedelta(hours=2)       # less than this before the pickup facility closes is "tight"
+SEARCH_DAYS = 3                        # earliest_backhaul looks this many days past the empty day
 WEEKDAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
 
@@ -186,7 +187,8 @@ def driver_after_outbound(shipment, facilities, miles=None):
 
 
 def backhaul_check(driver, pickup_facility, pickup_day, loaded_miles, deadhead_miles=0, deliver_by=None):
-    """Can this driver legally make the backhaul? Returns {ok, tight, pickup_at, arrive_at, slack, resets, reasons}.
+    """Can this driver legally make the backhaul? Returns {ok, tight, pickup_at, arrive_at, pickup_date,
+    delivery_date, slack, resets, reasons}; the *_at values are display strings, the *_date values ISO dates.
 
     pickup_day is the requested pickup date; the pickup must start while the pickup facility is open that day.
     """
@@ -200,14 +202,14 @@ def backhaul_check(driver, pickup_facility, pickup_day, loaded_miles, deadhead_m
     hours = facility_hours(pickup_facility, pickup_day)
     if hours is None:
         return {"ok": False, "tight": False, "pickup_at": None, "arrive_at": None, "slack": None,
-                "resets": d.resets - resets_before,
+                "pickup_date": None, "delivery_date": None, "resets": d.resets - resets_before,
                 "reasons": [f"Blocked: HOS/hours: the pickup facility is closed on {pickup_day:%a %m/%d}."]}
     open_, close = hours
     off_duty(d, open_, "waiting for the pickup facility to open")
     start = d.now
     if start > close:
         return {"ok": False, "tight": False, "pickup_at": fmt(start), "arrive_at": None, "slack": None,
-                "resets": d.resets - resets_before,
+                "pickup_date": None, "delivery_date": None, "resets": d.resets - resets_before,
                 "reasons": [f"Blocked: HOS: truck is empty {fmt(empty_at)}; the earliest legal pickup is "
                             f"{fmt(start)}, after the pickup facility closes ({fmt(close)}) on the requested day."]}
 
@@ -224,4 +226,21 @@ def backhaul_check(driver, pickup_facility, pickup_day, loaded_miles, deadhead_m
     elif tight:
         reasons.append(f"HOS is tight: only {slack.total_seconds() / 3600:.1f} h before the pickup facility closes.")
     return {"ok": ok, "tight": tight, "pickup_at": fmt(start), "arrive_at": fmt(d.now),
+            "pickup_date": start.astimezone(tz).date().isoformat(),
+            "delivery_date": d.now.astimezone(tz).date().isoformat(),
             "slack": slack, "resets": rests, "reasons": reasons}
+
+
+def earliest_backhaul(driver, pickup_facility, loaded_miles, deadhead_miles=0, search_days=SEARCH_DAYS):
+    """The first day (from the day the truck empties, up to search_days later) the driver can legally make
+    the backhaul; returns that day's backhaul_check result, or the last refusal when no day works."""
+    first_day = driver.now.astimezone(facility_tz(pickup_facility)).date()
+    result = None
+    for offset in range(search_days + 1):
+        result = backhaul_check(driver, pickup_facility, first_day + timedelta(days=offset),
+                                loaded_miles, deadhead_miles)
+        if result["ok"]:
+            return result
+    result["reasons"] = [f"Blocked: HOS: no legal pickup within {search_days} days of the truck emptying "
+                         f"({result['reasons'][0].removeprefix('Blocked: ')})"]
+    return result

@@ -233,3 +233,30 @@ def test_distance_uses_known_lane_miles_then_great_circle():
     assert network.distance_miles(("Dallas", "TX"), ("Nowhere", "ZZ")) is None
     fort_worth = network.distance_miles(("Dallas", "TX"), ("Fort Worth", "TX"))
     assert 25 < fort_worth < 45
+
+
+def test_backhaul_prospects_carry_hours_of_service_dates(dallas):
+    top = network.find_backhauls("Dallas", "TX")[0]
+    assert top["pickup_date"] and top["delivery_date_target"] >= top["pickup_date"]
+    assert top["est_pickup"] and top["est_delivery"]
+    assert any(r.startswith("HOS: truck empty") for r in top["reasons"])
+    assert top["reasons"][-1].startswith("Source:")
+
+
+def test_hours_of_service_blocks_when_no_legal_pickup_day(monkeypatch):
+    closed_mid_week = {"facility_id": "DC", "name": "DC", "city": "Dallas", "state": "TX", "facility_type": "DC",
+                       "timezone": "America/Chicago", "avg_unload_minutes": 60,
+                       # operating_hours with no weekday entries: closed every day, whatever today is
+                       "operating_hours": {"note": "closed for renovation"}}
+    seed([ship("1", ("Chicago", "IL"), ("Dallas", "TX"), "NORTHSTAR", category="STEEL", trailer="T1",
+               miles=925, consignee_facility="DC", pickup_date="2026-11-01")],
+         [carrier("ACMECARR")], [closed_mid_week], [customer("NORTHSTAR")])
+    prospects = network.find_backhauls("Dallas", "TX")
+    assert prospects and not prospects[0]["ok"] and prospects[0]["score"] == 0
+    assert prospects[0]["reasons"][0].startswith("Blocked: HOS: no legal pickup within 3 days")
+
+
+def test_old_inbound_loads_get_pickup_dates_from_today(dallas):
+    from datetime import date
+    today = date.today().isoformat()
+    assert all(p["pickup_date"] >= today for p in network.find_backhauls("Dallas", "TX") if p["ok"])

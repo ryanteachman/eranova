@@ -3,9 +3,10 @@
 import math
 import re
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 
 from .. import db
-from . import classify, compat, pricing
+from . import classify, compat, hos, pricing
 
 EMPTY_COST_PER_MILE = 2.00
 NEAR_MILES = 100
@@ -236,6 +237,8 @@ def _trucks_arriving(key, shipments, known_miles):
         buys = lane_buys.get((_origin(s), key))
         trucks.append({
             "outbound_file": s["shipment_id"],
+            "shipment": s,
+            "delivery_facility_id": (s.get("stops") or [{}])[-1].get("facility_id"),
             "home": _origin(s),
             "home_miles": s.get("miles") or _lane_miles(key, _origin(s), known_miles),
             "equipment": s.get("equipment_type"),
@@ -276,7 +279,9 @@ def _candidates_near(key, shipments, facilities, customers, known_miles):
         if near(_origin(s)):
             by_shipper[(s["customer_id"], _origin(s))].append(s)
     for (customer_id, pickup), loads in by_shipper.items():
+        pickup_facilities = Counter((s.get("stops") or [{}])[0].get("facility_id") for s in loads)
         candidates.append(dict(_profile(loads), customer_id=customer_id, pickup=pickup,
+                               pickup_facility_id=pickup_facilities.most_common(1)[0][0],
                                destination=None, loads=len(loads),
                                source=f"already ships from {pickup[0]}, {pickup[1]} ({len(loads)} loads)"))
 
@@ -296,7 +301,8 @@ def _candidates_near(key, shipments, facilities, customers, known_miles):
         for category in patterns:
             candidates.append(dict(
                 inbound, category=category, temp_controlled=False, hazmat=False,
-                customer_id=customer_id, pickup=pickup, destination=origin, loads=len(loads),
+                customer_id=customer_id, pickup=pickup, pickup_facility_id=facility_id,
+                destination=origin, loads=len(loads),
                 source=f"reverse logistics: {REVERSE_DESCRIPTIONS[category]} from "
                        f"{facility.get('name') or pickup[0]} back to {origin[0]}, {origin[1]}",
             ))
@@ -310,7 +316,7 @@ def _candidates_near(key, shipments, facilities, customers, known_miles):
             pickup = (address.get("city"), address.get("state"))
             if near(pickup):
                 candidates.append(dict(COLD_LEAD_PROFILE, customer_id=customer["customer_id"],
-                                       pickup=pickup, destination=None, loads=0,
+                                       pickup=pickup, pickup_facility_id=None, destination=None, loads=0,
                                        source=f"prospect with no loads yet; freight profile assumed GENERAL"))
                 break
     return candidates
@@ -338,7 +344,7 @@ def score_prospect(ok, truck, candidate, customer, miles_saved):
     return min(score, 100), reasons
 
 
-def _pair(key, truck, candidate, vendors, customers, known_miles):
+def _pair(key, truck, candidate, vendors, customers, known_miles, facilities=None, driver=None):
     destination = candidate["destination"] or truck["home"]
     deadhead = _lane_miles(key, candidate["pickup"], known_miles)
     loaded = _lane_miles(candidate["pickup"], destination, known_miles)
@@ -356,6 +362,16 @@ def _pair(key, truck, candidate, vendors, customers, known_miles):
         truck["last_category"], truck["equipment"], candidate, carrier,
         trailer_number=truck["trailer_number"], last_load_note=truck["last_note"],
     )
+    # Hours of Service: the earliest day this driver can legally pick the freight up and deliver it.
+    timing = {}
+    if driver is not None:
+        same_dock = candidate.get("pickup_facility_id") and candidate["pickup_facility_id"] == truck["delivery_facility_id"]
+        timing = hos.earliest_backhaul(driver, (facilities or {}).get(candidate.get("pickup_facility_id")), loaded,
+                                       0 if same_dock else max(deadhead, hos.LOCAL_DEADHEAD_MILES))
+        ok = ok and timing["ok"]
+        reasons = compat_reasons + timing["reasons"]
+        # The contract promises the first reason says what blocked it.
+        compat_reasons = [r for r in reasons if r.startswith("Blocked")] + [r for r in reasons if not r.startswith("Blocked")]
     score, score_reasons = score_prospect(ok, truck, candidate, customer, miles_saved)
 
     buy_lines = pricing.backhaul_buy_lines(loaded, truck["avg_outbound_buy_frt"])
@@ -381,6 +397,10 @@ def _pair(key, truck, candidate, vendors, customers, known_miles):
         "reasons": compat_reasons + score_reasons + [f"Source: {candidate['source']}."],
         "carrier_id": truck["carrier_id"],
         "miles_saved": miles_saved,
+        "pickup_date": timing.get("pickup_date"),
+        "delivery_date_target": timing.get("delivery_date"),
+        "est_pickup": timing.get("pickup_at"),
+        "est_delivery": timing.get("arrive_at"),
         "target_margin_pct": margin,
         "buy_lines": buy_lines,
     }
@@ -399,9 +419,15 @@ def find_backhauls(city, state):
     key = _resolve_city(city, state, one_way_cities(shipments))
     known_miles = _known_lane_miles(shipments)
     trucks = _trucks_arriving(key, shipments, known_miles)
+    # Each truck's driver clock once; a truck that emptied in the past is available now (it has rested).
+    now = datetime.now(timezone.utc)
+    drivers = {t["outbound_file"]: hos.off_duty(hos.driver_after_outbound(t["shipment"], facilities), now,
+                                                "already empty: available now")
+               for t in trucks}
     prospects = []
     for candidate in _candidates_near(key, shipments, facilities, customers, known_miles):
-        pairs = [p for p in (_pair(key, t, candidate, vendors, customers, known_miles) for t in trucks) if p]
+        pairs = [p for p in (_pair(key, t, candidate, vendors, customers, known_miles, facilities,
+                                   drivers[t["outbound_file"]]) for t in trucks) if p]
         if not pairs:
             continue
         compatible = [p for p in pairs if p["ok"]]
