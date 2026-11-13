@@ -26,6 +26,24 @@ Set `DB_PATH=/some/scratch.db` to try things without touching `return_trip.db` (
 Approving a `create_return_quote` creates a real quote in Meridian; `python scripts/reset_demo.py`
 declines Return Trip quotes afterwards.
 
+### Tests
+
+```bash
+python -m pytest -q email_pipeline/tests                             # offline: ~1 s, no OpenAI or Meridian calls
+RUN_LIVE_EMAIL_TESTS=1 python -m pytest -q email_pipeline/tests/live  # live: real model + a copy of return_trip.db
+python -m pytest -q                                                  # everything (backend + email)
+```
+
+The offline suite reuses Ryan's fixtures (a temporary database per test, a fake Meridian) and adds a scripted
+fake model (`fake_llm`) and a small Dallas dataset (`dallas_trucks`). It covers parsing and the "null" clean-up,
+the review rules, FSMA and washouts, trailer history from email, HOS blocks, the lane and other tiebreakers,
+pricing and HOS dates on the quote payload, the reply placeholder (refused before the quote, re-queued, then
+sent with the price), the agent's `send_reply` only proposing, routes and their errors, and the haggle (target
+range from lane history, the carrier's floor enforced in code). The live suite (opt-in, ~45 s, a little OpenAI
+usage, never approves anything) replays the demo order below on a copy of the synced database with the email
+tables emptied, plus a Saturday pickup at a weekday-only facility; its expected trucks come from the
+2026-11-13 dataset, so check the data first if it fails after a Meridian reset.
+
 **Demo order** (each email builds on the last):
 
 | # | File | What happens |
