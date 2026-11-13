@@ -70,3 +70,16 @@
   .ap-filters { order: 3; flex-basis: 100%; justify-content: flex-start; }
   .ap-cols { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
 }
+
+/* approved rows open into what was approved */
+.ap-row.clickable { cursor: pointer; }
+.ap-row.clickable:hover .ap-more { color: #2541ff; }
+.ap-approved { margin-top: 8px; background: #fff; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; cursor: default; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.ap-approved-kind { font-size: 13.5px; font-weight: 500; color: #111827; }
+.ap-approved dl { margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.ap-approved dl div { background: #f9fafb; border-radius: 10px; padding: 6px 10px; }
+.ap-approved dt { font-size: 11px; color: #6b7280; }
+.ap-approved dd { margin: 1px 0 0; font-size: 13px; color: #111827; word-break: break-word; }
+.ap-approved-body { margin: 0; white-space: pre-wrap; font-size: 13px; line-height: 1.5; color: #1f2937; background: #eef2ff; border-radius: 12px; padding: 10px 12px; }
+.ap-approved-why { margin: 0; font-size: 12px; line-height: 1.45; color: #6b7280; }
+.ap-approved-why b { font-weight: 500; color: #374151; }

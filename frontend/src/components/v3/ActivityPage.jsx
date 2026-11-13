@@ -105,9 +105,68 @@ const toDate = (iso) => {
   return d && !isNaN(d) ? d : null
 }
 
+const place = (p) => (p ? [p.name, p.city && `${p.city}, ${p.state}`].filter(Boolean).join(' · ') : null)
+const KIND = { create_return_quote: 'Quote created in Meridian', send_reply: 'Email reply sent', book_tour: 'Loop booked' }
+
+// What exactly was approved, in words: the quote, the email that went out, or the loop.
+function Approved({ action }) {
+  const p = action.payload || {}
+  const r = action.result || {}
+  const fields = []
+  const add = (k, v) => { if (v != null && v !== '' && !(Array.isArray(v) && !v.length)) fields.push([k, v]) }
+  if (action.kind === 'create_return_quote' || r.quote_id) {
+    add('Quote', r.quote_id && `#${r.quote_id}`)
+    add('Customer', p.customer_id)
+    add('From', place(p.origin))
+    add('To', place(p.destination))
+    add('Pickup', p.pickup_date)
+    add('Freight', (p.freight_lines || []).map((f) => `${f.pieces ?? ''} ${String(f.package_type || '').toLowerCase()} · ${f.weight_lb?.toLocaleString() ?? '?'} lb · ${f.description}`).join('; '))
+    add('Truck', [p.equipment_type, p.carrier_id, p.trailer_number && `trailer ${p.trailer_number}`].filter(Boolean).join(' · '))
+    add('Miles', p.miles)
+    add('Customer pays', money(r.sell_total))
+    add('Carrier gets', money((p.buy_lines || []).reduce((t, l) => t + (l.amount || 0), 0) || null))
+    add('Extras', (p.accessorials || []).join(', '))
+  }
+  if (action.kind === 'send_reply' || r.reply_id) add('Sent to', r.to)
+  if (r.quote_ids?.length) add('Quotes', r.quote_ids.join(', '))
+  return (
+    <div className="ap-approved">
+      <span className="ap-approved-kind">{KIND[action.kind] || humanize(action.kind)} · {action.title}</span>
+      {fields.length > 0 && (
+        <dl>
+          {fields.map(([k, v]) => (
+            <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
+          ))}
+        </dl>
+      )}
+      {r.body && <p className="ap-approved-body">{r.body}</p>}
+      {action.reasoning && <p className="ap-approved-why"><b>Why the agent proposed it:</b> {action.reasoning}</p>}
+    </div>
+  )
+}
+
 function Row({ row, onOpen }) {
   const [open, setOpen] = useState(false)
   const a = actorOf(row.actor)
+  if (row.action) {
+    return (
+      <div className={`ap-row ${row.tone || ''} clickable ${open ? 'open' : ''}`} onClick={() => setOpen((o) => !o)} role="button" tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && setOpen((o) => !o)}>
+        <span className="ap-time">{row.date ? hhmm(row.date) : ''}</span>
+        <div className="ap-main">
+          <div className="ap-line">
+            <span className={`ap-badge ${a.tone}`}>{a.label}</span>
+            <span className="ap-text">{row.text}</span>
+          </div>
+          <span className="ap-more">{open ? 'Hide' : 'See what was approved'}</span>
+          {open && <Approved action={row.action} />}
+          {row.path && (
+            <button className="ap-open" onClick={(e) => { e.stopPropagation(); onOpen(row.path) }}>Open in Meridian ↗</button>
+          )}
+        </div>
+      </div>
+    )
+  }
   return (
     <div className={`ap-row ${row.tone || ''}`}>
       <span className="ap-time">{row.date ? hhmm(row.date) : ''}</span>
@@ -151,7 +210,11 @@ export default function ActivityPage({ onClose, focusPath }) {
   )
 
   const rows = useMemo(() => {
-    const out = (audit.data?.items || []).map((r, i) => {
+    const known = new Set(actionItems.map((a) => a.action_id))
+    const out = (audit.data?.items || []).filter((r) => {
+      const id = (String(r.detail || '').match(/^(act_[a-z0-9]+)/) || [])[1]
+      return !(r.event === 'action_approved' && id && known.has(id))
+    }).map((r, i) => {
       const raw = String(r.detail ?? r.text ?? '').trim()
       const text = sentence(r)
       return {
@@ -167,7 +230,7 @@ export default function ActivityPage({ onClose, focusPath }) {
       if (a.status !== 'done' && a.status !== 'rejected' && a.status !== 'failed') continue
       const date = toDate(a.updated_at || a.created_at)
       const write = isWrite(a)
-      const label = a.result?.summary || a.title || humanize(a.kind)
+      const label = a.title || a.result?.summary || humanize(a.kind)
       out.push({
         key: `ac-${a.action_id}`,
         date,
@@ -184,7 +247,7 @@ export default function ActivityPage({ onClose, focusPath }) {
               ? `Rejected: ${a.title || humanize(a.kind)}`
               : `Failed: ${a.title || humanize(a.kind)}`,
         path: write ? meridianPath(a.result) : null,
-        raw: a.summary && a.summary !== label ? a.summary : null,
+        action: a,
       })
     }
     out.sort((x, y) => (y.date?.getTime() || 0) - (x.date?.getTime() || 0))
