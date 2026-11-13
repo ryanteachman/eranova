@@ -116,9 +116,30 @@ def resolve_carrier(hint, email_text):
     }
 
 
+# Meridian facility compliance flags in plain words, as they go on the quote and in the reply.
+FLAG_TEXT = {"SEAL_REQUIRED": "seal required", "ID_REQUIRED": "driver ID required", "TWIC_REQUIRED": "TWIC card required",
+             "SAFETY_VEST": "safety vest required", "STEEL_TOES": "steel-toe boots required",
+             "NO_CELL_PHONES": "no cell phones on the dock"}
+
+
+def facility_requirements(facility_id):
+    """What a facility demands of the driver, from its Meridian record (flags, appointments, lumper); [] if unknown."""
+    if not facility_id:
+        return []
+    facility = _safe_get(f"/facilities/{facility_id}") or {}
+    reqs = [FLAG_TEXT.get(flag, flag.lower().replace("_", " ")) for flag in facility.get("compliance_flags") or []]
+    if facility.get("appointment_required"):
+        reqs.append("appointment required")
+    if facility.get("lumper_policy") == "REQUIRED":
+        reqs.append("lumper required")
+    return reqs
+
+
 def resolve_facility(location):
-    """Fill location['facility_id'] from its stop name (e.g. 'Big-Box DC135'), and a missing city/state from the facility."""
+    """Fill location['facility_id'] from its stop name (e.g. 'Big-Box DC135'), a missing city/state, and the
+    facility's own requirements (location['requirements'])."""
     location["facility_id"] = None
+    location["requirements"] = []
     if not location.get("name"):
         return location
     hits, _ = _search_names(location["name"], "facilities")
@@ -128,6 +149,7 @@ def resolve_facility(location):
         return location
     hit = (same_city or hits)[0]
     location["facility_id"] = hit["entity_id"]
+    location["requirements"] = facility_requirements(hit["entity_id"])
     # sublabel looks like "VALIANT-DSM | Des Moines, IA"
     place = (hit.get("sublabel") or "").split("|")[-1]
     if "," in place:

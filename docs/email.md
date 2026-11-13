@@ -99,6 +99,11 @@ All Meridian calls are reads (`/search`, `/vendors/lookup`, `/vendors/{id}`, `/c
   When a tie decides the winner, its reasons say which tiebreaker did it.
 - **Options kept:** the top 5 usable options, plus every other option tied with the 5th one's score
   (already in tiebreak order), so a tie never silently drops a truck.
+- **Facility requirements:** each resolved stop gets `requirements` from its Meridian facility record
+  (`compliance_flags` such as seal / driver ID / TWIC, `appointment_required`, `lumper_policy: REQUIRED`). They are
+  added to the quote's `accessorials` (e.g. `"driver ID required at pickup (BBR-DC135)"`, skipped when the email
+  already said it) and passed to the reply prompt, so a gate rule like DC135's seal doesn't depend on the model
+  spotting it in the email.
 - **Trailer history from email:** if a `LAST_LOAD_INFO` email named a trailer, that last load overrides
   Meridian's history for the trailer in later quote matching (the reason says so).
 - **WASHOUT_CERT:** insert into `washouts`; `unblocked` lists network prospects for that trailer that are now
@@ -198,6 +203,8 @@ Each prompt lives in code next to its schema, with a one-line comment on what it
 - Last-load history from email lives only in our `emails` table; Ryan's own network and compat won't see it
   unless he reads `store.emailed_last_load()`.
 - Every `simulate` creates a new email row (no de-duplication), so the demo button can be pressed repeatedly.
+- The reply prompt is told the facility requirements, but the model doesn't always mention them; the quote
+  payload carries them either way.
 - The model's confidence on `06_vague` lands at 0.7–0.8; the missing-essentials check is what sends it to review.
 - A carrier's rate ask repeated in a reply is replaced with "(pricing to follow)" by the no-dollars guard.
 - The stub caches active shipments once per process; restart to pick up Meridian changes.

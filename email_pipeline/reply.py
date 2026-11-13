@@ -40,6 +40,11 @@ def _situation(kind, extracted, matched, quote_pending):
     matched = matched or {}
     facts = [f"Email kind: {kind}"]
     if kind == "QUOTE_REQUEST":
+        stop_reqs = [f"{stop}: {', '.join(loc['requirements'])}"
+                     for stop, loc in (("pickup", matched.get("origin") or {}), ("delivery", matched.get("destination") or {}))
+                     if loc.get("requirements")]
+        if stop_reqs:
+            facts.append("Facility requirements (from our records; confirm them in the reply): " + "; ".join(stop_reqs))
         if quote_pending:
             p = matched["prospect"]
             facts.append(f"We have a truck for it and a quote is being prepared for {p['customer_name']}.")

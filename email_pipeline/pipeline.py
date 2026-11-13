@@ -26,6 +26,16 @@ def _cite(email_id, email):
     return f'Email {email_id} from {email["from"]} ("{email["subject"]}"): "{_excerpt(email["body"])}"'
 
 
+def _with_facility_requirements(accessorials, origin, destination):
+    """The email's accessorials plus the stop facilities' own requirements from Meridian, without repeats."""
+    merged = list(accessorials)
+    for stop, loc in (("pickup", origin), ("delivery", destination)):
+        for req in loc.get("requirements") or []:
+            if not any(req.lower() in a.lower() for a in merged):
+                merged.append(f"{req} at {stop} ({loc['facility_id']})")
+    return merged
+
+
 def _quote_payload(email_id, extracted, matched):
     """The create_return_quote payload for a quote request: the full lane + freight from the email."""
     p = matched["prospect"]
@@ -48,7 +58,7 @@ def _quote_payload(email_id, extracted, matched):
         "pickup_date": extracted.get("pickup_date"),
         "freight_lines": lines,
         "references": extracted.get("references") or [],
-        "accessorials": extracted.get("accessorials") or [],
+        "accessorials": _with_facility_requirements(extracted.get("accessorials") or [], p["origin"], p["destination"]),
         "outbound_file": p["outbound_file"],
         "carrier_id": p["carrier_id"],
         "trailer_number": p["trailer_number"],
