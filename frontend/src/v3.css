@@ -193,3 +193,15 @@
 .v3-focus .explain { margin: 10px 0 0; font-size: 13.5px; line-height: 1.5; color: #374151; }
 .v3-focus .list-title { margin-top: 12px; font-size: 12.5px; color: var(--sub); }
 .v3-legend i.dash { width: 16px; height: 3px; border-radius: 2px; background: repeating-linear-gradient(90deg, #dc2626 0 4px, transparent 4px 7px); }
+
+/* the focus card always stops above the legend and the card row; its top scrolls if needed */
+.v3-focus { display: flex; flex-direction: column; max-height: calc(100vh - 76px - 300px); }
+.v3-focus .top { flex: 1 1 auto; min-height: 0; overflow-y: auto; border-radius: 28px 28px 0 0; }
+.v3-focus .bottom { flex: 0 0 auto; }
+.v3-focus .big { font-size: 64px; }
+.v3-card .big { font-size: 48px; }
+.v3-card .big small { display: block; margin: 6px 0 0; line-height: 1.35; }
+@media (max-width: 1500px) {
+  .v3-focus .big { font-size: 54px; }
+  .v3-card .big { font-size: 40px; }
+}

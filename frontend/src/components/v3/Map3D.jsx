@@ -76,11 +76,14 @@ function buildTrip(tour, period, offset, color) {
   const segs = legs.map(roadPath)
   const total = segs.reduce((s, g) => s + g.d, 0)
   if (!total) return null
-  const path = []
-  const timestamps = []
-  const colors = []
   const alpha = color[3] ?? 255
+  // One trip per lap: a route that doesn't end where it started (a one-way lane) must not draw
+  // a straight line from its end back to its start between laps.
+  const laps = []
   for (let lap = 0; lap < 3; lap++) {
+    const path = []
+    const timestamps = []
+    const colors = []
     let run = 0
     segs.forEach((g, li) => {
       const c = legs[li].kind === 'empty' ? [...EMPTY_RGB, alpha] : color
@@ -92,8 +95,9 @@ function buildTrip(tour, period, offset, color) {
       })
       run += g.d
     })
+    laps.push({ tour_id: tour.tour_id, path, timestamps, color, colors })
   }
-  return { tour_id: tour.tour_id, path, timestamps, color, colors }
+  return laps
 }
 
 function legLabel(l) {
@@ -134,16 +138,18 @@ export default function Map3D({ tours = [], focusTourId = null, onSelectTour, pa
           if (isFocus) empties.push({ ...row, path: row.road })
           continue
         }
-        const rgb = legRgb(t, l)
+        // with a loop selected, everything else turns light grey so only the selection has colour
+        const rgb = focus && !isFocus ? [203, 213, 225] : legRgb(t, l)
         // direction: the arc fades in from where the truck starts to where it arrives
-        const a = isFocus ? 255 : focus ? 150 : 230
-        arcs.push({ ...row, from: [...rgb, Math.round(a * 0.25)], to: [...rgb, a], width: isFocus ? 4 : focus ? 2.5 : 3.5, focus: isFocus })
+        const a = isFocus ? 255 : focus ? 110 : 230
+        // arcs show direction: the selected loop in its own colour, everything else light grey
+        arcs.push({ ...row, from: [...rgb, Math.round(a * 0.25)], to: [...rgb, a], width: isFocus ? 4 : focus ? 2 : 3.5, focus: isFocus })
         if (isFocus) (l.status === 'missing' ? roadsFound : roads).push({ ...row, color: [...rgb, 255] })
       }
     }
     const truckRgb = focus ? (focus.status === 'lane' ? STATUS_RGB.found : STATUS_RGB[tourState(focus)]) : BLUE
     const tripsFocus = focus
-      ? [0, LOOP / 2].map((o) => buildTrip(focus, LOOP, o, [...truckRgb, 255])).filter(Boolean)
+      ? [0, LOOP / 2].flatMap((o) => buildTrip(focus, LOOP, o, [...truckRgb, 255]) || [])
       : []
     const stops = []
     const seen = new Set()

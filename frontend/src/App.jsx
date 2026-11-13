@@ -21,8 +21,8 @@ const ROLES = [
 ]
 const EQ = { V: 'Dry van', R: 'Reefer', F: 'Flatbed', SV: 'Sprinter' }
 const BROKER_VIEWS = [
-  ['loops', 'Ready to book'],
-  ['lanes', 'Empty trips to fill'],
+  ['loops', 'Book now'],
+  ['lanes', 'Find freight'],
   ['mine', 'My loops'],
 ]
 const usd0 = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
@@ -58,10 +58,10 @@ function laneItems(lanes, targets) {
   return lanes.map((l) => ({
     id: l.lane_id,
     tourId: l.lane_id,
-    kicker: `${EQ[l.equipment] ?? l.equipment} trucks drive this home empty`,
+    kicker: `${EQ[l.equipment] ?? l.equipment} trucks drive this route back empty`,
     title: `${l.origin.city} → ${l.destination.city}`,
-    big: `${l.trucks_home_empty} trips`,
-    bigNote: `home empty since January · ${usd0(l.empty_cost_usd)} wasted`,
+    big: `${l.trucks_home_empty}`,
+    bigNote: `empty trips since January · ${usd0(l.empty_cost_usd)} spent driving empty`,
     tag: `about ${Math.max(1, Math.round(l.per_month))} a month`,
     tone: targets.includes(l.lane_id) ? '' : 'blue',
     explain: `Your trucks deliver into ${l.origin.city}, then drive back to ${l.destination.city} with nothing in the trailer. Find a shipper with freight going ${l.origin.city} → ${l.destination.city} and each of these trips earns money instead of costing it.`,
@@ -72,7 +72,7 @@ function laneItems(lanes, targets) {
     ],
     listTitle: 'Who could ship it',
     list: l.leads.slice(0, 3),
-    action: 'Find freight for this trip',
+    action: 'Find freight for this route',
     done: targets.includes(l.lane_id),
     doneLabel: 'The agent is looking ✓',
     raw: l,
@@ -236,7 +236,7 @@ export default function App() {
   const sub = {
     broker: {
       loops: <><b>{readyTours.length} {readyTours.length === 1 ? 'loop' : 'loops'}</b> ready to book · <b>{waiting.toLocaleString()} empty miles</b> to save</>,
-      lanes: bt ? <>Your trucks drove <b>{bt.one_by_one.empty_miles.toLocaleString()} miles empty</b> this year. <b>{bt.return_lanes.share_of_empty}%</b> of it is these {bt.return_lanes.lanes} trips home.</> : null,
+      lanes: bt ? <><b>{bt.return_lanes.lanes} routes</b> where your trucks come back empty · <b>{bt.return_lanes.share_of_empty}%</b> of all empty miles</> : null,
       mine: <><b>{bookedTours.length}</b> {bookedTours.length === 1 ? 'loop' : 'loops'} booked</>,
     }[view],
     carrier: <>Each truck gets a full week that ends at home</>,
@@ -350,7 +350,7 @@ export default function App() {
         <div className="v3-legend glass">
           <span><i style={{ background: '#16a34a' }} />Booked</span>
           <span><i style={{ background: '#d97706' }} />Ready to book</span>
-          <span><i style={{ background: '#2541ff' }} />Empty trip to fill</span>
+          <span><i style={{ background: '#2541ff' }} />Needs freight</span>
           <span><i className="dash" />Empty drive</span>
           {focusOpen ? (
             <button onClick={() => setFocusOpen(false)}>See all loops</button>
@@ -361,7 +361,7 @@ export default function App() {
       {items && items.length === 0 && role === 'broker' && (
         <div className="v3-cards"><div className="v3-card glass" style={{ cursor: 'default' }}>
           <span className="kicker">{view === 'mine' ? 'Nothing booked yet' : 'All caught up'}</span>
-          <span className="title">{view === 'mine' ? 'Book a loop and it shows up here with its money and savings.' : 'Every loop the brain found is booked. Check the return lanes to win.'}</span>
+          <span className="title">{view === 'mine' ? 'Book a loop and it shows up here with its money and savings.' : 'Every loop the brain found is booked. Check Find freight for the next ones.'}</span>
         </div></div>
       )}
       <CardRow items={items} selectedId={focusOpen ? selected?.id : null} onSelect={select} />
