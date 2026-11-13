@@ -1,16 +1,21 @@
 {
-  "reply": "Dallas receives 37 loads and ships none. The best backhaul is Keystone Home & Garden's retail returns to Chicago (score 86, GP 14.4%). I queued a return quote for your approval as act_0001. Valiant Foods was blocked: that trailer last hauled hazmat and needs a washout before food.",
+  "reply": "I found the best backhaul opportunity for Dallas, TX. A quote has been queued for approval:\n\n- **Customer**: Northstar Manufacturing\n- **Route**: Dallas, TX to Chicago, IL\n- **Category**: Scrap\n- **Score**: 98\n- **Estimated Buy**: $1,767.46\n- **Estimated Sell**: $1,905.26\n- **Gross Profit %**: 7.2%\n- **Miles Saved**: 925 (100% of the trip home)\n\nThe quote is waiting for approval with action ID: `act_dcae82c8`.",
   "tool_calls": [
+    {
+      "name": "network_overview",
+      "args": {},
+      "result_preview": "{\"totals\": {\"empty_miles\": 82805, \"empty_cost_usd\": 165610.0, \"one_way_lanes\": 21, \"loads\": 158}, \"most_one_way_cities\": [{\"city\": \"Dallas\", \"state\": \"TX\", \"inb"
+    },
     {
       "name": "find_backhauls",
       "args": {"city": "Dallas", "state": "TX"},
-      "result_preview": "3 prospects, 1 compatible: KEYSTONE-TX (86)"
+      "result_preview": "[{\"prospect_id\": \"TX:Dallas:NORTHSTAR:SCRAP:Dallas:Chicago:7300156\", \"customer_id\": \"NORTHSTAR\", \"customer_name\": \"Northstar Manufacturing\", \"origin\": {\"city\": \"Dallas\""
     },
     {
       "name": "create_return_quote",
-      "args": {"prospect_id": "DAL-CHI-KEYSTONE-TX-7300176"},
-      "result_preview": "Queued for human approval as act_0001"
+      "args": {"prospect_id": "TX:Dallas:NORTHSTAR:SCRAP:Dallas:Chicago:7300156"},
+      "result_preview": "Queued for human approval as act_dcae82c8"
     }
   ],
-  "actions_created": ["act_0001"]
+  "actions_created": ["act_dcae82c8"]
 }
