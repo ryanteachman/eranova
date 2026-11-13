@@ -60,6 +60,8 @@ a labeled text file, not `KEY=VALUE`: the backend reads the first word after `Ba
   `network_summary()`, `find_backhauls(city, state)`, `score_prospect()`, `city_detail()`,
   `find_prospect(prospect_id)`.
 - `brain/pricing.py`: `backhaul_buy_lines()`, `estimate()` (local), `preview()` (Meridian).
+- `brain/hos.py`: FMCSA Hours of Service simulator: `Driver`, `drive()`, `on_duty()`, `off_duty()`,
+  `rest()`, `driver_after_outbound(shipment, facilities)`, `backhaul_check(...)`. See *Hours of Service*.
 - `agent/registry.py`, `agent/tools.py`, `agent/loop.py`, `agent/actions.py`: see *Agent*.
 
 ## Compatibility rules (as implemented)
@@ -76,6 +78,29 @@ The LLM classifies; these rules decide. Every rule adds a human-readable reason;
 3. **Hazmat:** a hazmat candidate needs `hazmat_certified: true` on the carrier.
 4. **Size:** the candidate's average weight and pallet positions must fit the equipment.
 5. **Carrier:** `status` `ACTIVE` and a `CARGO` policy expiring today or later.
+
+## Hours of Service (`brain/hos.py`)
+
+FMCSA rules for property-carrying drivers (49 CFR Part 395), as a simulator of the driver's clocks.
+Meridian has no ELD logs, so the clocks are **estimated from the loads**: the outbound load's pickup
+window, its miles at 50 mph, dock time from the facility's `avg_unload_minutes`, and the delivery
+appointment (a delivered load's `actual_departure` overrides the estimate).
+
+1. **30-minute break** after 8 hours of driving; any 30+ minutes not driving counts.
+2. **11 hours of driving** per shift.
+3. **14-hour on-duty window** from the first on-duty minute; dock time and waiting don't pause it.
+4. **10 consecutive hours off duty** reset the shift and the window.
+
+`backhaul_check(driver, pickup_facility, pickup_day, loaded_miles, deadhead_miles=0, deliver_by=None)`
+plays the backhaul forward and returns `{ok, tight, pickup_at, arrive_at, slack, resets, reasons}`:
+blocked when the earliest legal pickup is after the pickup facility closes on the requested day (or it
+is closed that day, from `operating_hours`), or the legal delivery misses `deliver_by`; `tight` when
+less than 2 hours remain before closing. Times in reasons are in the pickup facility's timezone.
+
+Not modelled: the 60/70-hour weekly cap and 34-hour restart (no driver history; every driver is
+assumed to have hours left in the week), sleeper-berth splits and the adverse-conditions extension
+(leaving them out only makes trips look slower, never illegal), and the short-haul exemption.
+Used by the email pipeline's truck matching; not yet by `find_backhauls` / `check_compat`.
 
 ## Backhaul finder
 
@@ -164,6 +189,10 @@ city in the data.
 | Agent turns | 8 | `loop.MAX_TURNS` |
 | Meridian page size / timeout | 200 / 30 s | `meridian.PAGE_LIMIT`, `meridian.TIMEOUT_SECONDS` |
 | Classification threads | 8 | `classify.WORKERS` |
+| HOS: break / drive / window / reset | 8 h → 30 min, 11 h, 14 h, 10 h | `hos.MAX_DRIVING_BEFORE_BREAK`, `BREAK`, `MAX_DRIVING_PER_SHIFT`, `ON_DUTY_WINDOW`, `SHIFT_RESET` |
+| HOS: average truck speed | 50 mph | `hos.AVG_SPEED_MPH` |
+| HOS: default dock time / hours | 60 min, 06:00–18:00 | `hos.DEFAULT_DOCK_MINUTES`, `hos.DEFAULT_HOURS` |
+| HOS: local deadhead, tight slack | 15 mi, 2 h | `hos.LOCAL_DEADHEAD_MILES`, `hos.TIGHT_SLACK` |
 
 ## Known issues
 
@@ -177,3 +206,5 @@ city in the data.
   shipments came back `GENERAL`.
 - `washouts` is read by `trailer_number` and is assumed to have that column (see
   `docs/requests.md`).
+- **HOS is an estimate**, not a driver's log: a flat 50 mph, average dock times, and no weekly
+  60/70-hour cap. It can say a trip is too slow when the real driver would make it, not the reverse.
