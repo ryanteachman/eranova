@@ -115,7 +115,6 @@ export default function ApprovalQueue({ pending, onApproved, onToast }) {
   async function approve(action) {
     const done = await decide(action.action_id, () => api.approve(action.action_id))
     if (!done) return
-    onToast(done.result?.summary || `Approved ${action.action_id}`, 'success')
     onApproved(done)
   }
 

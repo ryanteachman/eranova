@@ -21,6 +21,8 @@ import reportsMock from '../mocks/reports.json'
 import learnedMock from '../mocks/learned.json'
 import hubsMock from '../mocks/shipper_hubs.json'
 import driversMock from '../mocks/drivers.json'
+import carriersMock from '../mocks/carriers.json'
+import carriersRankMock from '../mocks/carriers_rank.json'
 
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 export const MERIDIAN_WEB_URL = import.meta.env.VITE_MERIDIAN_WEB_URL || ''
@@ -83,6 +85,9 @@ const real = {
   getLearned: () => request('/api/learned'),
   // manufacturer supply hubs and the driver app, built from real Meridian loads
   getHubs: () => request('/api/hubs'),
+  // Ryan's carrier scorecards from real Meridian loads (on time, damage, bounces, cost)
+  getCarriers: () => request('/api/carriers'),
+  rankCarriers: (body) => request('/api/carriers/rank', { method: 'POST', body }),
   getDrivers: () => request('/api/drivers'),
 }
 
@@ -283,6 +288,14 @@ Object.assign(mock, {
   async getReports() {
     await wait(250)
     return clone(reportsMock)
+  },
+  async getCarriers() {
+    await wait(200)
+    return clone(carriersMock)
+  },
+  async rankCarriers() {
+    await wait(300)
+    return clone(carriersRankMock)
   },
   async getHubs() {
     await wait(200)

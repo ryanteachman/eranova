@@ -54,7 +54,7 @@ function Action({ action, busy, onDecide }) {
   )
 }
 
-export default function InboxPage({ onToast, onActionsChanged, onClose }) {
+export default function InboxPage({ onToast, onActionsChanged, onApproved, onClose }) {
   const inbox = usePoll(() => api.getInbox(), 5000)
   const outbox = usePoll(() => api.getOutbox(), 5000)
   const actions = usePoll(() => api.getActions(), 3000)
@@ -94,7 +94,8 @@ export default function InboxPage({ onToast, onActionsChanged, onClose }) {
     try {
       if (decision === 'approve') {
         const done = await api.approve(action.action_id)
-        onToast(done.result?.summary || `${action.title}: done`, 'success')
+        if (onApproved) onApproved(done)
+        else onToast(done.result?.summary || `${action.title}: done`, 'success')
       } else {
         await api.reject(action.action_id, 'Rejected from the inbox')
         onToast(`Rejected: ${action.title}`, 'info')

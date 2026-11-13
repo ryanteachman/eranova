@@ -6,7 +6,6 @@ import Map3D from './components/v3/Map3D.jsx'
 import { CardRow, FocusCard } from './components/v3/Cards.jsx'
 import { Why } from './components/v2/TourDetail.jsx'
 import { routeText } from './components/v2/TourList.jsx'
-import PhoneWeek from './components/v3/PhoneWeek.jsx'
 import ApprovalQueue from './components/ApprovalQueue.jsx'
 import InboxPanel from './components/InboxPanel.jsx'
 import AgentChat from './components/AgentChat.jsx'
@@ -33,7 +32,7 @@ const usd = (n) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD
 const day = (d) => new Date(`${d}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' })
 
 // Each role becomes the same simple card: one title, one big number, one tag, one action.
-function brokerItems(tours) {
+function brokerItems(tours, scores = {}) {
   return tours.map((t) => ({
     id: t.tour_id,
     tourId: t.tour_id,
@@ -41,8 +40,12 @@ function brokerItems(tours) {
     title: t.name,
     big: `${t.totals.empty_miles_saved.toLocaleString()} mi`,
     bigNote: `fewer empty miles (≈ ${usd0(t.totals.cost_saved_usd)})`,
-    tag: `${t.totals.loaded_pct}% loaded`,
+    tag: scores[t.carrier.vendor_id] ? `${t.totals.loaded_pct}% loaded · carrier ${scores[t.carrier.vendor_id].base_score}/100` : `${t.totals.loaded_pct}% loaded`,
     tone: t.status === 'booked' ? '' : 'amber',
+    ...(scores[t.carrier.vendor_id] && {
+      listTitle: `Carrier check · ${t.carrier.name} scores ${scores[t.carrier.vendor_id].base_score}/100`,
+      list: scores[t.carrier.vendor_id].reasons.slice(0, 3).map((r, j) => ({ key: `${t.tour_id}-r${j}`, name: r, why: '' })),
+    }),
     stats: [
       ['Truck loaded', `${t.totals.loaded_pct}% (was ${t.totals.one_by_one_loaded_pct}%)`],
       ['You collect · pay', `${usd0(t.totals.sell)} · ${usd0(t.totals.buy)}`],
@@ -95,17 +98,25 @@ function carrierItems(weeks) {
     kicker: `${w.carrier.truck} · ${w.carrier.driver} · ${EQ[w.carrier.equipment] ?? w.carrier.equipment}`,
     title: routeText(w),
     big: usd0(w.totals.pay),
-    bigNote: 'this week',
+    bigNote: 'offered for this truck this week',
     tag: `Home ${day(w.totals.home_by)}`,
     tone: w.status === 'accepted' ? '' : 'blue',
+    listTitle: 'The week the broker offered',
+    list: w.legs.map((l) => ({
+      key: `${w.tour_id}-${l.seq}`,
+      name: `${l.origin.city} → ${l.destination.city}`,
+      why: l.kind === 'empty'
+        ? `Empty · ${l.miles} mi`
+        : `Pickup ${day(l.pickup)} · ${l.miles} mi · ${usd0(l.pay)}${l.status === 'needs_carrier' ? ' · new load' : ''}`,
+    })),
     stats: [
       ['Truck loaded', `${w.totals.loaded_pct}%`],
       ['Per mile', `$${w.totals.per_mile}`],
       ['Idle days', `${w.totals.idle_days} (was ${w.standalone.idle_days})`],
     ],
-    action: 'Accept the week',
+    action: `Accept and send to ${w.carrier.driver.split(' ')[0]}`,
     done: w.status !== 'offered',
-    doneLabel: w.status === 'accepted' ? 'Accepted ✓' : 'Counter sent',
+    doneLabel: w.status === 'accepted' ? `Accepted ✓ · on ${w.carrier.driver.split(' ')[0]}'s phone` : 'Counter sent',
     raw: w,
   }))
 }
@@ -147,6 +158,11 @@ const hubAsTour = (h) => ({
     miles: sp.miles, path: sp.path, rgb: SPOKE_RGB[sp.status] ?? SPOKE_RGB.none_this_week,
   })),
 })
+// The carrier's week for a truck and the driver who drives it (same carrier + truck number in Meridian).
+const weekDriverId = (w) => `${w.carrier.vendor_id}:${w.carrier.truck.replace(/^Truck /, '')}:${w.carrier.driver}`
+const weekAsNextLoads = (w) => w.legs.filter((l) => l.kind !== 'empty').map((l) => ({
+  shipment_id: `${w.tour_id}-${l.seq}`, origin: l.origin, destination: l.destination, pickup: l.pickup, miles: l.miles, pay: l.pay,
+}))
 const driverAsTour = (d) => ({
   tour_id: d.driver_id, kind: 'leg', status: 'driver', equipment: d.equipment, name: d.name,
   legs: [{ seq: 1, kind: 'existing', status: 'booked', origin: d.load.origin, destination: d.load.destination, miles: d.load.miles, path: d.load.path, rgb: [37, 65, 255] }],
@@ -203,6 +219,7 @@ export default function App() {
   const prices = usePoll(() => api.getPriceSignals(), 0)
   const lanes = usePoll(() => api.getReturnLanes(), 0)
   const backtest = usePoll(() => api.getBacktest(), 0)
+  const carrierCards = usePoll(() => api.getCarriers(), 0)
 
   const toast = useCallback((text, kind = 'info') => {
     const id = Math.random()
@@ -222,18 +239,37 @@ export default function App() {
     if (role === 'broker') {
       if (view === 'lanes') return lanes.data ? laneItems(lanes.data.items, targets) : null
       if (!tours.data) return null
-      return brokerItems(tours.data.items.filter((t) => (view === 'mine' ? t.status === 'booked' : t.status !== 'booked')))
+      const scores = Object.fromEntries((carrierCards.data?.items ?? []).map((c) => [c.vendor_id, c]))
+      return brokerItems(tours.data.items.filter((t) => (view === 'mine' ? t.status === 'booked' : t.status !== 'booked')), scores)
     }
     if (role === 'carrier') return weeks.data ? carrierItems(weeks.data.items.filter((w) => w.carrier.vendor_id === carrierId)) : null
     if (role === 'driver') return null
     if (!hubs.data) return null
     const cid = customerId ?? hubs.data.items[0]?.customer_id
     return hubItems(hubs.data.items.filter((h) => h.customer_id === cid))
-  }, [role, view, targets, carrierId, customerId, tours.data, weeks.data, hubs.data, lanes.data])
+  }, [role, view, targets, carrierId, customerId, tours.data, weeks.data, hubs.data, lanes.data, carrierCards.data])
 
   const pickKey = role === 'broker' ? `broker-${view}` : role
   const selected = items?.find((it) => it.id === picked[pickKey]) ?? items?.[0] ?? null
-  const focus = selected ? { ...selected, link: links[selected.id] } : null
+  const [ranks, setRanks] = useState({}) // tour_id -> Ryan's ranking for the loop's new load
+  const newLeg = role === 'broker' && view !== 'lanes' ? selected?.raw?.legs?.find((l) => l.status === 'needs_carrier' && l.shipment_id) : null
+  useEffect(() => {
+    if (!newLeg || ranks[selected.id]) return
+    const id = selected.id
+    api.rankCarriers({ shipment_id: newLeg.shipment_id }).then((r) => setRanks((x) => ({ ...x, [id]: r }))).catch(() => {})
+  }, [newLeg?.shipment_id]) // eslint-disable-line react-hooks/exhaustive-deps
+  const rank = selected && ranks[selected.id]
+  const rankText = (() => {
+    if (!rank || !newLeg) return null
+    const mine = selected.raw.carrier.vendor_id
+    const pos = rank.eligible.findIndex((c) => c.vendor_id === mine)
+    const top = rank.eligible[0]
+    const lane = `${newLeg.origin.city} → ${newLeg.destination.city}`
+    if (pos === 0) return `Best-ranked carrier for the new ${lane} load out of ${rank.eligible.length + rank.excluded.length} checked.`
+    if (pos > 0) return `Ranked #${pos + 1} for the new ${lane} load. Top pick is ${top.legal_name} (${top.score}), but ${selected.raw.carrier.name} already has a truck there from the load before it.`
+    return `Not in the top ${rank.eligible.length} for the new ${lane} load. Top pick is ${top.legal_name} (${top.score}).`
+  })()
+  const focus = selected ? { ...selected, link: links[selected.id], explain: selected.explain ?? rankText } : null
 
   const priceLanes = useMemo(() => {
     if (!prices.data) return []
@@ -260,11 +296,11 @@ export default function App() {
         toast(`The agent is now watching email and calls for freight going ${selected.title}.`, 'success')
       } else if (role === 'broker') {
         const action = await api.approve(selected.raw.action_id)
+        announce(action)
         setLinks((l) => ({ ...l, [selected.id]: meridianLink(action.result) }))
-        toast(action.result?.summary ?? 'Loop booked', 'success')
       } else if (role === 'carrier') {
         await api.respondWeek(selected.raw.tour_id, 'accept')
-        toast(`Week accepted. ${selected.raw.carrier.name} is home ${day(selected.raw.totals.home_by)}.`, 'success')
+        toast(`Week accepted. It's on ${selected.raw.carrier.driver}'s phone now, home ${day(selected.raw.totals.home_by)}.`, 'success')
       } else {
         await api.respondOffer(selected.raw.offer_id, 'accept')
         toast(`${selected.raw.shipper.name} accepted. The loop closes.`, 'success')
@@ -300,26 +336,39 @@ export default function App() {
   }, [hubs.data])
   const activeCustomer = customerId ?? hubCustomers[0]?.id
   const driverList = drivers.data?.items ?? []
-  const driver = driverList.find((d) => d.driver_id === driverId) ?? driverList[0] ?? null
+  const baseDriver = driverList.find((d) => d.driver_id === driverId) ?? driverList[0] ?? null
+  // once dispatch accepts a week for this truck, its loads show up on the driver's phone
+  const acceptedWeek = baseDriver && allWeeks.find((w) => w.status === 'accepted' && weekDriverId(w) === baseDriver.driver_id)
+  const driver = baseDriver && acceptedWeek ? { ...baseDriver, next_loads: weekAsNextLoads(acceptedWeek) } : baseDriver
 
-  // Pop a notice whenever an approved action writes to Meridian (a real change in the TMS).
+  // Every approval pops a notice. If it wrote to Meridian (a quote), the notice links to it.
   const seenWrites = useRef(null)
+  const announce = useCallback((a) => {
+    if (!a || a.status !== 'done') return
+    if (seenWrites.current?.has(a.action_id)) return
+    seenWrites.current?.add(a.action_id)
+    const r = a.result || {}
+    const wrote = Boolean(r.quote_id || r.meridian_url)
+    const path = r.meridian_url ? new URL(r.meridian_url, 'http://x').pathname : r.quote_id ? `/quotes/${r.quote_id}` : null
+    const id = a.action_id
+    setNotices((n) => [...n, {
+      id,
+      head: wrote ? 'Meridian updated' : 'Approved',
+      title: r.quote_id ? `Quote ${r.quote_id} created` : r.summary || a.title,
+      amount: r.sell_total,
+      path: wrote ? path : null,
+    }])
+    setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 9000)
+  }, [])
   useEffect(() => {
-    const writes = (allActions.data?.items ?? []).filter((a) => a.status === 'done' && (a.result?.quote_id || a.result?.meridian_url))
     if (!allActions.data) return
+    const writes = allActions.data.items.filter((a) => a.status === 'done')
     if (seenWrites.current === null) {
       seenWrites.current = new Set(writes.map((a) => a.action_id)) // don't announce what happened before the page opened
       return
     }
-    const fresh = writes.filter((a) => !seenWrites.current.has(a.action_id))
-    fresh.forEach((a) => {
-      seenWrites.current.add(a.action_id)
-      const id = a.action_id
-      const path = a.result.meridian_url ? new URL(a.result.meridian_url, 'http://x').pathname : `/quotes/${a.result.quote_id}`
-      setNotices((n) => [...n, { id, title: a.result.quote_id ? `Quote ${a.result.quote_id} created` : a.title, detail: a.title, amount: a.result.sell_total, path }])
-      setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 9000)
-    })
-  }, [allActions.data])
+    writes.forEach(announce) // catches approvals made anywhere else (another tab, a teammate)
+  }, [allActions.data, announce])
 
   const sub = {
     broker: {
@@ -327,7 +376,7 @@ export default function App() {
       lanes: bt ? <><b>{bt.return_lanes.lanes} routes</b> where your trucks come back empty · <b>{bt.return_lanes.share_of_empty}%</b> of all empty miles</> : null,
       mine: <><b>{bookedTours.length}</b> {bookedTours.length === 1 ? 'loop' : 'loops'} booked</>,
     }[view],
-    carrier: <>Each truck gets a full week that ends at home</>,
+    carrier: <>Dispatch: accept a full week for each truck · it goes straight to the driver's phone</>,
     driver: <>The driver's app: today's load, every stop, one button for the next step</>,
     shipper: <>Each plant is a supply hub · lines show where its goods ship this week</>,
   }[role]
@@ -395,7 +444,7 @@ export default function App() {
       )}
       {role === 'driver' && (
         <div className="v3-filters">
-          {driverList.slice(0, 12).map((d) => (
+          {[...driverList.slice(0, 12), ...(driver && !driverList.slice(0, 12).some((d) => d.driver_id === driver.driver_id) ? [driver] : [])].map((d) => (
             <button key={d.driver_id} className={`glass ${driver?.driver_id === d.driver_id ? 'on' : ''}`} onClick={() => setDriverId(d.driver_id)}>
               {d.name} <em>Truck {d.truck}</em>
             </button>
@@ -421,25 +470,11 @@ export default function App() {
         ))}
       </div>
 
-      {role === 'carrier' && !drawer && selected && (
-        <div className="v3-phone">
-          <PhoneWeek
-            key={selected.raw.tour_id}
-            week={selected.raw}
-            onResponded={() => {
-              weeks.refresh()
-              tours.refresh()
-            }}
-            onToast={toast}
-          />
-        </div>
-      )}
-
       {role === 'driver' && !drawer && (
         <div className="v3-phone">
           <DriverApp
             key={driver?.driver_id}
-            drivers={drivers.data ? driverList : null}
+            drivers={drivers.data ? driverList.map((d) => (d.driver_id === driver?.driver_id ? driver : d)) : null}
             selectedId={driver?.driver_id}
             onSelect={setDriverId}
             onToast={toast}
@@ -447,13 +482,18 @@ export default function App() {
         </div>
       )}
 
-      {role !== 'carrier' && role !== 'driver' && focusOpen && !drawer && (
+      {role !== 'driver' && focusOpen && !drawer && (
         <FocusCard
           item={focus}
           busy={busy}
           onAction={act}
           onClose={() => setFocusOpen(false)}
-          onWhy={role === 'broker' && view !== 'lanes' ? () => setDrawer('why') : null}
+          onWhy={
+            role === 'broker' && view !== 'lanes' ? () => setDrawer('why')
+              : role === 'carrier' && selected?.raw.status === 'accepted' ? () => { setDriverId(weekDriverId(selected.raw)); setRole('driver') }
+              : null
+          }
+          whyLabel={role === 'carrier' ? `See ${selected?.raw.carrier.driver.split(' ')[0]}'s phone →` : undefined}
         />
       )}
 
@@ -464,7 +504,7 @@ export default function App() {
             <button className="x" onClick={() => setDrawer(null)} aria-label="Close">✕</button>
           </header>
           <div className={`body ${drawer === 'agent' ? 'flush' : ''}`}>
-            {drawer === 'approvals' && <ApprovalQueue pending={pending} onApproved={() => tours.refresh()} onToast={toast} />}
+            {drawer === 'approvals' && <ApprovalQueue pending={pending} onApproved={(a) => { announce(a); tours.refresh() }} onToast={toast} />}
             {drawer === 'inbox' && <InboxPanel onToast={toast} onActionsCreated={() => pending.refresh()} />}
             {drawer === 'agent' && <AgentChat onError={(m) => toast(m, 'error')} />}
             {drawer === 'why' && selected?.raw?.decisions && <Why tour={selected.raw} priceLanes={priceLanes} />}
@@ -502,6 +542,7 @@ export default function App() {
       {showInbox && (
         <InboxPage
           onToast={toast}
+          onApproved={announce}
           onActionsChanged={() => {
             pending.refresh()
             tours.refresh()
@@ -530,10 +571,10 @@ export default function App() {
           <div key={n.id} className="m-notice">
             <span className="m-dot" />
             <div>
-              <b>Meridian updated</b>
+              <b>{n.head}</b>
               <span>{n.title}{n.amount != null ? ` · ${usd(n.amount)}` : ''}</span>
             </div>
-            <button onClick={() => { setActivity({ focusPath: n.path, meridian: true }); setNotices((x) => x.filter((y) => y.id !== n.id)) }}>View</button>
+            {n.path && <button onClick={() => { setActivity({ focusPath: n.path, meridian: true }); setNotices((x) => x.filter((y) => y.id !== n.id)) }}>View in Meridian</button>}
           </div>
         ))}
       </div>

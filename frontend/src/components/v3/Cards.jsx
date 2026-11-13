@@ -31,7 +31,7 @@ export function CardRow({ items, selectedId, onSelect }) {
   )
 }
 
-export function FocusCard({ item, busy, onAction, onClose, onWhy }) {
+export function FocusCard({ item, busy, onAction, onClose, onWhy, whyLabel = 'Why this? →' }) {
   if (!item) return null
   return (
     <div className="v3-focus">
@@ -46,7 +46,7 @@ export function FocusCard({ item, busy, onAction, onClose, onWhy }) {
           {item.listTitle && <span className="list-title">{item.listTitle}</span>}
           <ul className="focus-list">
             {item.list.map((x) => (
-              <li key={x.name}>
+              <li key={x.key ?? x.name}>
                 <b>{x.name}</b>
                 <span>{x.why}</span>
               </li>
@@ -54,7 +54,7 @@ export function FocusCard({ item, busy, onAction, onClose, onWhy }) {
           </ul>
         </>)}
         {onWhy && (
-          <button className="why-link" onClick={onWhy}>Why this? →</button>
+          <button className="why-link" onClick={onWhy}>{whyLabel}</button>
         )}
       </div>
       <div className="bottom">
