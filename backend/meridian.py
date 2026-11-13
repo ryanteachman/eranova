@@ -19,14 +19,18 @@ class MeridianError(Exception):
 
 
 def _request(method, path, params=None, body=None):
-    response = requests.request(
-        method,
-        config.TMS_API_BASE + path,
-        headers={"x-api-key": config.TMS_API_KEY},
-        params=params,
-        json=body,
-        timeout=TIMEOUT_SECONDS,
-    )
+    try:
+        response = requests.request(
+            method,
+            config.TMS_API_BASE + path,
+            headers={"x-api-key": config.TMS_API_KEY},
+            params=params,
+            json=body,
+            timeout=TIMEOUT_SECONDS,
+        )
+    except requests.RequestException as exc:
+        raise MeridianError(503, "meridian_unreachable",
+                            f"Could not reach Meridian ({type(exc).__name__}). Try again shortly.") from exc
     if response.ok:
         return response.json()
     try:

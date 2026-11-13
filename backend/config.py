@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SECRET_FILE = ROOT / "secret.txt"
 
 # secret.txt is a labeled text file ("  Base URL: ..."), not KEY=VALUE lines.
-SECRET_LABELS = {"Base URL": "TMS_API_BASE", "API key": "TMS_API_KEY"}
+SECRET_LABELS = {"Base URL": "TMS_API_BASE", "API key": "TMS_API_KEY", "URL": "TMS_UI_URL"}
 
 load_dotenv(ROOT / ".env")
 
@@ -32,6 +32,7 @@ _secret = read_secret_file()
 
 TMS_API_BASE = (os.getenv("TMS_API_BASE") or _secret.get("TMS_API_BASE", "")).rstrip("/")
 TMS_API_KEY = os.getenv("TMS_API_KEY") or _secret.get("TMS_API_KEY", "")
+TMS_UI_URL = (os.getenv("TMS_UI_URL") or _secret.get("TMS_UI_URL", "")).rstrip("/")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
