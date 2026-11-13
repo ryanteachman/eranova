@@ -101,7 +101,17 @@ Shipments, carriers, customers, facilities and freight categories come from Ryan
   `status: "prospect"` with `prospect` and the `options`, or `"none_found"` with `reasons`. All blocked trucks
   are kept in `blocked`. The chosen truck is priced with Ryan's `pricing`: lane miles (Meridian's average on the
   lane, else his distance estimate), `backhaul_buy_lines`, the customer's `margin_for` and a local `estimate`.
-- **Tiebreakers** (trucks with equal scores, in this order): same pickup facility (the truck delivers at the
+- **Hours of Service:** each truck also goes through `backend/brain/hos.py`: its driver's clocks are
+  estimated from its outbound load, then the backhaul (local deadhead, loading, loaded miles) is played
+  forward with the FMCSA break / 11-hour / 14-hour / 10-hour-reset rules. A truck whose earliest legal
+  pickup is after the pickup facility closes on the requested day is blocked (`Blocked: HOS: …`); one with
+  less than 2 hours of slack loses 10 points; every option gets `est_pickup` and `est_delivery`, and the
+  quote payload gets the estimated `delivery_date_target` (Ryan's executor sends it, the pickup date and the
+  email's freight lines to Meridian).
+- **Tiebreakers** (trucks with equal scores, in this order): carrier lane (the carrier's Meridian `lanes`,
+  state to state: this exact lane beats the reverse lane, which beats none; the reverse counts because a
+  carrier running Chicago→Dallas is the one whose trucks need to get home; few carriers list any lane) →
+  same pickup facility (the truck delivers at the
   dock we pick up from) → load status (DELIVERED > AT_DELIVERY > IN_TRANSIT > PICKED_UP/AT_PICKUP > DISPATCHED >
   COVERED > BOOKED: how sure we are the truck shows up) → carrier compliance (GREEN > YELLOW > RED) → known
   trailer number → lowest outbound file number (booked earliest; mainly keeps results the same from run to run).
@@ -221,8 +231,8 @@ Each prompt lives in code next to its schema, with a one-line comment on what it
 - **LLM provider:** the pipeline uses OpenAI structured output (`gpt-4o-mini`, `OPENAI_MODEL_FAST`) through
   `llm.structured()`, not `anthropic` as the original plan said. Swapping providers only touches `llm.py`.
 - Matching reads Ryan's cache, so it is only as fresh as the last `python scripts/sync_data.py`.
-- Ryan's `create_return_quote` executor doesn't send `pickup_date`, `freight_lines` or references to Meridian,
-  so a quote from an email has the lane and price but not the email's freight details (see requests).
+- References and accessorials from the email are in the payload but not sent to Meridian (`POST /quotes` has
+  no field for them).
 - For carrier emails the quote's `rate_ref` points at the outbound file Ryan's finder paired with the freight,
   not at the emailing carrier's truck (which isn't on a Meridian file).
 - Ryan's test `test_every_tool_is_registered_with_a_valid_schema` expects only his seven tools, so it fails now

@@ -11,7 +11,7 @@ from datetime import date
 from functools import lru_cache
 
 from backend import db, meridian
-from backend.brain import classify, network, pricing
+from backend.brain import classify, hos, network, pricing
 from backend.brain.compat import CONTAMINANT_CATEGORIES, EQUIPMENT_FITS, FOOD_CATEGORIES, check_compat
 
 from email_pipeline import store
@@ -278,6 +278,23 @@ def price_backhaul(origin, destination, customer_id, truck, rows):
             "est_buy": money["buy_total"], "est_sell": money["sell_total"], "gp_pct": money["gp_pct"]}
 
 
+def hos_check(truck, shipment, origin, loaded_miles, pickup_date, facilities):
+    """Hours of Service (backend/brain/hos.py) for this truck taking the backhaul after its outbound load.
+
+    Returns hos.backhaul_check's result, or None when the pickup date or the loaded miles are unknown.
+    """
+    if not (shipment and pickup_date and loaded_miles):
+        return None
+    try:
+        pickup_day = date.fromisoformat(pickup_date)
+    except ValueError:
+        return None
+    driver = hos.driver_after_outbound(shipment, facilities)
+    same_dock = origin.get("facility_id") and truck.get("delivery_facility_id") == origin["facility_id"]
+    deadhead = 0 if same_dock else hos.LOCAL_DEADHEAD_MILES
+    return hos.backhaul_check(driver, facilities.get(origin.get("facility_id")), pickup_day, loaded_miles, deadhead)
+
+
 def _candidate_from_request(extracted):
     """The freight in a quote request, shaped as a check_compat candidate."""
     lines = extracted.get("freight_lines") or []
@@ -294,8 +311,22 @@ def _candidate_from_request(extracted):
     }
 
 
-def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_city, home_state):
-    """Run check_compat for one arriving truck carrying the email's freight; returns an option dict."""
+def lane_fit(carrier, origin_state, destination_state):
+    """How well the carrier's listed lanes (Meridian `lanes`, state to state) fit this trip:
+    2 = it lists this exact lane, 1 = it lists the reverse (it runs this corridor, and this trip takes its
+    truck home), 0 = no lane. Returns (fit, description)."""
+    for lane in carrier.get("lanes") or []:
+        if (lane.get("origin"), lane.get("destination")) == (origin_state, destination_state):
+            return 2, f"runs {origin_state}→{destination_state}"
+    for lane in carrier.get("lanes") or []:
+        if (lane.get("origin"), lane.get("destination")) == (destination_state, origin_state):
+            return 1, f"runs {destination_state}→{origin_state}, the reverse of this trip"
+    return 0, None
+
+
+def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_city, home_state, hos_result=None,
+                      origin_state=None):
+    """Run check_compat and the HOS check for one arriving truck carrying the email's freight; returns an option dict."""
     carrier = get_vendor(truck["carrier_id"]) or {"vendor_id": truck["carrier_id"]}
     equipment = truck.get("equipment")
     last_category, last_note = truck.get("trailer_last_category"), truck.get("last_load_note")
@@ -312,6 +343,9 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
     if requested_equipment and equipment not in EQUIPMENT_FITS.get(requested_equipment, {requested_equipment}):
         ok = False
         reasons.append(f"Blocked: request needs equipment {requested_equipment}, truck is {equipment}.")
+    if hos_result:
+        reasons += hos_result["reasons"]
+        ok = ok and hos_result["ok"]
 
     score = 50 if ok else 0
     truck_home_city, truck_home_state = _city_state(truck.get("destination"))
@@ -331,16 +365,26 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
             reasons.append(f"Truck only empties {-gap} day(s) after the requested pickup.")
         else:
             reasons.append(f"Truck empties {gap} days before pickup (long wait).")
+    if hos_result and hos_result["tight"]:
+        score -= 10
+    lane, lane_note = lane_fit(carrier, origin_state, home_state)
+    if lane_note:
+        reasons.append(f"Carrier {truck['carrier_id']} {lane_note} (a listed lane).")
     return {
         "outbound_file": truck.get("outbound_file"),
         "outbound_status": truck.get("outbound_status"),
         "delivery_facility_id": truck.get("delivery_facility_id"),
         "carrier_id": truck.get("carrier_id"),
         "carrier_compliance": carrier.get("compliance_light"),
+        "carrier_lane": lane,
+        "carrier_lane_note": lane_note,
         "trailer_number": truck.get("trailer_number"),
         "equipment": equipment,
         "trailer_last_category": last_category,
         "available_date": truck.get("available_date"),
+        "est_pickup": (hos_result or {}).get("pickup_at"),
+        "est_delivery": (hos_result or {}).get("arrive_at"),
+        "est_delivery_date": (hos_result or {}).get("delivery_date"),
         "heading_home_to": f"{truck_home_city}, {truck_home_state}",
         "ok": ok,
         "score": max(score, 0),
@@ -348,8 +392,10 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
     }
 
 
-# Tiebreakers for trucks with the same score, strongest first.
-TIEBREAKERS = ["same pickup facility", "load status", "carrier compliance", "known trailer", "lower file number"]
+# Tiebreakers for trucks with the same score, strongest first. A carrier's listed lane comes first: it takes
+# a long record of runs to establish one, so few carriers have any, but when one does it is the best signal.
+TIEBREAKERS = ["carrier lane", "same pickup facility", "load status", "carrier compliance", "known trailer",
+               "lower file number"]
 # How sure we are the truck really shows up empty: further along in its outbound trip = more certain.
 STATUS_CERTAINTY = {"DELIVERED": 6, "AT_DELIVERY": 5, "IN_TRANSIT": 4, "PICKED_UP": 3, "AT_PICKUP": 3,
                     "DISPATCHED": 2, "COVERED": 1, "BOOKED": 0}
@@ -360,6 +406,7 @@ def _tiebreak_values(option, pickup_facility_id):
     """One value per TIEBREAKERS entry; bigger wins. The file number is negated so the lowest (oldest) wins."""
     file_no = str(option.get("outbound_file") or "")
     return (
+        option.get("carrier_lane") or 0,
         bool(pickup_facility_id) and option.get("delivery_facility_id") == pickup_facility_id,
         STATUS_CERTAINTY.get(option.get("outbound_status"), -1),
         COMPLIANCE_RANK.get(option.get("carrier_compliance"), -1),
@@ -375,7 +422,8 @@ def _rank_trucks(options, pickup_facility_id):
         win, lose = _tiebreak_values(options[0], pickup_facility_id), _tiebreak_values(options[1], pickup_facility_id)
         decided_by = next((name for name, a, b in zip(TIEBREAKERS, win, lose) if a != b),
                           "equal footing (first listed)")
-        detail = {"load status": f" ({options[0]['outbound_status']} vs {options[1]['outbound_status']})",
+        detail = {"carrier lane": f" ({options[0]['carrier_id']} {options[0]['carrier_lane_note']})",
+                  "load status": f" ({options[0]['outbound_status']} vs {options[1]['outbound_status']})",
                   "carrier compliance": f" ({options[0]['carrier_compliance']} vs {options[1]['carrier_compliance']})"}
         options[0]["reasons"].append(f"Tied on score with outbound file {options[1]['outbound_file']}; "
                                      f"chosen on {decided_by}{detail.get(decided_by, '')}.")
@@ -400,9 +448,14 @@ def match_quote_request(email_id, email, extracted):
     candidate = _candidate_from_request(extracted)
     rows = shipments()
     trucks = arriving_trucks(origin["city"], origin["state"], rows)
+    by_file = {s["shipment_id"]: s for s in rows}
+    facilities = _cached("facilities", "facility_id")
+    loaded_miles = lane_miles(origin, dest, rows)
+    pickup_date = extracted.get("pickup_date")
     options = [
-        _option_for_truck(t, candidate, extracted.get("equipment"), extracted.get("pickup_date"),
-                          dest["city"], dest["state"])
+        _option_for_truck(t, candidate, extracted.get("equipment"), pickup_date, dest["city"], dest["state"],
+                          hos_check(t, by_file.get(t["outbound_file"]), origin, loaded_miles, pickup_date, facilities),
+                          origin_state=origin["state"])
         for t in trucks
     ]
     _rank_trucks(options, origin.get("facility_id"))
@@ -439,6 +492,9 @@ def match_quote_request(email_id, email, extracted):
         "carrier_id": best["carrier_id"],
         "trailer_number": best["trailer_number"],
         "score": best["score"],
+        "est_pickup": best["est_pickup"],
+        "est_delivery": best["est_delivery"],
+        "delivery_date_target": best["est_delivery_date"],
         **price,
         "ok": True,
         "reasons": best["reasons"],
@@ -489,6 +545,8 @@ def _rerun_prospect(prospect, trailer_last_category, equipment, carrier, trailer
         "target_margin_pct": prospect.get("target_margin_pct"),
         "est_buy": prospect.get("est_buy"),
         "est_sell": prospect.get("est_sell"),
+        "pickup_date": prospect.get("pickup_date"),
+        "delivery_date_target": prospect.get("delivery_date_target"),
         "score": max(prospect.get("score") or 0, 50) if ok else 0,
         "ok": ok,
         "reasons": list(reasons),
