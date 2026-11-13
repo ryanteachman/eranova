@@ -1,0 +1,22 @@
+{
+  "action_id": "act_0001",
+  "kind": "create_return_quote",
+  "title": "Return quote: Dallas, TX -> Chicago, IL for KEYSTONE-TX",
+  "summary": "Backhaul for outbound file 7300176. 925 mi dry van, buy $2,158.75 / sell $2,520.95 / GP 14.4%.",
+  "payload": {
+    "prospect_id": "DAL-CHI-KEYSTONE-TX-7300176",
+    "customer_id": "KEYSTONE-TX",
+    "outbound_file": "7300176"
+  },
+  "tier": "approve",
+  "confidence": 0.86,
+  "reasoning": "Truck from file 7300176 arrives empty in Dallas; Keystone ships dry retail returns to Chicago and every compatibility rule passes.",
+  "status": "done",
+  "result": {
+    "quote_id": "7300201",
+    "summary": "Quote 7300201 | QUOTED | KEYSTONE-TX | TL V | Dallas, TX -> Chicago, IL | 925 mi | sell $2,520.95 | valid until 11/20/26",
+    "sell_total": 2520.95,
+    "meridian_url": "<UI URL>/quotes/7300201"
+  },
+  "created_at": "2026-11-13T15:02:11Z"
+}

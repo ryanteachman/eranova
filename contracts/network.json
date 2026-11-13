@@ -1,0 +1,53 @@
+{
+  "totals": {
+    "empty_miles": 60325,
+    "empty_cost_usd": 120650.0,
+    "one_way_lanes": 6,
+    "loads": 84
+  },
+  "cities": [
+    {"city": "Chicago", "state": "IL", "lat": 41.8781, "lng": -87.6298, "inbound": 0, "outbound": 27},
+    {"city": "Dallas", "state": "TX", "lat": 32.7767, "lng": -96.797, "inbound": 37, "outbound": 0},
+    {"city": "Houston", "state": "TX", "lat": 29.7604, "lng": -95.3698, "inbound": 0, "outbound": 10},
+    {"city": "Rockford", "state": "IL", "lat": 42.2711, "lng": -89.094, "inbound": 0, "outbound": 16},
+    {"city": "Aurora", "state": "CO", "lat": 39.7294, "lng": -104.8319, "inbound": 16, "outbound": 0},
+    {"city": "Columbus", "state": "OH", "lat": 39.9612, "lng": -82.9988, "inbound": 0, "outbound": 11},
+    {"city": "Fort Worth", "state": "TX", "lat": 32.7555, "lng": -97.3308, "inbound": 11, "outbound": 0},
+    {"city": "Pittsburgh", "state": "PA", "lat": 40.4406, "lng": -79.9959, "inbound": 0, "outbound": 10},
+    {"city": "Newark", "state": "NJ", "lat": 40.7357, "lng": -74.1724, "inbound": 10, "outbound": 0},
+    {"city": "Portland", "state": "OR", "lat": 45.5152, "lng": -122.6784, "inbound": 0, "outbound": 10},
+    {"city": "Kent", "state": "WA", "lat": 47.3809, "lng": -122.2348, "inbound": 10, "outbound": 0}
+  ],
+  "arcs": [
+    {
+      "from": {"city": "Chicago", "state": "IL", "lat": 41.8781, "lng": -87.6298},
+      "to": {"city": "Dallas", "state": "TX", "lat": 32.7767, "lng": -96.797},
+      "loads": 27, "miles": 925, "equipment": {"V": 22, "SB": 5}
+    },
+    {
+      "from": {"city": "Rockford", "state": "IL", "lat": 42.2711, "lng": -89.094},
+      "to": {"city": "Aurora", "state": "CO", "lat": 39.7294, "lng": -104.8319},
+      "loads": 16, "miles": 1000, "equipment": {"R": 16}
+    },
+    {
+      "from": {"city": "Columbus", "state": "OH", "lat": 39.9612, "lng": -82.9988},
+      "to": {"city": "Fort Worth", "state": "TX", "lat": 32.7555, "lng": -97.3308},
+      "loads": 11, "miles": 1050, "equipment": {"V": 11}
+    },
+    {
+      "from": {"city": "Pittsburgh", "state": "PA", "lat": 40.4406, "lng": -79.9959},
+      "to": {"city": "Newark", "state": "NJ", "lat": 40.7357, "lng": -74.1724},
+      "loads": 10, "miles": 370, "equipment": {"V": 6, "F": 4}
+    },
+    {
+      "from": {"city": "Houston", "state": "TX", "lat": 29.7604, "lng": -95.3698},
+      "to": {"city": "Dallas", "state": "TX", "lat": 32.7767, "lng": -96.797},
+      "loads": 10, "miles": 240, "equipment": {"V": 10}
+    },
+    {
+      "from": {"city": "Portland", "state": "OR", "lat": 45.5152, "lng": -122.6784},
+      "to": {"city": "Kent", "state": "WA", "lat": 47.3809, "lng": -122.2348},
+      "loads": 10, "miles": 170, "equipment": {"V": 10}
+    }
+  ]
+}

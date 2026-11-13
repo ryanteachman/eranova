@@ -1,1 +1,1 @@
-"""Claude tool-use loop."""
+"""OpenAI tool-calling loop."""
