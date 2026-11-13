@@ -1,4 +1,7 @@
-"""Pull all Meridian data into SQLite and classify every shipment. Run from the repo root."""
+"""Pull all Meridian data into SQLite and classify every shipment. Run from the repo root.
+
+Usage: python scripts/sync_data.py [--refresh]   (--refresh re-pulls every shipment's events)
+"""
 
 import sys
 from collections import Counter
@@ -11,9 +14,10 @@ from backend.brain import classify, sync  # noqa: E402
 
 
 def main():
-    """Init the database, sync Meridian, classify shipments, then print the totals."""
+    """Init the database, sync Meridian and its events, classify shipments, then print the totals."""
     db.init_db()
     sync.sync_all()
+    sync.sync_events(refresh="--refresh" in sys.argv)
     classify.classify_all()
     categories = Counter(c["category"] for c in classify.get_classifications().values())
     print("categories:", dict(categories.most_common()))

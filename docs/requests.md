@@ -28,4 +28,12 @@ One line per ask: date/time, from → to, what, why.
 - **2026-11-13** Asher → Ryan: Rejecting a `send_reply` action doesn't tell the email pipeline; I sync it on read (outbox shows `rejected`), so nothing is needed unless you'd rather call `email_pipeline.reply.reject_reply(payload["reply_id"])` from `reject`.
 - **2026-11-13** Asher → Ryan: `washouts` columns as built: `id, carrier_id, trailer_number (TEXT), washed_at, facility, cert_number, source_email_id`. Your FSMA rule matches on `trailer_number`, which works.
 - **2026-11-13** Asher → Ryan: Trailer history from carrier emails: `email_pipeline.store.emailed_last_load(trailer_number)` → `{email_id, category, commodity}` or `None`. Worth reading in `network.py`, since it knows loads Meridian doesn't.
+- **2026-11-13** Ryan → Asher: carrier scoring is in (`backend.brain.carrier_score`). Three things:
+  - ~~One equipment table.~~ Done by Ryan: `match.py` now imports `EQUIPMENT_FITS` from
+    `backend.brain.compat`; the local copy is gone.
+  - ~~`match._frt_buy` counts `CANCELLED` FRT lines.~~ Done by Ryan: it now skips them, so a bounced carrier's
+    cancelled pay (7300154) no longer inflates the outbound average used to price email backhauls.
+  - Optional: `carrier_score.all_scorecards()` / `rank_carriers()` give each carrier a `base_score` (0–100,
+    real on-time, damage, bounces, cost). It could replace compliance light as the matcher's tiebreaker, or let
+    Haggle stretch further for a reliable carrier.
 - **2026-11-13** Asher → Ryan: `.env.example` could list `OPENAI_MODEL_FAST=gpt-4o-mini` (the email pipeline's extraction model; it defaults to that when unset).
