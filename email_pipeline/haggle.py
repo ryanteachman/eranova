@@ -2,19 +2,22 @@
 
 A simulated carrier (an LLM with a personality) answers our offer for its empty truck. Our side is
 plain code: open at target_pay_min, meet in the middle, never above target_pay_max. The target range
-comes from lane history (what we paid per mile on this lane's head-haul direction). A deal becomes a
-`cover_load` action for human approval; nothing is ever sent to the real carrier.
+comes from lane history (what we paid per mile on this lane's head-haul direction). A deal is drafted
+as a rate confirmation to the carrier and queued as a `confirm_carrier_rate` action; approving it marks
+the confirmation sent (simulated). Covering the load in Meridian needs the backhaul quote booked first,
+so that stays a separate step.
 """
 
 import re
 from statistics import median
 
+from backend.agent.actions import propose
+from backend.errors import Conflict
 from pydantic import BaseModel, Field
 
-from email_pipeline import store
-from email_pipeline.deps import meridian_get, propose
+from email_pipeline import reply, store
 from email_pipeline.llm import structured
-from email_pipeline.match import _city_state
+from email_pipeline.match import _city_state, shipments
 
 BACKHAUL_MAX_SHARE = 0.85   # pay at most 85% of the head-haul per-mile rate for the trip home
 BACKHAUL_MIN_SHARE = 0.65   # open at 65%
@@ -48,18 +51,9 @@ def _parse_rate_ask(rate_ask, miles):
     return round(value * miles, 2) if per_mile else value
 
 
-def lane_history(origin_state, dest_state, limit_pages=4):
-    """Per-mile buy rates we paid on this lane, either direction: {per_mile:[...], direction}."""
-    rows, cursor = [], None
-    for _ in range(limit_pages):
-        params = {"limit": 200, "status": "DELIVERED,POD_RECEIVED,CLOSED"}
-        if cursor:
-            params["cursor"] = cursor
-        page = meridian_get("/shipments", **params)
-        rows += page["items"]
-        cursor = page.get("next_cursor")
-        if not cursor:
-            break
+def lane_history(origin_state, dest_state):
+    """Per-mile buy rates we paid on this lane (from Ryan's shipment cache): {per_mile:[...], direction}."""
+    rows = [s for s in shipments() if s.get("status") in ("DELIVERED", "POD_RECEIVED", "CLOSED")]
 
     def rates(a, b):
         return [s["buy_total"] / s["miles"] for s in rows
@@ -93,11 +87,11 @@ def haggle(email_id, target_pay_min=None, target_pay_max=None, max_rounds=MAX_RO
     """Negotiate with the simulated carrier for a CARRIER_OFFER email; returns the transcript and any action."""
     row = store.get_email(email_id)
     if row is None or row["kind"] != "CARRIER_OFFER":
-        raise ValueError(f"{email_id} is not a processed CARRIER_OFFER email")
+        raise Conflict(f"{email_id} is not a processed CARRIER_OFFER email.")
     matched, extracted = row["matched"] or {}, row["extracted"] or {}
     prospect = matched.get("prospect")
     if not prospect:
-        raise ValueError("No prospect to haggle over; nothing compatible was found for this truck.")
+        raise Conflict("No prospect to haggle over; nothing compatible was found for this truck.")
 
     origin_city, origin_state = _city_state(prospect["origin"])
     dest_city, dest_state = _city_state(prospect["destination"])
@@ -106,7 +100,7 @@ def haggle(email_id, target_pay_min=None, target_pay_max=None, max_rounds=MAX_RO
     if target_pay_min is None or target_pay_max is None:
         low, high, why = target_range(origin_state, dest_state, miles)
         if low is None:
-            raise ValueError("No lane history; pass target_pay_min and target_pay_max.")
+            raise Conflict("No lane history; pass target_pay_min and target_pay_max.")
         target_pay_min = target_pay_min if target_pay_min is not None else low
         target_pay_max = target_pay_max if target_pay_max is not None else high
 
@@ -140,20 +134,28 @@ def haggle(email_id, target_pay_min=None, target_pay_max=None, max_rounds=MAX_RO
 
     action_id = None
     if deal is not None:
-        payload = {"carrier_id": carrier["entity_id"], "prospect_id": prospect["prospect_id"], "amount": deal,
-                   "miles": miles, "rate_per_mile": round(deal / miles, 2), "source_email_id": email_id,
-                   "trailer_number": extracted.get("trailer_number")}
+        # The agreed carrier pay goes in the confirmation as a real number: a person approves it before it "sends".
+        body = (f"Confirming ${deal:,.2f} all in for your empty {extracted.get('equipment') or ''} truck: "
+                f"{origin_city}, {origin_state} → {dest_city}, {dest_state} ({miles} mi), available "
+                f"{extracted.get('available_date') or 'as offered'}. Rate confirmation and load details to follow "
+                f"once the load is booked.\n\nMeridian Logistics - Return Trip desk")
+        reply_id = store.insert_reply(email_id, row["from_addr"], f"Re: {row['subject']} - rate confirmed", body)
+        payload = {"reply_id": reply_id, "email_id": email_id, "carrier_id": carrier["entity_id"],
+                   "prospect_id": prospect["prospect_id"], "amount": deal, "miles": miles,
+                   "rate_per_mile": round(deal / miles, 2), "trailer_number": extracted.get("trailer_number")}
         action_id = propose(
-            "cover_load",
-            f"Cover with {carrier.get('label')}: ${deal:,.2f} {origin_city} → {dest_city}",
+            "confirm_carrier_rate",
+            f"Confirm {carrier.get('label')} at ${deal:,.2f}: {origin_city} → {dest_city}",
             f"Negotiated by e-mail in {len(transcript)} messages (target ${target_pay_min:,.0f}-${target_pay_max:,.0f}).",
             payload,
             0.8,
             f"Carrier offer in email {email_id} asked {extracted.get('rate_ask')}; target from {why}. "
             f"Settled at ${deal:,.2f}, inside the target range.",
-        )
+            actor="email_pipeline",
+        )["action_id"]
+        store.update_reply(reply_id, action_id=action_id)
         store.add_action_id(email_id, action_id)
-        store.audit("action_proposed", {"email_id": email_id, "action_id": action_id, "kind": "cover_load"})
+        store.audit("action_proposed", {"email_id": email_id, "action_id": action_id, "kind": "confirm_carrier_rate"})
 
     result = {"email_id": email_id, "target_pay_min": target_pay_min, "target_pay_max": target_pay_max,
               "target_basis": why, "carrier_ask": ask_total, "deal": deal, "action_id": action_id,
@@ -161,3 +163,10 @@ def haggle(email_id, target_pay_min=None, target_pay_max=None, max_rounds=MAX_RO
     store.update_email(email_id, matched={**matched, "haggle": result})
     store.audit("haggle_finished", {"email_id": email_id, "deal": deal, "rounds": len(transcript)})
     return result
+
+
+def execute_rate_confirmation(payload):
+    """Executor for `confirm_carrier_rate`: mark the drafted rate confirmation sent (simulated)."""
+    sent = reply.send_reply(payload["reply_id"])
+    return {**sent, "carrier_id": payload["carrier_id"], "amount": payload["amount"],
+            "rate_per_mile": payload["rate_per_mile"]}
