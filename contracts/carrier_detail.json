@@ -1,0 +1,74 @@
+{
+  "base_score": 79,
+  "bounced_loads": [
+    {
+      "reason": "FELL_THROUGH",
+      "shipment_id": "7300154"
+    }
+  ],
+  "bounces": 1,
+  "compliance_light": "RED",
+  "cost_score": 0.48,
+  "damage": 1,
+  "last_city": {
+    "city": "Fort Worth",
+    "date": "2026-07-03",
+    "shipment_id": "7300038",
+    "state": "TX"
+  },
+  "late_by_cause": {
+    "carrier": 0,
+    "excused": 0,
+    "unknown": 0
+  },
+  "legal_name": "Bad Wolf Logistics LLC",
+  "loads": 3,
+  "on_time_actual_pct": 100,
+  "on_time_stored_pct": 68,
+  "per_load": [
+    {
+      "condition": "CLEAR",
+      "cost_ratio": 0.85,
+      "extra_charges": 1,
+      "lane": "Columbus, OH -> Fort Worth, TX",
+      "late_delivery": null,
+      "late_pickup": false,
+      "pickup_date": "2026-07-01",
+      "shipment_id": "7300038",
+      "status": "CLOSED"
+    },
+    {
+      "condition": "CLEAR",
+      "cost_ratio": 0.9,
+      "extra_charges": 0,
+      "lane": "Kansas City, MO -> Aurora, CO",
+      "late_delivery": null,
+      "late_pickup": false,
+      "pickup_date": "2026-06-06",
+      "shipment_id": "7300032",
+      "status": "CLOSED"
+    },
+    {
+      "condition": "DAMAGE",
+      "cost_ratio": 0.9,
+      "extra_charges": 0,
+      "lane": "Kansas City, MO -> Aurora, CO",
+      "late_delivery": null,
+      "late_pickup": false,
+      "pickup_date": "2026-04-07",
+      "shipment_id": "7300019",
+      "status": "CLOSED"
+    }
+  ],
+  "quality": 0.742,
+  "reasons": [
+    "100% on time across 3 loads",
+    "Bounced 1 load (FELL_THROUGH)",
+    "1 damage or shortage claim at delivery",
+    "Profile says 68% on time; actual loads say 100%",
+    "Paid 12% under target minimum on average (3 loads)"
+  ],
+  "reliability": 0.974,
+  "tonu": 0,
+  "vendor_id": "BADWOLF"
+}

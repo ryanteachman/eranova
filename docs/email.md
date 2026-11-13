@@ -67,7 +67,9 @@ Every step writes a line to `audit_log` with `actor="email_pipeline"` (`email_re
 
 Unknown fields are `null`. The prompts forbid guessing reference numbers, cert numbers or dates, and the
 code drops any extracted reference (or cert number) that doesn't literally appear in the email.
-Weekdays ("this Tue") are resolved against `received_at`.
+Weekdays ("this Tue") are resolved against `received_at`. The model's output is cleaned before use: strings like
+`"null"`, `"none"` or `"N/A"` become real nulls, and a state that isn't a 2-letter code is dropped, so a
+missing state can still be filled in from the matched facility.
 
 | Kind | Fields |
 |---|---|

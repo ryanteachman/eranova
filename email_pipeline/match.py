@@ -12,7 +12,7 @@ from functools import lru_cache
 
 from backend import db, meridian
 from backend.brain import classify, network, pricing
-from backend.brain.compat import CONTAMINANT_CATEGORIES, FOOD_CATEGORIES, check_compat
+from backend.brain.compat import CONTAMINANT_CATEGORIES, EQUIPMENT_FITS, FOOD_CATEGORIES, check_compat
 
 from email_pipeline import store
 
@@ -20,8 +20,6 @@ from email_pipeline import store
 ACTIVE_STATUSES = {"BOOKED", "COVERED", "DISPATCHED", "AT_PICKUP", "PICKED_UP", "IN_TRANSIT", "AT_DELIVERY",
                    "DELIVERED"}
 RISKY_LAST_LOADS = CONTAMINANT_CATEGORIES
-# Which truck equipment can serve a requested equipment type.
-EQUIPMENT_FITS = {"V": {"V", "R", "VC"}, "R": {"R"}, "F": {"F", "SD"}, "SD": {"SD"}, "VC": {"VC", "V"}}
 MAX_OPTIONS = 5
 
 
@@ -223,8 +221,9 @@ def _un_number(s):
 
 
 def _frt_buy(s):
-    """What we paid the carrier for linehaul on a shipment."""
-    return sum(c.get("amount") or 0 for c in s.get("vendor_costs") or [] if c.get("charge_code") == "FRT")
+    """What we paid the carrier for linehaul on a shipment (a bounced carrier's cancelled line excluded)."""
+    return sum(c.get("amount") or 0 for c in s.get("vendor_costs") or []
+               if c.get("charge_code") == "FRT" and c.get("status") != "CANCELLED")
 
 
 def arriving_trucks(city, state, rows=None):

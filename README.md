@@ -12,8 +12,9 @@ cp .env.example .env           # fill in keys, or keep secret.txt in the repo ro
 ## Run
 
 ```bash
-python scripts/sync_data.py                   # first time: pull Meridian data + classify
+python scripts/sync_data.py                   # first time: pull Meridian data + events + classify
 flask --app backend run --debug --port 5000
+python scripts/score_carriers.py              # carrier scorecards as a table
 python scripts/reset_demo.py                  # before a demo: decline Return Trip quotes
 python -m pytest backend/tests                # offline tests (fake Meridian and OpenAI)
 ```
