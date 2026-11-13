@@ -21,7 +21,7 @@ const GREY = [156, 163, 175]
 export const STATUS_RGB = { booked: [22, 163, 74], ready: [217, 119, 6], found: BLUE }
 const tourState = (t) => (t.status === 'booked' ? 'booked' : 'ready')
 // a leg the brain found that is not booked yet is blue; everything else takes its loop's colour
-const legRgb = (t, l) => (l.status === 'missing' ? STATUS_RGB.found : STATUS_RGB[tourState(t)])
+const legRgb = (t, l) => l.rgb ?? (l.status === 'missing' ? STATUS_RGB.found : STATUS_RGB[tourState(t)])
 const LOOP = 12 // seconds per lap, focused tour
 const IDLE_MS = 6000
 const ORBIT_DEG_S = 2
@@ -72,6 +72,9 @@ const EMPTY_RGB = [220, 38, 38] // empty drives are red everywhere: the line and
 // One truck going round a tour's legs: 3 laps so the trail never pops at the wrap.
 // Each point carries its own colour, so the truck turns red while it drives empty.
 function buildTrip(tour, period, offset, color) {
+  if (tour.kind === 'hub') {
+    return (tour.legs || []).flatMap((l) => buildTrip({ ...tour, kind: 'leg', legs: [l] }, period, offset, l.rgb ? [...l.rgb, 255] : color) || [])
+  }
   const legs = [...(tour.legs || [])].sort((a, b) => a.seq - b.seq)
   const segs = legs.map(roadPath)
   const total = segs.reduce((s, g) => s + g.d, 0)

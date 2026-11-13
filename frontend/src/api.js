@@ -19,6 +19,8 @@ import returnLanesMock from '../mocks/return_lanes.json'
 import backtestMock from '../mocks/network_backtest.json'
 import reportsMock from '../mocks/reports.json'
 import learnedMock from '../mocks/learned.json'
+import hubsMock from '../mocks/shipper_hubs.json'
+import driversMock from '../mocks/drivers.json'
 
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false'
 export const MERIDIAN_WEB_URL = import.meta.env.VITE_MERIDIAN_WEB_URL || ''
@@ -79,6 +81,9 @@ const real = {
   // weekly reports and what the brain learned from Meridian's history
   getReports: () => request('/api/reports/weekly'),
   getLearned: () => request('/api/learned'),
+  // manufacturer supply hubs and the driver app, built from real Meridian loads
+  getHubs: () => request('/api/hubs'),
+  getDrivers: () => request('/api/drivers'),
 }
 
 // ---------- mock API ----------
@@ -279,6 +284,14 @@ Object.assign(mock, {
     await wait(250)
     return clone(reportsMock)
   },
+  async getHubs() {
+    await wait(200)
+    return clone(hubsMock)
+  },
+  async getDrivers() {
+    await wait(200)
+    return clone(driversMock)
+  },
   async getLearned() {
     await wait(200)
     return clone(learnedMock)
@@ -343,7 +356,7 @@ function laneFromPayload(payload = {}) {
 // real-data files in ../mocks, so the live API can be switched on before every route exists.
 const NOT_IN_BACKEND_YET = [
   'getTours', 'getCarrierWeeks', 'respondWeek', 'getOffers', 'respondOffer',
-  'getPriceSignals', 'getReturnLanes', 'getBacktest', 'getReports', 'getLearned',
+  'getPriceSignals', 'getReturnLanes', 'getBacktest', 'getReports', 'getLearned', 'getHubs', 'getDrivers',
 ]
 const missing = new Set() // routes that returned 404 once: stop asking the backend for them
 for (const name of NOT_IN_BACKEND_YET) {

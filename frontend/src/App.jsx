@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './v3.css'
 import { api, meridianLink } from './api.js'
 import usePoll from './usePoll.js'
@@ -13,10 +13,13 @@ import AgentChat from './components/AgentChat.jsx'
 import Toasts from './components/Toasts.jsx'
 import Reports from './components/v3/Reports.jsx'
 import InboxPage from './components/v3/InboxPage.jsx'
+import DriverApp from './components/v3/DriverApp.jsx'
+import ActivityPage from './components/v3/ActivityPage.jsx'
 
 const ROLES = [
   { id: 'broker', label: 'Broker' },
   { id: 'carrier', label: 'Carrier' },
+  { id: 'driver', label: 'Driver' },
   { id: 'shipper', label: 'Manufacturer' },
 ]
 const EQ = { V: 'Dry van', R: 'Reefer', F: 'Flatbed', SV: 'Sprinter' }
@@ -107,6 +110,48 @@ function carrierItems(weeks) {
   }))
 }
 
+// Manufacturer: each plant is a supply hub; spokes go everywhere it ships (real Meridian loads).
+const SPOKE_RGB = { delivered: [22, 163, 74], in_transit: [217, 119, 6], booked: [100, 116, 139], on_hold: [220, 38, 38], none_this_week: [203, 213, 225] }
+const plantName = (h) => h.plant.replace(`${h.customer} - `, '').replace(/^.* - /, '')
+function hubItems(hubs) {
+  return hubs.map((h) => ({
+    id: h.hub_id,
+    tourId: h.hub_id,
+    kicker: h.customer,
+    title: plantName(h),
+    big: `${h.week.loads}`,
+    bigNote: `loads this week · ${h.spokes.length} ${h.spokes.length === 1 ? 'destination' : 'destinations'}`,
+    tag: h.week.in_transit ? `${h.week.in_transit} on the road` : `${h.all.loads} loads since January`,
+    tone: h.week.in_transit ? 'amber' : '',
+    stats: [
+      ['Delivered', `${h.week.delivered}`],
+      ['On the road', `${h.week.in_transit}`],
+      ['Booked, not picked up', `${h.week.booked}`],
+      ['Spend this week', usd0(h.week.spend)],
+    ],
+    listTitle: 'Where this plant ships',
+    list: h.spokes.slice(0, 4).map((sp) => ({
+      name: sp.name,
+      why: `${sp.loads_week} this week · ${sp.loads_all} since January${sp.on_time_pct != null ? ` · ${sp.on_time_pct}% on time` : ''}`,
+    })),
+    action: 'Live from Meridian',
+    done: true,
+    doneLabel: 'Live from Meridian',
+    raw: h,
+  }))
+}
+const hubAsTour = (h) => ({
+  tour_id: h.hub_id, kind: 'hub', status: 'hub', equipment: '', name: plantName(h),
+  legs: h.spokes.map((sp, i) => ({
+    seq: i + 1, kind: 'existing', status: sp.status, origin: h.hub, destination: sp.destination,
+    miles: sp.miles, path: sp.path, rgb: SPOKE_RGB[sp.status] ?? SPOKE_RGB.none_this_week,
+  })),
+})
+const driverAsTour = (d) => ({
+  tour_id: d.driver_id, kind: 'leg', status: 'driver', equipment: d.equipment, name: d.name,
+  legs: [{ seq: 1, kind: 'existing', status: 'booked', origin: d.load.origin, destination: d.load.destination, miles: d.load.miles, path: d.load.path, rgb: [37, 65, 255] }],
+})
+
 function shipperItems(offers) {
   return offers.map((o) => ({
     id: o.offer_id,
@@ -132,7 +177,11 @@ function shipperItems(offers) {
 export default function App() {
   const [role, setRole] = useState('broker')
   const [picked, setPicked] = useState({ broker: 'T-101', carrier: 'T-101', shipper: 'O-301' })
-    const [carrierId, setCarrierId] = useState('SUNRIDGE')
+  const [carrierId, setCarrierId] = useState('SUNRIDGE')
+  const [customerId, setCustomerId] = useState(null)
+  const [driverId, setDriverId] = useState(null)
+  const [activity, setActivity] = useState(null) // null | { focusPath }
+  const [notices, setNotices] = useState([])
   const [view, setView] = useState('loops')
   const [targets, setTargets] = useState([])
   const [showReports, setShowReports] = useState(false)
@@ -148,6 +197,9 @@ export default function App() {
   const tours = usePoll(() => api.getTours(), 4000)
   const weeks = usePoll(() => api.getCarrierWeeks(), 4000)
   const offers = usePoll(() => api.getOffers(), 4000)
+  const hubs = usePoll(() => api.getHubs(), 0)
+  const drivers = usePoll(() => api.getDrivers(), 0)
+  const allActions = usePoll(() => api.getActions(), 3000)
   const prices = usePoll(() => api.getPriceSignals(), 0)
   const lanes = usePoll(() => api.getReturnLanes(), 0)
   const backtest = usePoll(() => api.getBacktest(), 0)
@@ -173,8 +225,11 @@ export default function App() {
       return brokerItems(tours.data.items.filter((t) => (view === 'mine' ? t.status === 'booked' : t.status !== 'booked')))
     }
     if (role === 'carrier') return weeks.data ? carrierItems(weeks.data.items.filter((w) => w.carrier.vendor_id === carrierId)) : null
-    return offers.data ? shipperItems(offers.data.items) : null
-  }, [role, view, targets, carrierId, tours.data, weeks.data, offers.data, lanes.data])
+    if (role === 'driver') return null
+    if (!hubs.data) return null
+    const cid = customerId ?? hubs.data.items[0]?.customer_id
+    return hubItems(hubs.data.items.filter((h) => h.customer_id === cid))
+  }, [role, view, targets, carrierId, customerId, tours.data, weeks.data, hubs.data, lanes.data])
 
   const pickKey = role === 'broker' ? `broker-${view}` : role
   const selected = items?.find((it) => it.id === picked[pickKey]) ?? items?.[0] ?? null
@@ -233,6 +288,39 @@ export default function App() {
   )
   const bt = backtest.data
 
+  const hubCustomers = useMemo(() => {
+    const m = new Map()
+    ;(hubs.data?.items ?? []).forEach((h) => {
+      const c = m.get(h.customer_id) ?? { id: h.customer_id, name: h.customer, plants: 0, loads: 0 }
+      c.plants += 1
+      c.loads += h.week.loads
+      m.set(h.customer_id, c)
+    })
+    return [...m.values()].sort((a, b) => b.loads - a.loads)
+  }, [hubs.data])
+  const activeCustomer = customerId ?? hubCustomers[0]?.id
+  const driverList = drivers.data?.items ?? []
+  const driver = driverList.find((d) => d.driver_id === driverId) ?? driverList[0] ?? null
+
+  // Pop a notice whenever an approved action writes to Meridian (a real change in the TMS).
+  const seenWrites = useRef(null)
+  useEffect(() => {
+    const writes = (allActions.data?.items ?? []).filter((a) => a.status === 'done' && (a.result?.quote_id || a.result?.meridian_url))
+    if (!allActions.data) return
+    if (seenWrites.current === null) {
+      seenWrites.current = new Set(writes.map((a) => a.action_id)) // don't announce what happened before the page opened
+      return
+    }
+    const fresh = writes.filter((a) => !seenWrites.current.has(a.action_id))
+    fresh.forEach((a) => {
+      seenWrites.current.add(a.action_id)
+      const id = a.action_id
+      const path = a.result.meridian_url ? new URL(a.result.meridian_url, 'http://x').pathname : `/quotes/${a.result.quote_id}`
+      setNotices((n) => [...n, { id, title: a.result.quote_id ? `Quote ${a.result.quote_id} created` : a.title, detail: a.title, amount: a.result.sell_total, path }])
+      setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), 9000)
+    })
+  }, [allActions.data])
+
   const sub = {
     broker: {
       loops: <><b>{readyTours.length} {readyTours.length === 1 ? 'loop' : 'loops'}</b> ready to book · <b>{waiting.toLocaleString()} empty miles</b> to save</>,
@@ -240,15 +328,21 @@ export default function App() {
       mine: <><b>{bookedTours.length}</b> {bookedTours.length === 1 ? 'loop' : 'loops'} booked</>,
     }[view],
     carrier: <>Each truck gets a full week that ends at home</>,
-    shipper: <>Trucks already coming your way</>,
+    driver: <>The driver's app: today's load, every stop, one button for the next step</>,
+    shipper: <>Each plant is a supply hub · lines show where its goods ship this week</>,
   }[role]
 
   return (
     <div className="v3">
       <div className="v3-map">
         <Map3D
-          tours={role === 'broker' && view === 'lanes' ? (lanes.data?.items ?? []).map(laneAsTour) : allTours.filter((t) => role !== 'broker' || (view === 'mine' ? t.status === 'booked' : true))}
-          focusTourId={focusOpen || role === 'carrier' ? selected?.tourId ?? null : null}
+          tours={
+            role === 'shipper' ? (hubs.data?.items ?? []).filter((h) => h.customer_id === activeCustomer).map(hubAsTour)
+              : role === 'driver' ? (driver ? [driverAsTour(driver)] : [])
+              : role === 'broker' && view === 'lanes' ? (lanes.data?.items ?? []).map(laneAsTour)
+              : allTours.filter((t) => role !== 'broker' || (view === 'mine' ? t.status === 'booked' : true))
+          }
+          focusTourId={role === 'driver' ? driver?.driver_id ?? null : focusOpen || role === 'carrier' ? selected?.tourId ?? null : null}
           onSelectTour={(id) => {
             if (role === 'broker') select(id)
           }}
@@ -290,11 +384,31 @@ export default function App() {
           ))}
         </div>
       )}
+      {role === 'shipper' && (
+        <div className="v3-filters">
+          {hubCustomers.map((c) => (
+            <button key={c.id} className={`glass ${activeCustomer === c.id ? 'on' : ''}`} onClick={() => { setCustomerId(c.id); setFocusOpen(true) }}>
+              {c.name.replace(' - ', ' · ')} <em>{c.plants} {c.plants === 1 ? 'plant' : 'plants'}</em>
+            </button>
+          ))}
+        </div>
+      )}
+      {role === 'driver' && (
+        <div className="v3-filters">
+          {driverList.slice(0, 12).map((d) => (
+            <button key={d.driver_id} className={`glass ${driver?.driver_id === d.driver_id ? 'on' : ''}`} onClick={() => setDriverId(d.driver_id)}>
+              {d.name} <em>Truck {d.truck}</em>
+            </button>
+          ))}
+        </div>
+      )}
       <div className="v3-sub glass">{sub}</div>
       </div>
 
       <div className="v3-more">
         <button className="glass" onClick={() => setShowReports(true)}>Reports</button>
+        <button className="glass" onClick={() => setActivity({})}>Activity</button>
+        <button className="glass meridian" onClick={() => setActivity({ meridian: true })}>View Meridian ↗</button>
         <button className="glass" onClick={() => { setDrawer(null); setShowInbox(true) }}>Inbox</button>
         {[
           ['approvals', 'Approvals'],
@@ -321,7 +435,19 @@ export default function App() {
         </div>
       )}
 
-      {role !== 'carrier' && focusOpen && !drawer && (
+      {role === 'driver' && !drawer && (
+        <div className="v3-phone">
+          <DriverApp
+            key={driver?.driver_id}
+            drivers={drivers.data ? driverList : null}
+            selectedId={driver?.driver_id}
+            onSelect={setDriverId}
+            onToast={toast}
+          />
+        </div>
+      )}
+
+      {role !== 'carrier' && role !== 'driver' && focusOpen && !drawer && (
         <FocusCard
           item={focus}
           busy={busy}
@@ -346,7 +472,15 @@ export default function App() {
         </aside>
       )}
 
-      {role !== 'carrier' && (
+      {role === 'shipper' && (
+        <div className="v3-legend glass">
+          <span><i style={{ background: '#16a34a' }} />Delivered</span>
+          <span><i style={{ background: '#d97706' }} />On the road</span>
+          <span><i style={{ background: '#64748b' }} />Booked</span>
+          <span><i style={{ background: '#cbd5e1' }} />No load this week</span>
+        </div>
+      )}
+      {role === 'broker' && (
         <div className="v3-legend glass">
           <span><i style={{ background: '#16a34a' }} />Booked</span>
           <span><i style={{ background: '#d97706' }} />Ready to book</span>
@@ -382,6 +516,27 @@ export default function App() {
           onClose={() => setShowReports(false)}
         />
       )}
+      {activity && (
+        <ActivityPage
+          focusPath={activity.focusPath}
+          startOnMeridian={!!activity.meridian}
+          onClose={() => setActivity(null)}
+        />
+      )}
+
+      {/* a pop-up every time an approved action changes Meridian */}
+      <div className="m-notices">
+        {notices.map((n) => (
+          <div key={n.id} className="m-notice">
+            <span className="m-dot" />
+            <div>
+              <b>Meridian updated</b>
+              <span>{n.title}{n.amount != null ? ` · ${usd(n.amount)}` : ''}</span>
+            </div>
+            <button onClick={() => { setActivity({ focusPath: n.path, meridian: true }); setNotices((x) => x.filter((y) => y.id !== n.id)) }}>View</button>
+          </div>
+        ))}
+      </div>
       <Toasts items={toasts} />
     </div>
   )
