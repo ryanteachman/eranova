@@ -92,6 +92,11 @@ All Meridian calls are reads (`/search`, `/vendors/lookup`, `/vendors/{id}`, `/c
   (+15 same state), +20 if it empties 0–2 days before pickup, −20 if it empties after pickup. The result is
   `status: "prospect"` with `prospect` and the `options`, or `"none_found"` with `reasons`. All blocked trucks
   are kept in `blocked`.
+- **Tiebreakers** (trucks with equal scores, in this order): same pickup facility (the truck delivers at the
+  dock we pick up from) → load status (DELIVERED > AT_DELIVERY > IN_TRANSIT > PICKED_UP/AT_PICKUP > DISPATCHED >
+  COVERED > BOOKED: how sure we are the truck shows up) → carrier compliance (GREEN > YELLOW > RED) → known
+  trailer number → lowest outbound file number (booked earliest; mainly keeps results the same from run to run).
+  When a tie decides the winner, its reasons say which tiebreaker did it.
 - **Trailer history from email:** if a `LAST_LOAD_INFO` email named a trailer, that last load overrides
   Meridian's history for the trailer in later quote matching (the reason says so).
 - **WASHOUT_CERT:** insert into `washouts`; `unblocked` lists network prospects for that trailer that are now
@@ -185,8 +190,9 @@ Each prompt lives in code next to its schema, with a one-line comment on what it
 - The stub `find_backhauls` is crude: one return-lane prospect per truck arriving in the city, for the same
   customer, with categories from a hard-coded reverse-logistics table and keyword freight categories.
   Ryan's real finder replaces it.
-- Matching expects prospects to carry `outbound_file, carrier_id, trailer_number, trailer_last_category,
-  available_date, origin, destination, equipment, category, miles` (see requests).
+- Matching expects prospects to carry `outbound_file, outbound_status, delivery_facility_id, carrier_id,
+  trailer_number, trailer_last_category, available_date, origin, destination, equipment, category, miles`
+  (see requests). Without `outbound_status` / `delivery_facility_id` those tiebreakers are skipped.
 - Last-load history from email lives only in our `emails` table; Ryan's own network and compat won't see it
   unless he reads `store.emailed_last_load()`.
 - Every `simulate` creates a new email row (no de-duplication), so the demo button can be pressed repeatedly.

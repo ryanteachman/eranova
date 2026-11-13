@@ -233,6 +233,9 @@ def find_backhauls(city, state):
             "est_buy": None, "est_sell": None, "gp_pct": None,
             "miles": s.get("miles"),
             "outbound_file": s["shipment_id"],
+            "outbound_status": s.get("status"),
+            "delivery_facility_id": next((st.get("facility_id") for st in reversed(s.get("stops", []))
+                                          if st.get("stop_type") == "DELIVERY"), None),
             "carrier_id": s.get("carrier_id"),
             "trailer_number": s.get("trailer_number"),
             "trailer_last_category": last_category,

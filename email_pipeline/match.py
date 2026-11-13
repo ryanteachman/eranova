@@ -223,7 +223,10 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
             reasons.append(f"Truck empties {gap} days before pickup (long wait).")
     return {
         "outbound_file": truck.get("outbound_file"),
+        "outbound_status": truck.get("outbound_status"),
+        "delivery_facility_id": truck.get("delivery_facility_id"),
         "carrier_id": truck.get("carrier_id"),
+        "carrier_compliance": (carrier or {}).get("compliance_light"),
         "trailer_number": truck.get("trailer_number"),
         "equipment": equipment,
         "trailer_last_category": last_category,
@@ -233,6 +236,40 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
         "score": max(score, 0),
         "reasons": reasons,
     }
+
+
+# Tiebreakers for trucks with the same score, strongest first.
+TIEBREAKERS = ["same pickup facility", "load status", "carrier compliance", "known trailer", "lower file number"]
+# How sure we are the truck really shows up empty: further along in its outbound trip = more certain.
+STATUS_CERTAINTY = {"DELIVERED": 6, "AT_DELIVERY": 5, "IN_TRANSIT": 4, "PICKED_UP": 3, "AT_PICKUP": 3,
+                    "DISPATCHED": 2, "COVERED": 1, "BOOKED": 0}
+COMPLIANCE_RANK = {"GREEN": 2, "YELLOW": 1, "RED": 0}
+
+
+def _tiebreak_values(option, pickup_facility_id):
+    """One value per TIEBREAKERS entry; bigger wins. The file number is negated so the lowest (oldest) wins."""
+    file_no = str(option.get("outbound_file") or "")
+    return (
+        bool(pickup_facility_id) and option.get("delivery_facility_id") == pickup_facility_id,
+        STATUS_CERTAINTY.get(option.get("outbound_status"), -1),
+        COMPLIANCE_RANK.get(option.get("carrier_compliance"), -1),
+        option.get("trailer_number") is not None,
+        -int(file_no) if file_no.isdigit() else float("-inf"),
+    )
+
+
+def _rank_trucks(options, pickup_facility_id):
+    """Sort truck options (ok first, then score, then the tiebreakers) and explain a tie on the winner."""
+    options.sort(key=lambda o: (o["ok"], o["score"], *_tiebreak_values(o, pickup_facility_id)), reverse=True)
+    if len(options) > 1 and options[0]["ok"] and options[1]["ok"] and options[0]["score"] == options[1]["score"]:
+        win, lose = _tiebreak_values(options[0], pickup_facility_id), _tiebreak_values(options[1], pickup_facility_id)
+        decided_by = next((name for name, a, b in zip(TIEBREAKERS, win, lose) if a != b),
+                          "equal footing (first listed)")
+        detail = {"load status": f" ({options[0]['outbound_status']} vs {options[1]['outbound_status']})",
+                  "carrier compliance": f" ({options[0]['carrier_compliance']} vs {options[1]['carrier_compliance']})"}
+        options[0]["reasons"].append(f"Tied on score with outbound file {options[1]['outbound_file']}; "
+                                     f"chosen on {decided_by}{detail.get(decided_by, '')}.")
+    return options
 
 
 def match_quote_request(email_id, email, extracted):
@@ -257,7 +294,7 @@ def match_quote_request(email_id, email, extracted):
                           dest["city"], dest["state"])
         for t in trucks
     ]
-    options.sort(key=lambda o: (o["ok"], o["score"]), reverse=True)
+    _rank_trucks(options, origin.get("facility_id"))
     result["options"] = [o for o in options if o["ok"]][:MAX_OPTIONS]
     result["blocked"] = [o for o in options if not o["ok"]]
 
