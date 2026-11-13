@@ -1,19 +1,25 @@
 """Step 3: tie extracted email data to Meridian records and return-trip prospects.
 
-Reads only (GET /search, /vendors/lookup, /vendors/{id}, /customers, /shipments). The one write
-is to our own `washouts` table. Compatibility is always decided by `check_compat`, never the LLM.
+Trucks, carriers, customers, facilities and freight categories come from Ryan's synced cache
+(`python scripts/sync_data.py`); names are resolved with Meridian's GET /search and /vendors/lookup.
+Nothing here writes to Meridian; the one write is to our own `washouts` table. Compatibility is
+always decided by Ryan's `check_compat`, never the LLM, and prices by his `pricing` module.
 """
 
 import re
 from datetime import date
 from functools import lru_cache
 
-from email_pipeline import store
-from email_pipeline.deps import check_compat, find_backhauls, meridian_get
+from backend import db, meridian
+from backend.brain import classify, network, pricing
+from backend.brain.compat import CONTAMINANT_CATEGORIES, FOOD_CATEGORIES, check_compat
 
-ACTIVE_STATUSES = "BOOKED,COVERED,DISPATCHED,AT_PICKUP,PICKED_UP,IN_TRANSIT,AT_DELIVERY,DELIVERED"
-RISKY_LAST_LOADS = ("CHEMICAL", "HAZMAT", "WASTE")
-FOOD_CATEGORIES = ("FOOD", "BEVERAGE")
+from email_pipeline import store
+
+# Outbound loads whose truck is (or will soon be) empty at the consignee.
+ACTIVE_STATUSES = {"BOOKED", "COVERED", "DISPATCHED", "AT_PICKUP", "PICKED_UP", "IN_TRANSIT", "AT_DELIVERY",
+                   "DELIVERED"}
+RISKY_LAST_LOADS = CONTAMINANT_CATEGORIES
 # Which truck equipment can serve a requested equipment type.
 EQUIPMENT_FITS = {"V": {"V", "R", "VC"}, "R": {"R"}, "F": {"F", "SD"}, "SD": {"SD"}, "VC": {"VC", "V"}}
 MAX_OPTIONS = 5
@@ -24,7 +30,7 @@ MAX_OPTIONS = 5
 def _safe_get(path, **params):
     """GET from Meridian, returning None instead of raising (matching must not crash the pipeline)."""
     try:
-        return meridian_get(path, **params)
+        return meridian.get(path, **params)
     except Exception:
         return None
 
@@ -35,16 +41,35 @@ def _search(q):
     return _safe_get("/search", q=q) or {}
 
 
-@lru_cache(maxsize=64)
+def _cached(table, id_field):
+    """One of Ryan's cache tables as {id: record}."""
+    return {r[id_field]: r for r in db.load_records(table)}
+
+
 def get_vendor(vendor_id):
-    """One carrier record (cached), or None."""
-    return _safe_get(f"/vendors/{vendor_id}")
+    """One carrier record from the cache (Meridian if it isn't cached), or None."""
+    if not vendor_id:
+        return None
+    return _cached("vendors", "vendor_id").get(vendor_id) or _safe_get(f"/vendors/{vendor_id}")
 
 
-@lru_cache(maxsize=1)
 def _customers():
-    """All customers (there are only a handful), cached."""
-    return (_safe_get("/customers", limit=200) or {}).get("items", [])
+    """All customers from the cache (Meridian if the cache is empty)."""
+    return list(_cached("customers", "customer_id").values()) or \
+        (_safe_get("/customers", limit=200) or {}).get("items", [])
+
+
+def shipments():
+    """Every cached shipment, with its freight category attached as `_category` (Ryan's classification;
+    Meridian's hazmat flag when a shipment hasn't been classified yet)."""
+    labels = classify.get_classifications()
+    rows = []
+    for s in db.load_records("shipments"):
+        label = labels.get(s["shipment_id"])
+        hazmat = any(line.get("hazmat") for line in s.get("freight_lines") or [])
+        s["_category"] = label["category"] if label else ("HAZMAT" if hazmat else "GENERAL")
+        rows.append(s)
+    return rows
 
 
 def _hint_variants(hint):
@@ -126,7 +151,7 @@ def facility_requirements(facility_id):
     """What a facility demands of the driver, from its Meridian record (flags, appointments, lumper); [] if unknown."""
     if not facility_id:
         return []
-    facility = _safe_get(f"/facilities/{facility_id}") or {}
+    facility = _cached("facilities", "facility_id").get(facility_id) or _safe_get(f"/facilities/{facility_id}") or {}
     reqs = [FLAG_TEXT.get(flag, flag.lower().replace("_", " ")) for flag in facility.get("compliance_flags") or []]
     if facility.get("appointment_required"):
         reqs.append("appointment required")
@@ -188,13 +213,70 @@ def _days_between(a, b):
         return None
 
 
-def _trucks_at(city, state):
-    """Trucks arriving in a city, taken from find_backhauls and de-duplicated by outbound file."""
-    trucks = {}
-    for p in find_backhauls(city, state):
-        key = p.get("outbound_file") or p.get("prospect_id")
-        trucks.setdefault(key, p)
-    return list(trucks.values())
+def _un_number(s):
+    """The first UN number in a shipment's freight lines (for FSMA reasons), or None."""
+    for line in s.get("freight_lines") or []:
+        m = re.search(r"UN\d{4}", line.get("description") or "")
+        if m:
+            return m.group(0)
+    return None
+
+
+def _frt_buy(s):
+    """What we paid the carrier for linehaul on a shipment."""
+    return sum(c.get("amount") or 0 for c in s.get("vendor_costs") or [] if c.get("charge_code") == "FRT")
+
+
+def arriving_trucks(city, state, rows=None):
+    """Trucks on active outbound loads into this city, with their trailer's last load (Ryan's trailer history)."""
+    rows = rows if rows is not None else shipments()
+    history = network.trailer_history(rows)
+    trucks = []
+    for s in rows:
+        if (s["consignee_city"].lower(), s["consignee_state"].upper()) != (city.lower(), state.upper()):
+            continue
+        if s.get("status") not in ACTIVE_STATUSES or s.get("mode") not in network.TRUCK_MODES or not s.get("carrier_id"):
+            continue
+        last = history.get((s["carrier_id"], s.get("trailer_number")), s)
+        trucks.append({
+            "outbound_file": s["shipment_id"],
+            "outbound_status": s.get("status"),
+            "delivery_facility_id": next((st.get("facility_id") for st in reversed(s.get("stops") or [])
+                                          if st.get("stop_type") == "DELIVERY"), None),
+            "carrier_id": s["carrier_id"],
+            "trailer_number": s.get("trailer_number"),
+            "equipment": s.get("equipment_type"),
+            "trailer_last_category": last["_category"],
+            "last_load_note": _un_number(last),
+            "available_date": s.get("delivery_date_target"),
+            "destination": {"city": s["shipper_city"], "state": s["shipper_state"]},
+        })
+    return trucks
+
+
+def lane_miles(origin, destination, rows):
+    """Miles for a lane: the average Meridian mileage on it (either direction), else Ryan's estimate."""
+    a, b = (origin["city"], origin["state"]), (destination["city"], destination["state"])
+    known = [s["miles"] for s in rows if s.get("miles")
+             and {(s["shipper_city"], s["shipper_state"]), (s["consignee_city"], s["consignee_state"])} == {a, b}]
+    return round(sum(known) / len(known)) if known else network.distance_miles(a, b)
+
+
+def price_backhaul(origin, destination, customer_id, truck, rows):
+    """Ryan's backhaul pricing for the email's lane on this truck: {miles, buy_lines, target_margin_pct, est_*}."""
+    miles = lane_miles(origin, destination, rows)
+    if not miles:
+        return None
+    home = truck["destination"]
+    outbound_buys = [_frt_buy(s) for s in rows if _frt_buy(s)
+                     and (s["shipper_city"], s["shipper_state"]) == (home["city"], home["state"])
+                     and (s["consignee_city"], s["consignee_state"]) == (origin["city"], origin["state"])]
+    avg_outbound = sum(outbound_buys) / len(outbound_buys) if outbound_buys else None
+    buy_lines = pricing.backhaul_buy_lines(miles, avg_outbound)
+    margin = pricing.margin_for(_cached("customers", "customer_id").get(customer_id))
+    money = pricing.estimate(buy_lines, margin)
+    return {"miles": miles, "buy_lines": buy_lines, "target_margin_pct": margin,
+            "est_buy": money["buy_total"], "est_sell": money["sell_total"], "gp_pct": money["gp_pct"]}
 
 
 def _candidate_from_request(extracted):
@@ -208,21 +290,21 @@ def _candidate_from_request(extracted):
         "temp_controlled": bool(extracted.get("temp_controlled")),
         "hazmat": bool(extracted.get("hazmat")),
         "weight_lb": sum(l.get("weight_lb") or 0 for l in lines),
-        "pallets": sum(l.get("pieces") or 0 for l in lines if l.get("package_type") in ("PALLET", "SKID", None)),
+        "pallet_positions": sum(l.get("pieces") or 0 for l in lines if l.get("package_type") in ("PALLET", "SKID", None)),
         "description": "; ".join(l.get("description") or "" for l in lines),
     }
 
 
 def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_city, home_state):
     """Run check_compat for one arriving truck carrying the email's freight; returns an option dict."""
-    carrier = get_vendor(truck["carrier_id"]) if truck.get("carrier_id") else None
+    carrier = get_vendor(truck["carrier_id"]) or {"vendor_id": truck["carrier_id"]}
     equipment = truck.get("equipment")
-    cand = dict(candidate, trailer_number=truck.get("trailer_number"), carrier_id=truck.get("carrier_id"))
-    last_category = truck.get("trailer_last_category")
+    last_category, last_note = truck.get("trailer_last_category"), truck.get("last_load_note")
     history = store.emailed_last_load(truck.get("trailer_number"))
     if history and history["category"]:
-        last_category = history["category"]
-    ok, reasons = check_compat(last_category, equipment, cand, carrier)
+        last_category, last_note = history["category"], history["commodity"]
+    ok, reasons = check_compat(last_category, equipment, candidate, carrier,
+                               trailer_number=truck.get("trailer_number"), last_load_note=last_note)
     reasons = list(reasons)
     if history and history["category"]:
         reasons.insert(0, f"Trailer history from email {history['email_id']}: last hauled "
@@ -231,8 +313,6 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
     if requested_equipment and equipment not in EQUIPMENT_FITS.get(requested_equipment, {requested_equipment}):
         ok = False
         reasons.append(f"Blocked: request needs equipment {requested_equipment}, truck is {equipment}.")
-    if not truck.get("carrier_id"):
-        reasons.append("No carrier assigned to the outbound load yet.")
 
     score = 50 if ok else 0
     truck_home_city, truck_home_state = _city_state(truck.get("destination"))
@@ -257,7 +337,7 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
         "outbound_status": truck.get("outbound_status"),
         "delivery_facility_id": truck.get("delivery_facility_id"),
         "carrier_id": truck.get("carrier_id"),
-        "carrier_compliance": (carrier or {}).get("compliance_light"),
+        "carrier_compliance": carrier.get("compliance_light"),
         "trailer_number": truck.get("trailer_number"),
         "equipment": equipment,
         "trailer_last_category": last_category,
@@ -319,7 +399,8 @@ def match_quote_request(email_id, email, extracted):
         return result
 
     candidate = _candidate_from_request(extracted)
-    trucks = _trucks_at(origin["city"], origin["state"])
+    rows = shipments()
+    trucks = arriving_trucks(origin["city"], origin["state"], rows)
     options = [
         _option_for_truck(t, candidate, extracted.get("equipment"), extracted.get("pickup_date"),
                           dest["city"], dest["state"])
@@ -338,6 +419,12 @@ def match_quote_request(email_id, email, extracted):
     if not customer["entity_id"]:
         result.update(status="none_found", reasons=[f"A truck fits, but the customer '{customer['hint']}' is not in Meridian."])
         return result
+    price = price_backhaul(origin, dest, customer["entity_id"], next(t for t in trucks
+                                                                     if t["outbound_file"] == best["outbound_file"]), rows)
+    if not price:
+        result.update(status="none_found", reasons=[f"A truck fits, but there is no mileage for "
+                                                    f"{origin['city']} → {dest['city']} to price it."])
+        return result
 
     result["status"] = "prospect"
     result["prospect"] = {
@@ -353,6 +440,7 @@ def match_quote_request(email_id, email, extracted):
         "carrier_id": best["carrier_id"],
         "trailer_number": best["trailer_number"],
         "score": best["score"],
+        **price,
         "ok": True,
         "reasons": best["reasons"],
     }
@@ -361,17 +449,19 @@ def match_quote_request(email_id, email, extracted):
 
 # ---------- trailers ----------
 
-def trailer_position(carrier_id, trailer_number):
-    """Latest active Meridian shipment for this carrier's trailer, as {city, state, outbound_file, date}, or None."""
+def trailer_position(carrier_id, trailer_number, rows=None):
+    """Latest active shipment for this carrier's trailer, as {city, state, outbound_file, date, last_category}, or None."""
     if not carrier_id or not trailer_number:
         return None
-    page = _safe_get("/shipments", carrier=carrier_id, status=ACTIVE_STATUSES, limit=200) or {}
-    mine = [s for s in page.get("items", []) if str(s.get("trailer_number")) == str(trailer_number)]
+    rows = rows if rows is not None else shipments()
+    mine = [s for s in rows if s.get("carrier_id") == carrier_id and s.get("status") in ACTIVE_STATUSES
+            and str(s.get("trailer_number")) == str(trailer_number)]
     if not mine:
         return None
     s = max(mine, key=lambda s: s.get("delivery_date_target") or "")
+    last = network.trailer_history(rows).get((carrier_id, s.get("trailer_number")), s)
     return {"city": s["consignee_city"], "state": s["consignee_state"], "outbound_file": s["shipment_id"],
-            "date": s.get("delivery_date_target")}
+            "date": s.get("delivery_date_target"), "last_category": last["_category"]}
 
 
 def _rerun_prospect(prospect, trailer_last_category, equipment, carrier, trailer_number):
@@ -382,11 +472,10 @@ def _rerun_prospect(prospect, trailer_last_category, equipment, carrier, trailer
             prospect.get("category") in FOOD_CATEGORIES and prospect.get("equipment") == "R"),
         "hazmat": prospect.get("category") == "HAZMAT",
         "weight_lb": prospect.get("weight_lb"),
-        "pallets": prospect.get("pallets"),
-        "trailer_number": trailer_number,
-        "carrier_id": carrier and carrier.get("vendor_id"),
+        "pallet_positions": prospect.get("pallet_positions"),
     }
-    ok, reasons = check_compat(trailer_last_category, equipment, candidate, carrier)
+    ok, reasons = check_compat(trailer_last_category, equipment, candidate, carrier or {"vendor_id": None},
+                               trailer_number=trailer_number)
     return {
         "prospect_id": prospect.get("prospect_id"),
         "customer_id": prospect.get("customer_id"),
@@ -396,6 +485,11 @@ def _rerun_prospect(prospect, trailer_last_category, equipment, carrier, trailer
         "category": prospect.get("category"),
         "equipment": equipment,
         "miles": prospect.get("miles"),
+        "outbound_file": prospect.get("outbound_file"),
+        "buy_lines": prospect.get("buy_lines"),
+        "target_margin_pct": prospect.get("target_margin_pct"),
+        "est_buy": prospect.get("est_buy"),
+        "est_sell": prospect.get("est_sell"),
         "score": max(prospect.get("score") or 0, 50) if ok else 0,
         "ok": ok,
         "reasons": list(reasons),
@@ -406,9 +500,9 @@ def _prospects_for_truck(city, state, trailer_last_category, equipment, carrier,
     """Every prospect out of a city, re-checked for this truck; ok ones first."""
     options = [
         _rerun_prospect(p, trailer_last_category, equipment or p.get("equipment"), carrier, trailer_number)
-        for p in find_backhauls(city, state)
+        for p in network.find_backhauls(city, state)
     ]
-    # The finder lists freight once per arriving truck; this truck only needs each load once.
+    # This truck only needs each load once, whichever arriving truck the finder paired it with.
     unique = {}
     for o in options:
         key = (o["customer_id"], str(o["origin"]), str(o["destination"]), o["category"])
@@ -430,14 +524,12 @@ def match_washout(email_id, email, extracted, email_text):
         extracted.get("cert_number"), email_id,
     )
 
-    # 1. Finder prospects where this trailer is emptying, now re-checked with the washout on file.
+    # 1. Ryan's prospects for this trailer's truck: food it can now carry because the washout is on file.
     position = trailer_position(carrier["entity_id"], trailer)
     result["position"] = position
-    if position:
-        for p in find_backhauls(position["city"], position["state"]):
-            if (str(p.get("trailer_number")) == str(trailer) and p.get("ok")
-                    and p.get("category") in FOOD_CATEGORIES
-                    and p.get("trailer_last_category") in RISKY_LAST_LOADS):
+    if position and position["last_category"] in RISKY_LAST_LOADS:
+        for p in network.find_backhauls(position["city"], position["state"]):
+            if p.get("outbound_file") == position["outbound_file"] and p.get("ok") and p.get("category") in FOOD_CATEGORIES:
                 result["unblocked"].append({"source": "network", "prospect_id": p.get("prospect_id"),
                                             "customer_id": p.get("customer_id"), "category": p.get("category"),
                                             "origin": p.get("origin"), "destination": p.get("destination")})
@@ -480,7 +572,7 @@ def _quote_options_now_blocked(email_id, trailer, last_category):
 def match_last_load(email_id, email, extracted, email_text):
     """Re-check the prospects at the truck's position using the last load the carrier told us about."""
     carrier_ref = resolve_carrier(extracted.get("carrier_hint"), email_text)
-    carrier = get_vendor(carrier_ref["entity_id"]) if carrier_ref["entity_id"] else None
+    carrier = get_vendor(carrier_ref["entity_id"])
     trailer = extracted.get("trailer_number")
     city, state = extracted.get("last_delivery_city"), extracted.get("last_delivery_state")
     if not (city and state):
@@ -509,7 +601,7 @@ def match_last_load(email_id, email, extracted, email_text):
 def match_carrier_offer(email_id, email, extracted, email_text):
     """Find prospects out of the city where the offered truck is empty."""
     carrier_ref = resolve_carrier(extracted.get("carrier_hint"), email_text)
-    carrier = get_vendor(carrier_ref["entity_id"]) if carrier_ref["entity_id"] else None
+    carrier = get_vendor(carrier_ref["entity_id"])
     city, state = extracted.get("empty_city"), extracted.get("empty_state")
     result = {"carrier": carrier_ref, "position": {"city": city, "state": state}, "options": [], "prospect": None}
     if not (city and state):
@@ -517,12 +609,8 @@ def match_carrier_offer(email_id, email, extracted, email_text):
         return result
 
     # Trailer history: what Meridian knows about this trailer, if the carrier gave a number.
-    last_category = None
-    if extracted.get("trailer_number"):
-        pos = trailer_position(carrier_ref["entity_id"], extracted["trailer_number"])
-        if pos:
-            last_category = next((p.get("trailer_last_category") for p in find_backhauls(pos["city"], pos["state"])
-                                  if p.get("outbound_file") == pos["outbound_file"]), None)
+    pos = trailer_position(carrier_ref["entity_id"], extracted.get("trailer_number"))
+    last_category = pos["last_category"] if pos else None
 
     options = _prospects_for_truck(city, state, last_category, extracted.get("equipment"), carrier,
                                    extracted.get("trailer_number"))
