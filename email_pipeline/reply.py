@@ -1,12 +1,11 @@
 """Draft reply text with the LLM, and the simulated send (nothing ever leaves the building)."""
 
-import json
 import re
 
+from backend.agent import actions
 from pydantic import BaseModel
 
 from email_pipeline import store
-from email_pipeline.deps import get_conn
 from email_pipeline.llm import structured
 
 PRICE_PLACEHOLDER = "{{sell_total}}"
@@ -95,13 +94,14 @@ def draft_reply(email, extracted, matched, kind=None, quote_pending=False, instr
     return {"to": email["from"], "subject": reply.subject, "body": body}
 
 
+class QuoteNotApproved(Exception):
+    """The reply quotes a price, but its create_return_quote action hasn't been approved yet."""
+
+
 def _quote_result(action_id):
-    """Ryan's actions row for the quote: (status, result dict)."""
-    with get_conn() as conn:
-        row = conn.execute("SELECT status, result FROM actions WHERE action_id = ?", (action_id,)).fetchone()
-    if row is None:
-        return None, None
-    return row["status"], json.loads(row["result"]) if row["result"] else None
+    """The quote's status and result in Ryan's approval queue: (status, result dict)."""
+    action = actions.get(action_id) if action_id else None
+    return (action["status"], action["result"]) if action else (None, None)
 
 
 def send_reply(reply_id, quote_action_id=None):
@@ -117,7 +117,7 @@ def send_reply(reply_id, quote_action_id=None):
     if PRICE_PLACEHOLDER in body:
         status, result = _quote_result(quote_action_id) if quote_action_id else (None, None)
         if status != "done" or not result or result.get("sell_total") is None:
-            raise ValueError(f"Approve the quote action {quote_action_id} first; this reply quotes its price.")
+            raise QuoteNotApproved(f"Approve the quote action {quote_action_id} first; this reply quotes its price.")
         body = body.replace(PRICE_PLACEHOLDER, f"${result['sell_total']:,.2f}")
         if result.get("quote_id"):
             body += f"\n\nMeridian quote #{result['quote_id']}"
@@ -135,5 +135,18 @@ def reject_reply(reply_id):
 
 
 def execute_send_reply(payload):
-    """Executor for Ryan's approval queue: approving a `send_reply` action calls this with its payload."""
-    return send_reply(payload["reply_id"], payload.get("quote_action_id"))
+    """Executor for Ryan's approval queue: approving a `send_reply` action calls this with its payload.
+
+    Ryan's queue marks an action `failed` when its executor raises, and a failed action can't be approved
+    again. So if the quote isn't approved yet, the reply is queued again under a new action before the
+    error is raised: the approver approves the quote, then the new send_reply.
+    """
+    try:
+        return send_reply(payload["reply_id"], payload.get("quote_action_id"))
+    except QuoteNotApproved as exc:
+        old = store.get_reply(payload["reply_id"])
+        new = actions.propose("send_reply", f"Reply to {old['to_addr']}: {old['subject']}", old["body"][:280],
+                              dict(payload), 1.0, f"Re-queued: {exc}", actor="email_pipeline")
+        store.update_reply(payload["reply_id"], action_id=new["action_id"])
+        store.add_action_id(payload["email_id"], new["action_id"])
+        raise QuoteNotApproved(f"{exc} The reply was queued again as {new['action_id']}.") from exc

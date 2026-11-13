@@ -6,9 +6,11 @@ the inbox (status `failed` plus the error) with everything that worked up to tha
 
 import traceback
 
+from backend.agent.actions import propose
+from backend.errors import NotFound
+
 from email_pipeline import store
 from email_pipeline.classify import classify_email, needs_review
-from email_pipeline.deps import propose
 from email_pipeline.extract import extract
 from email_pipeline.match import match
 from email_pipeline.parse import as_prompt_text, parse_json
@@ -36,8 +38,14 @@ def _with_facility_requirements(accessorials, origin, destination):
     return merged
 
 
+def _queue(kind, title, summary, payload, confidence, reasoning):
+    """Propose an action in Ryan's approval queue as the email pipeline; returns its action_id."""
+    return propose(kind, title, summary, payload, confidence, reasoning, actor="email_pipeline")["action_id"]
+
+
 def _quote_payload(email_id, extracted, matched):
-    """The create_return_quote payload for a quote request: the full lane + freight from the email."""
+    """The create_return_quote payload for a quote request: the fields Ryan's executor needs, plus the
+    email's freight, date and references."""
     p = matched["prospect"]
     lines = [
         {k: line[k] for k in ("pieces", "weight_lb", "package_type", "description") if line.get(k) is not None}
@@ -55,6 +63,10 @@ def _quote_payload(email_id, extracted, matched):
         "equipment_type": p["equipment"],
         "origin": {k: v for k, v in p["origin"].items() if k in location_keys and v},
         "destination": {k: v for k, v in p["destination"].items() if k in location_keys and v},
+        "category": p["category"],
+        "miles": p["miles"],
+        "target_margin_pct": p["target_margin_pct"],
+        "buy_lines": p["buy_lines"],
         "pickup_date": extracted.get("pickup_date"),
         "freight_lines": lines,
         "references": extracted.get("references") or [],
@@ -62,14 +74,41 @@ def _quote_payload(email_id, extracted, matched):
         "outbound_file": p["outbound_file"],
         "carrier_id": p["carrier_id"],
         "trailer_number": p["trailer_number"],
-        "rate_ref": f"return-trip:{p['outbound_file']}",
     }
+
+
+def _carrier_payload(email_id, extracted, matched):
+    """The create_return_quote payload for a prospect found from a carrier's email (one of Ryan's prospects)."""
+    p, carrier = matched["prospect"], matched["carrier"]
+    return {
+        "source": "email",
+        "source_email_id": email_id,
+        "prospect_id": p["prospect_id"],
+        "customer_id": p["customer_id"],
+        "equipment_type": p["equipment"],
+        "category": p["category"],
+        "origin": p["origin"],
+        "destination": p["destination"],
+        "miles": p["miles"],
+        "outbound_file": p["outbound_file"],
+        "target_margin_pct": p["target_margin_pct"],
+        "buy_lines": p["buy_lines"],
+        "carrier_id": carrier["entity_id"],
+        "trailer_number": extracted.get("trailer_number"),
+    }
+
+
+def _money(p):
+    """' Est. buy $x / sell $y.' when the prospect has an estimate (shown to the approver, never the customer)."""
+    if p.get("est_buy") is None or p.get("est_sell") is None:
+        return ""
+    return f" Est. buy ${p['est_buy']:,.2f} / sell ${p['est_sell']:,.2f}."
 
 
 def _propose_quote(email_id, email, kind, classification, extracted, matched):
     """Queue a create_return_quote action when matching found a usable prospect; returns the action id or None."""
     p = matched.get("prospect") if matched else None
-    if not p:
+    if not p or not p.get("buy_lines"):
         return None
     party = matched.get("customer") or matched.get("carrier") or {}
     confidence = round(min(classification["confidence"], party.get("confidence") or 0.5), 2)
@@ -78,19 +117,20 @@ def _propose_quote(email_id, email, kind, classification, extracted, matched):
         payload = _quote_payload(email_id, extracted, matched)
         o, d = p["origin"], p["destination"]
         title = f"Quote {p['customer_name']}: {o['city']}, {o['state']} → {d['city']}, {d['state']}"
-        summary = (f"{p['category']} on {p['equipment']}, pickup {extracted.get('pickup_date') or 'TBD'}; "
-                   f"rides the truck from outbound file {p['outbound_file']} ({p['carrier_id'] or 'carrier TBD'}).")
+        summary = (f"{p['category']} on {p['equipment']}, {p['miles']} mi, pickup {extracted.get('pickup_date') or 'TBD'}; "
+                   f"rides the truck from outbound file {p['outbound_file']} ({p['carrier_id']}).{_money(p)}")
         why = "; ".join(p["reasons"])
     else:
         carrier = matched["carrier"]
-        payload = {"source": "email", "source_email_id": email_id, "prospect_id": p["prospect_id"],
-                   "carrier_id": carrier["entity_id"], "trailer_number": extracted.get("trailer_number")}
+        payload = _carrier_payload(email_id, extracted, matched)
+        o, d = p["origin"], p["destination"]
         title = f"Quote {p.get('customer_name') or p.get('customer_id')} for {carrier['label'] or carrier['hint']}'s empty truck"
-        summary = f"{p.get('category')} from {p.get('origin')} to {p.get('destination')} (prospect {p['prospect_id']})."
+        summary = (f"{p.get('category')} {o['city']}, {o['state']} → {d['city']}, {d['state']}, {p['miles']} mi "
+                   f"(prospect {p['prospect_id']}).{_money(p)}")
         why = "; ".join(p["reasons"])
 
     reasoning = f"{_cite(email_id, email)}. Compatibility: {why}"
-    action_id = propose("create_return_quote", title, summary, payload, confidence, reasoning)
+    action_id = _queue("create_return_quote", title, summary, payload, confidence, reasoning)
     store.add_action_id(email_id, action_id)
     store.audit("action_proposed", {"email_id": email_id, "action_id": action_id, "kind": "create_return_quote"})
     return action_id
@@ -111,8 +151,8 @@ def _draft_and_propose_reply(email_id, email, kind, extracted, matched, quote_ac
     reasoning = f"Reply to {_cite(email_id, email)}."
     if quote_action_id:
         reasoning += f" The price is filled in from quote action {quote_action_id} once that is approved."
-    action_id = propose("send_reply", f"Reply to {draft['to']}: {draft['subject']}", summary, payload,
-                        1.0, reasoning)
+    action_id = _queue("send_reply", f"Reply to {draft['to']}: {draft['subject']}", summary, payload,
+                       1.0, reasoning)
     store.update_reply(reply_id, action_id=action_id)
     store.add_action_id(email_id, action_id)
     store.audit("action_proposed", {"email_id": email_id, "action_id": action_id, "kind": "send_reply"})
@@ -160,7 +200,7 @@ def process_email(email):
         email_id = email
         row = store.get_email(email_id)
         if row is None:
-            raise KeyError(f"no email {email_id}")
+            raise NotFound(f"No email {email_id}.")
         email = {"from": row["from_addr"], "to": row["to_addr"], "subject": row["subject"], "body": row["body"],
                  "received_at": row["received_at"], "attachments": row["attachments"] or []}
         store.update_email(email_id, kind=None, confidence=None, extracted=None, matched=None, error=None)
@@ -217,7 +257,7 @@ def redraft_reply(email_id, instructions=None):
     """Draft a fresh reply for a processed email (e.g. with broker instructions); returns {reply_id, action_id}."""
     row = store.get_email(email_id)
     if row is None:
-        raise KeyError(f"no email {email_id}")
+        raise NotFound(f"No email {email_id}.")
     email = {"from": row["from_addr"], "subject": row["subject"], "body": row["body"]}
     matched = row["matched"] or {}
     quote_action_id = store.quote_action_for_email(email_id)

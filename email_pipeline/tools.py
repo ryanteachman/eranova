@@ -1,10 +1,19 @@
-"""Registers the email tools in Ryan's agent registry so the agent can work email from chat.
+"""Registers the email tools and executors with Ryan's agent, so the agent can work email from chat.
 
-Ryan's backend/agent/tools.py imports this module so the @tool decorators run.
+Ryan's backend imports this module on start-up, so the @tool and @executor decorators run.
+An `approve`-tier tool only describes the write ({title, summary, payload, confidence, reasoning});
+Ryan's loop queues it, and the matching @executor does the write when a person approves it.
 """
 
+from backend.agent.actions import executor
+from backend.agent.registry import tool
+from backend.errors import Conflict
+
 from email_pipeline import haggle, pipeline, reply, store
-from email_pipeline.deps import tool
+
+# Executors for the actions the email pipeline proposes.
+executor("send_reply")(reply.execute_send_reply)
+executor("confirm_carrier_rate")(haggle.execute_rate_confirmation)
 
 
 def inbox_row(row):
@@ -27,7 +36,6 @@ def inbox_row(row):
 )
 def list_emails(status=None):
     """Return {items:[inbox rows]}."""
-    store.init_email_tables()
     return {"items": [inbox_row(r) for r in store.list_emails(status)]}
 
 
@@ -80,19 +88,30 @@ def draft_reply(email_id, instructions=None):
 
 @tool(
     name="send_reply",
-    description="Send a drafted reply (simulated: marks it approved_sent; nothing leaves the system).",
+    description="Send a drafted reply (simulated: marks it approved_sent; nothing leaves the system). "
+                "Queued for human approval; the quote's price is filled in when it is sent.",
     schema={"type": "object", "properties": {"reply_id": {"type": "string"}}, "required": ["reply_id"]},
     tier="approve",
 )
 def send_reply(reply_id):
-    """Mark the reply approved_sent, filling in the quote price; runs only after human approval."""
-    return reply.send_reply(reply_id)
+    """Describe sending this draft for the approval queue; reply.execute_send_reply does it on approval."""
+    draft = store.get_reply(reply_id)
+    if draft is None or draft["status"] != "draft":
+        raise Conflict(f"No draft reply {reply_id}; it may already be sent or rejected.")
+    return {
+        "title": f"Reply to {draft['to_addr']}: {draft['subject']}",
+        "summary": draft["body"][:280],
+        "payload": {"reply_id": reply_id, "email_id": draft["email_id"],
+                    "quote_action_id": store.quote_action_for_email(draft["email_id"])},
+        "confidence": 1.0,
+        "reasoning": f"Agent asked to send the drafted reply to email {draft['email_id']}.",
+    }
 
 
 @tool(
     name="haggle_with_carrier",
     description="Negotiate by e-mail with the carrier behind a CARRIER_OFFER email (simulated carrier), staying "
-                "inside a target pay range from lane history; a deal is queued as a cover_load action.",
+                "inside a target pay range from lane history; a deal is queued as a confirm_carrier_rate action.",
     schema={
         "type": "object",
         "properties": {
@@ -105,8 +124,5 @@ def send_reply(reply_id):
     tier="auto",
 )
 def haggle_with_carrier(email_id, target_pay_min=None, target_pay_max=None):
-    """Return the haggle transcript, the deal amount and any cover_load action id."""
-    try:
-        return haggle.haggle(email_id, target_pay_min, target_pay_max)
-    except ValueError as exc:
-        return {"error": str(exc)}
+    """Return the haggle transcript, the deal amount and any confirm_carrier_rate action id."""
+    return haggle.haggle(email_id, target_pay_min, target_pay_max)
