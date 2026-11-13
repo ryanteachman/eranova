@@ -3,6 +3,7 @@ team03.txt
 secret.txt
 asher-sandbox/
 .env
+run*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
