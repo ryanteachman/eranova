@@ -132,3 +132,9 @@ dmypy.json
 
 # Secrets and sensitive files
 secret.txt
+
+# Local data and frontend deps
+*.db
+node_modules/
+
+CLAUDE.md
