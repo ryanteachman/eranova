@@ -1,0 +1,7 @@
+{
+  "items": [
+    {"at": "2026-11-13T15:04:40Z", "actor": "human", "event": "action_approved", "detail": "act_0001 -> quote 7300201"},
+    {"at": "2026-11-13T15:02:11Z", "actor": "agent", "event": "tool_call", "detail": "create_return_quote {\"prospect_id\": \"DAL-CHI-KEYSTONE-TX-7300176\"} -> Queued for human approval as act_0001"},
+    {"at": "2026-11-13T15:02:09Z", "actor": "agent", "event": "tool_call", "detail": "find_backhauls {\"city\": \"Dallas\", \"state\": \"TX\"} -> 3 prospects, 1 compatible"}
+  ]
+}

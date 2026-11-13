@@ -1,0 +1,69 @@
+{
+  "city": "Dallas",
+  "state": "TX",
+  "inbound": 37,
+  "outbound": 0,
+  "prospects": [
+    {
+      "prospect_id": "DAL-CHI-KEYSTONE-TX-7300176",
+      "customer_id": "KEYSTONE-TX",
+      "customer_name": "Keystone Home & Garden - Texas Division",
+      "origin": {"city": "Dallas", "state": "TX"},
+      "destination": {"city": "Chicago", "state": "IL"},
+      "equipment": "V",
+      "category": "RETAIL_RETURNS",
+      "score": 86,
+      "est_buy": 2158.75,
+      "est_sell": 2520.95,
+      "gp_pct": 14.4,
+      "miles": 925,
+      "outbound_file": "7300176",
+      "ok": true,
+      "reasons": [
+        "Dry van matches dry freight.",
+        "Trailer last hauled STEEL; no FSMA restriction.",
+        "Carrier ACMECARR is ACTIVE with an unexpired CARGO policy.",
+        "Warm lead: Keystone already ships with us.",
+        "Saves 925 empty miles."
+      ]
+    },
+    {
+      "prospect_id": "DAL-CHI-VALIANTFD-7300181",
+      "customer_id": "VALIANTFD",
+      "customer_name": "Valiant Foods Group",
+      "origin": {"city": "Dallas", "state": "TX"},
+      "destination": {"city": "Chicago", "state": "IL"},
+      "equipment": "V",
+      "category": "FOOD",
+      "score": 0,
+      "est_buy": 2158.75,
+      "est_sell": 2520.95,
+      "gp_pct": 14.4,
+      "miles": 925,
+      "outbound_file": "7300181",
+      "ok": false,
+      "reasons": [
+        "Blocked: trailer last hauled HAZMAT (UN1760); FSMA requires a washout before food."
+      ]
+    },
+    {
+      "prospect_id": "DAL-CHI-LONESTARCH-7300190",
+      "customer_id": "LONESTARCH",
+      "customer_name": "Lone Star Chemical Co.",
+      "origin": {"city": "Dallas", "state": "TX"},
+      "destination": {"city": "Chicago", "state": "IL"},
+      "equipment": "V",
+      "category": "HAZMAT",
+      "score": 0,
+      "est_buy": 2158.75,
+      "est_sell": 2520.95,
+      "gp_pct": 14.4,
+      "miles": 925,
+      "outbound_file": "7300190",
+      "ok": false,
+      "reasons": [
+        "Blocked: hazmat freight needs a hazmat-certified carrier; BLUERIDGE is not certified."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "reply": "Dallas receives 37 loads and ships none. The best backhaul is Keystone Home & Garden's retail returns to Chicago (score 86, GP 14.4%). I queued a return quote for your approval as act_0001. Valiant Foods was blocked: that trailer last hauled hazmat and needs a washout before food.",
+  "tool_calls": [
+    {
+      "name": "find_backhauls",
+      "args": {"city": "Dallas", "state": "TX"},
+      "result_preview": "3 prospects, 1 compatible: KEYSTONE-TX (86)"
+    },
+    {
+      "name": "create_return_quote",
+      "args": {"prospect_id": "DAL-CHI-KEYSTONE-TX-7300176"},
+      "result_preview": "Queued for human approval as act_0001"
+    }
+  ],
+  "actions_created": ["act_0001"]
+}

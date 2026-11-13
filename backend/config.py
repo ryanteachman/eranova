@@ -21,9 +21,10 @@ def read_secret_file(path=SECRET_FILE):
         return values
     for line in path.read_text(encoding="utf-8").splitlines():
         label, sep, value = line.replace("\r", "").strip().partition(":")
-        label, value = label.strip(), value.strip()
-        if sep and label in SECRET_LABELS and value:
-            values[SECRET_LABELS[label]] = value
+        label, words = label.strip(), value.split()
+        # The value may be followed by an explanatory note on the same line.
+        if sep and label in SECRET_LABELS and words:
+            values[SECRET_LABELS[label]] = words[0]
     return values
 
 
