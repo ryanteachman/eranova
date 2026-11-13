@@ -128,6 +128,18 @@ def add_action_id(email_id, action_id):
     update_email(email_id, action_ids=ids)
 
 
+def emailed_last_load(trailer_number):
+    """The newest LAST_LOAD_INFO email about this trailer: {email_id, received_at, category, commodity} or None."""
+    if not trailer_number:
+        return None
+    for row in list_emails(status="processed"):
+        ext = row.get("extracted") or {}
+        if row["kind"] == "LAST_LOAD_INFO" and str(ext.get("trailer_number")) == str(trailer_number):
+            return {"email_id": row["email_id"], "received_at": row["received_at"],
+                    "category": ext.get("last_commodity_category"), "commodity": ext.get("last_commodity")}
+    return None
+
+
 def quote_action_for_email(email_id):
     """The create_return_quote action id proposed for this email (from Ryan's actions table), or None."""
     ids = (get_email(email_id) or {}).get("action_ids") or []

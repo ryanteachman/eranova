@@ -187,8 +187,15 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
     carrier = get_vendor(truck["carrier_id"]) if truck.get("carrier_id") else None
     equipment = truck.get("equipment")
     cand = dict(candidate, trailer_number=truck.get("trailer_number"), carrier_id=truck.get("carrier_id"))
-    ok, reasons = check_compat(truck.get("trailer_last_category"), equipment, cand, carrier)
+    last_category = truck.get("trailer_last_category")
+    history = store.emailed_last_load(truck.get("trailer_number"))
+    if history and history["category"]:
+        last_category = history["category"]
+    ok, reasons = check_compat(last_category, equipment, cand, carrier)
     reasons = list(reasons)
+    if history and history["category"]:
+        reasons.insert(0, f"Trailer history from email {history['email_id']}: last hauled "
+                          f"{history['commodity']} ({history['category']}), not in Meridian.")
 
     if requested_equipment and equipment not in EQUIPMENT_FITS.get(requested_equipment, {requested_equipment}):
         ok = False
@@ -219,7 +226,7 @@ def _option_for_truck(truck, candidate, requested_equipment, pickup_date, home_c
         "carrier_id": truck.get("carrier_id"),
         "trailer_number": truck.get("trailer_number"),
         "equipment": equipment,
-        "trailer_last_category": truck.get("trailer_last_category"),
+        "trailer_last_category": last_category,
         "available_date": truck.get("available_date"),
         "heading_home_to": f"{truck_home_city}, {truck_home_state}",
         "ok": ok,
@@ -383,6 +390,25 @@ def match_washout(email_id, email, extracted, email_text):
     return result
 
 
+def _quote_options_now_blocked(email_id, trailer, last_category):
+    """Food quote requests that had planned on this trailer, which the emailed last load now rules out."""
+    if not trailer or last_category not in RISKY_LAST_LOADS:
+        return []
+    hits = []
+    for other in store.list_emails(status="processed"):
+        if other["kind"] != "QUOTE_REQUEST" or other["email_id"] == email_id:
+            continue
+        if (other.get("extracted") or {}).get("category") not in FOOD_CATEGORIES:
+            continue
+        for opt in (other.get("matched") or {}).get("options", []):
+            if str(opt.get("trailer_number")) == str(trailer) and not store.washouts_for_trailer(trailer):
+                hits.append({"email_id": other["email_id"], "subject": other["subject"],
+                             "outbound_file": opt["outbound_file"], "carrier_id": opt["carrier_id"],
+                             "reason": f"Blocked: trailer {trailer} last hauled {last_category}; "
+                                       "FSMA requires a washout before food."})
+    return hits
+
+
 def match_last_load(email_id, email, extracted, email_text):
     """Re-check the prospects at the truck's position using the last load the carrier told us about."""
     carrier_ref = resolve_carrier(extracted.get("carrier_hint"), email_text)
@@ -403,6 +429,7 @@ def match_last_load(email_id, email, extracted, email_text):
     options = _prospects_for_truck(city, state, extracted.get("last_commodity_category"), equipment, carrier, trailer)
     result["options"] = [o for o in options if o["ok"]][:MAX_OPTIONS]
     result["blocked"] = [o for o in options if not o["ok"]]
+    result["newly_blocked"] = _quote_options_now_blocked(email_id, trailer, extracted.get("last_commodity_category"))
     usable = [o for o in options if o["ok"]]
     result["prospect"] = usable[0] if usable else None
     result["status"] = "prospect" if usable else "none_found"
