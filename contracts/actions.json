@@ -1,10 +1,12 @@
 {
   "items": [
     {
-      "action_id": "act_4f2ed401",
+      "action_id": "act_76278fd2",
       "confidence": 0.98,
-      "created_at": "2026-11-13T18:17:49Z",
+      "created_at": "2026-11-13T20:13:23Z",
+      "decided_by": null,
       "kind": "create_return_quote",
+      "mode": "approval",
       "payload": {
         "buy_lines": [
           {
@@ -42,6 +44,12 @@
       },
       "reasoning": "Dry V matches dry SCRAP freight. 30,761 lb / 10 pallets fits the V. Carrier ACMECARR is ACTIVE with an unexpired CARGO policy. Warm lead: Northstar Manufacturing already ships with us (27 loads on this pattern). Saves 925 empty miles (100% of the trip home). Equipment match: this freight usually moves on V. Source: reverse logistics: steel scrap and offcuts from Big-Box Retailer DC135 back to Chicago, IL.",
       "result": null,
+      "risk": {
+        "blockers": [],
+        "cap": null,
+        "level": "low",
+        "reasons": []
+      },
       "status": "pending",
       "summary": "Backhaul for outbound file 7300156. 925 mi V, SCRAP, buy $1,767.46 / sell $1,905.26 / GP 7.2%.",
       "tier": "approve",

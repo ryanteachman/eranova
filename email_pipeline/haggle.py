@@ -142,7 +142,8 @@ def haggle(email_id, target_pay_min=None, target_pay_max=None, max_rounds=MAX_RO
         reply_id = store.insert_reply(email_id, row["from_addr"], f"Re: {row['subject']} - rate confirmed", body)
         payload = {"reply_id": reply_id, "email_id": email_id, "carrier_id": carrier["entity_id"],
                    "prospect_id": prospect["prospect_id"], "amount": deal, "miles": miles,
-                   "rate_per_mile": round(deal / miles, 2), "trailer_number": extracted.get("trailer_number")}
+                   "rate_per_mile": round(deal / miles, 2), "trailer_number": extracted.get("trailer_number"),
+                   "target_pay_min": target_pay_min, "target_pay_max": target_pay_max}
         action_id = propose(
             "confirm_carrier_rate",
             f"Confirm {carrier.get('label')} at ${deal:,.2f}: {origin_city} → {dest_city}",

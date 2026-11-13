@@ -2,39 +2,39 @@
   "items": [
     {
       "actor": "human",
-      "at": "2026-11-13T18:17:49Z",
-      "detail": "act_4f2ed401: Customer has no freight ready this week.",
+      "at": "2026-11-13T20:13:23Z",
+      "detail": "act_76278fd2: Customer has no freight ready this week.",
       "event": "action_rejected"
     },
     {
       "actor": "human",
-      "at": "2026-11-13T18:17:49Z",
-      "detail": "act_4f2ed401 create_return_quote: Return quote: Dallas, TX -> Chicago, IL for NORTHSTAR",
+      "at": "2026-11-13T20:13:23Z",
+      "detail": "act_76278fd2 create_return_quote: Return quote: Dallas, TX -> Chicago, IL for NORTHSTAR",
       "event": "action_proposed"
     },
     {
       "actor": "system",
-      "at": "2026-11-13T18:17:45Z",
-      "detail": "{'classified': 0, 'skipped': 160, 'failed': 0}",
-      "event": "classify"
+      "at": "2026-11-13T20:12:56Z",
+      "detail": "declined 4 quotes, cleared 0 pending actions",
+      "event": "reset_demo"
     },
     {
-      "actor": "system",
-      "at": "2026-11-13T18:17:45Z",
-      "detail": "{'shipments': 160, 'vendors': 18, 'facilities': 30, 'customers': 14}",
-      "event": "sync"
+      "actor": "human",
+      "at": "2026-11-13T20:12:51Z",
+      "detail": "invisible -> approval",
+      "event": "mode_changed"
     },
     {
-      "actor": "system",
-      "at": "2026-11-13T18:17:38Z",
-      "detail": "{'classified': 160, 'skipped': 0, 'failed': 0}",
-      "event": "classify"
+      "actor": "ai",
+      "at": "2026-11-13T20:12:51Z",
+      "detail": "act_68a6e97d -> {\"quote_id\": \"7300188\", \"summary\": \"Quote 7300188 | QUOTED | TRUENORTH | TL R | Denver, CO -> Rockford, IL | 1015 mi | sell $2,288.33 | valid until 11/20/26\", \"sell_total\": 2288.33, \"meridian_url\": \"<TMS_UI_URL>/quotes/7300188\"}",
+      "event": "action_approved"
     },
     {
-      "actor": "system",
-      "at": "2026-11-13T18:17:19Z",
-      "detail": "{'shipments': 160, 'vendors': 18, 'facilities': 30, 'customers': 14}",
-      "event": "sync"
+      "actor": "ai",
+      "at": "2026-11-13T20:12:50Z",
+      "detail": "act_68a6e97d (invisible mode, risk high)",
+      "event": "action_auto_approved"
     }
   ]
 }

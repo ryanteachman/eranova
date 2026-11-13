@@ -159,6 +159,46 @@ city in the data.
 - Asher's code plugs in on import when present: `email_pipeline.tools` (tools and executors,
   e.g. `send_reply`) and `email_pipeline.routes.bp` (a Blueprint mounted at `/api/email`).
 
+## Decision modes
+
+`agent/autonomy.py` decides who approves a write. Every Meridian write, from Fill, the agent
+chat or Asher's email pipeline, goes through `actions.propose()`, which asks `decide()`:
+
+| Mode | What happens to a proposed action |
+|---|---|
+| `approval` (default) | Stays `pending` for a human. |
+| `auto` | Executed at once as actor `ai` when its risk is low and no blocker or cap applies; otherwise `pending` with the reasons. |
+| `invisible` | Executed at once as actor `ai` unless a blocker or the daily cap applies. |
+
+- The mode is stored in the `settings` table; `GET/PUT /api/mode`. Changing it is audited
+  (`mode_changed`). Actions already pending are not touched by a switch. Re-proposing one
+  (e.g. Fill again) re-decides it under the current mode.
+- Every action records `mode`, `decided_by` (`human` / `ai`) and `risk`. AI decisions are
+  audited as `action_auto_approved` or `action_held` with the reasons.
+- **Risk rules** register with `@autonomy.risk_check(kind)` and return
+  `{risks, blockers}`. A kind without rules is always high risk.
+
+  | Kind | Low risk when | Blocker |
+  |---|---|---|
+  | `create_return_quote` | confidence ≥ `min_confidence` (0.80), estimated sell ≤ `max_quote_sell` ($2,500), customer `ACTIVE` with past loads, category not in `risky_categories` (`HAZMAT`, `FOOD`, `BEVERAGE`) | — |
+  | `send_reply` (Asher) | always | its `quote_action_id` is not `done` yet |
+  | `confirm_carrier_rate` (Asher) | `amount` ≤ `target_pay_max` | — |
+
+- **Daily caps** (`DAILY_CAPS`, per UTC day, auto and invisible): at most 20 AI-executed
+  actions and $50,000 of AI-quoted sell. Past them, actions fall back to `pending` with the
+  cap in `risk.cap`. Human approvals don't count.
+- **Waiting actions:** after any action finishes `done`, pending actions with blockers are
+  re-decided, so in auto/invisible mode a customer reply goes out as soon as a human approves
+  the quote it prices.
+- **No loops:** actions proposed while an executor is running (Asher's reply re-queues itself
+  when its quote isn't approved) are never auto-executed.
+- The agent's tool result says what happened (`Executed automatically by the AI as …`,
+  `Queued for human approval as … (reasons)` or the failure), and the system prompt tells it
+  to report that.
+- Tested against the sandbox: auto created a low-risk Dallas quote and held a cold-lead
+  prospect (confidence 0.60); invisible executed that one; an email quote request in auto mode
+  produced an AI-created quote and an AI-sent reply. All declined afterwards.
+
 ## Carrier scoring
 
 `brain/carrier_score.py` ranks carriers by how they actually performed on our loads, not by
@@ -261,6 +301,8 @@ inside the target ranges.
 | Event sync threads | 8 | `sync.EVENT_WORKERS` |
 | Carrier score weights, `K` | see *Carrier scoring* | `carrier_score.WEIGHTS` |
 | Ranked carriers returned | 5 | `carrier_score.RANK_LIMIT` |
+| Auto-mode risk limits | confidence 0.80, sell $2,500, HAZMAT/FOOD/BEVERAGE | `autonomy.RISK` |
+| AI daily caps | 20 actions, $50,000 sell | `autonomy.DAILY_CAPS` |
 | Profile gap shown in reasons | 10 points | `carrier_score.PROFILE_GAP_POINTS` |
 
 ## Known issues

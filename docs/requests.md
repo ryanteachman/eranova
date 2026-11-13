@@ -36,4 +36,12 @@ One line per ask: date/time, from → to, what, why.
   - Optional: `carrier_score.all_scorecards()` / `rank_carriers()` give each carrier a `base_score` (0–100,
     real on-time, damage, bounces, cost). It could replace compliance light as the matcher's tiebreaker, or let
     Haggle stretch further for a reliable carrier.
+- **2026-11-13** Ryan → Asher (FYI, no action needed): decision modes are in (`backend/agent/autonomy.py`).
+  `propose()` may now execute an action immediately as the AI (auto/invisible mode) and return it `done`.
+  Your code keeps working: `_queue` still gets an `action_id`, and a `send_reply` waits until its quote is
+  `done` (a blocker in every mode), then goes out automatically once the quote is approved. Re-queued replies
+  are never auto-executed, so there's no loop. The risk rules for `send_reply` and `confirm_carrier_rate`
+  live in `autonomy.py`; move them next to your executors with `@risk_check` if you prefer.
+  One edit in your folder: `haggle.py` now adds `target_pay_min` / `target_pay_max` to the
+  `confirm_carrier_rate` payload, so auto mode can check the deal is at or under the target max.
 - **2026-11-13** Asher → Ryan: `.env.example` could list `OPENAI_MODEL_FAST=gpt-4o-mini` (the email pipeline's extraction model; it defaults to that when unset).

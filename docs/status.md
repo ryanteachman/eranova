@@ -15,8 +15,21 @@
   `rank_carriers` ("who should haul 7300174?" works from chat), `scripts/score_carriers.py`.
   Rules, weights and data notes in `docs/backend.md` › *Carrier scoring*.
 
+- **2026-11-13 Decision modes:** `approval` (default, as before), `auto` (the AI executes
+  low-risk writes, humans get the rest) and `invisible` (the AI executes everything, within
+  daily caps). `GET/PUT /api/mode`; every action now records `mode`, `decided_by` and `risk`.
+  Rules in `docs/backend.md` › *Decision modes*.
+
 **Doing**
 - Nothing blocked. Next: tune scoring and the demo script with the team.
+
+**Decision modes UI** (@Ali)
+- A mode switch: `GET /api/mode`, `PUT /api/mode {mode}` (`contracts/mode.json`), plus today's AI
+  usage against the caps.
+- `POST /api/fill` can now return `status: "done"` with the quote in `result` (auto/invisible).
+  Actions carry `decided_by` (`human`/`ai`) and `risk` (`level`, `reasons`, `blockers`, `cap`):
+  good for an "AI did this" badge and a "why is this waiting?" line on held cards.
+  Example AI-executed action: `contracts/action_auto_executed.json`.
 
 **Blocked**
 - Nothing.

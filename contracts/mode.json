@@ -1,0 +1,25 @@
+{
+  "ai_today": {
+    "actions": 5,
+    "sell": 6098.85
+  },
+  "daily_caps": {
+    "max_actions": 20,
+    "max_sell": 50000.0
+  },
+  "mode": "approval",
+  "modes": [
+    "approval",
+    "auto",
+    "invisible"
+  ],
+  "risk_rules": {
+    "max_quote_sell": 2500.0,
+    "min_confidence": 0.8,
+    "risky_categories": [
+      "BEVERAGE",
+      "FOOD",
+      "HAZMAT"
+    ]
+  }
+}
